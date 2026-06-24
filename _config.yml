@@ -2,18 +2,17 @@
 #  Site settings — edit these to make the site yours
 # ─────────────────────────────────────────────────────────────
 title: Jiaqian Zhu (Janelle)
-tagline: PhD Student · NLP, LLMs & World Models
+tagline: PhD Student in Computer Science 
 email: jiaqianzhu915@gmail.com
 
 # Short bio shown under your name on the homepage (Markdown allowed)
 
 description: >-
   My name is Jiaqian Zhu (Janelle), and I'm a PhD student in Computer Science
-  at Missouri University of Science and Technology working on large language models and NLP. I love trying
-  new directions — recently spanning biomedical, privacy, world models,
-  efficiency, and AI for science — and I'm always curious about new problems and
-  open to collaboration. Feel free to reach out!
-
+  at Missouri University of Science and Technology. My research interests
+  include world models, large language models, NLP, efficiency, and AI for
+  science. I'm always open to exploring new directions and collaboration —
+  feel free to reach out!
 
 # Your affiliation / location (shown in the sidebar)
 affiliation: Missouri University of Science and Technology

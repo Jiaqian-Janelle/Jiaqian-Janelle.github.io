@@ -1,17 +1,13 @@
 # Each entry becomes one publication card on the homepage.
 # Bold your own name in `authors` with **double asterisks**.
-# Remove the sample entries and add your own.
-- title: "A Sample Paper Title That Says Something Interesting"
-  authors: "**Your Name**, Co Author, Senior Advisor"
-  venue: "ACL 2026 Findings"
+- title: "Accelerating design of glass substrates by machine learning using small-to-medium datasets"
+  authors: "**J. Zhu**, L. Ding, G. Sun, L. Wang"
+  venue: "Ceramics International, 50(2), 3018–3025, 2024"
   links:
-    - { name: Project, url: "#" }
-    - { name: ArXiv, url: "#" }
-    - { name: Code, url: "#" }
+    - { name: Paper, url: "https://doi.org/10.1016/j.ceramint.2023.11.048" }
 
-- title: "Another Representative Piece of Your Research"
-  authors: "First Author, **Your Name**, Last Author"
-  venue: "AAAI 2025"
+- title: "Advancing the prediction of crystalline phases in glass-ceramics via machine learning"
+  authors: "**J. Zhu**, G. Sun, L. Ding, L. Wang"
+  venue: "Journal of Non-Crystalline Solids, 646, 123251, 2024"
   links:
-    - { name: ArXiv, url: "#" }
-    - { name: Code, url: "#" }
+    - { name: Paper, url: "https://doi.org/10.1016/j.jnoncrysol.2024.123251" }

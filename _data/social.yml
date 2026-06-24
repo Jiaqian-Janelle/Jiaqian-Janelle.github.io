@@ -2,16 +2,13 @@
 # icon must match a key in the SVG set defined in _includes/sidebar.html
 - name: Email
   icon: email
-  url: mailto:you@example.com
+  url: mailto:jiaqianzhu915@gmail.com
 - name: GitHub
   icon: github
-  url: https://github.com/yourname
+  url: https://github.com/Jiaqian-Janelle
 - name: Google Scholar
   icon: scholar
-  url: https://scholar.google.com/citations?user=XXXX
-- name: Twitter
-  icon: twitter
-  url: https://twitter.com/yourname
+  url: https://scholar.google.com/citations?user=51tFWCsAAAAJ
 - name: LinkedIn
   icon: linkedin
-  url: https://www.linkedin.com/in/yourname
+  url: https://www.linkedin.com/in/jiaqian-zhu-2a8a70321/
