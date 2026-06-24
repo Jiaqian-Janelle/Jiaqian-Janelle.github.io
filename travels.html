@@ -1,0 +1,101 @@
+---
+layout: default
+title: Travels in the US
+---
+<div class="wrap" style="max-width:820px">
+  <article class="article" style="padding-left:0;padding-right:0">
+    <a class="back" href="{{ '/' | relative_url }}">← Home</a>
+    <header class="article-head">
+      <div class="date">My footprints across the US</div>
+      <h1>Travels</h1>
+      <p style="color:var(--ink-soft);margin:.6rem 0 0">Places I've explored in the United States.</p>
+    </header>
+    <div id="usmap" style="width:100%;position:relative"></div>
+    <div id="triplist" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:1.5rem"></div>
+  </article>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script>
+(function(){
+  var dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  var land     = dark ? '#26261f' : '#efece3';
+  var landSeen = dark ? '#143b32' : '#cdeee1';
+  var edge     = dark ? 'rgba(255,255,255,.10)' : '#ffffff';
+  var edgeSeen = dark ? '#1D9E75' : '#5DCAA5';
+  var pinCore  = '#1D9E75';
+  var lbl      = dark ? 'rgba(255,255,255,.34)' : 'rgba(60,60,58,.45)';
+  var lblSeen  = dark ? '#5DCAA5' : '#0F6E56';
+  var nameClr  = dark ? '#e9e7e1' : '#1b1b1a';
+
+  var seen = { 'California': true, 'Massachusetts': true };
+  var places = [
+    { name:'Los Angeles', state:'California', lon:-118.24, lat:34.05, dx:-8, anchor:'end' },
+    { name:'San Diego', state:'California', lon:-117.16, lat:32.72, dx:10, anchor:'start' },
+    { name:'Boston', state:'Massachusetts', lon:-71.06, lat:42.36, dx:10, anchor:'start' }
+  ];
+  var small = ['Rhode Island','Delaware','Connecticut','New Jersey','New Hampshire','Vermont','Massachusetts','Maryland','Hawaii','District of Columbia'];
+  var abbr = { 'California':'CA','Massachusetts':'MA' };
+
+  var W=820, H=500;
+  var svg = d3.select('#usmap').append('svg').attr('viewBox','0 0 '+W+' '+H).attr('width','100%');
+  var projection = d3.geoAlbersUsa();
+  var path = d3.geoPath(projection);
+
+  var tip = d3.select('#usmap').append('div')
+    .style('position','absolute').style('pointer-events','none')
+    .style('background', dark ? '#1d1d22':'#ffffff').style('border','1px solid #d0cdc6')
+    .style('border-radius','6px').style('padding','4px 10px').style('font-size','13px')
+    .style('color', nameClr).style('opacity',0).style('transition','opacity .12s');
+
+  d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(function(us){
+    var states = topojson.feature(us, us.objects.states);
+    projection.fitExtent([[15,18],[W-15,H-30]], states);
+
+    svg.append('g').selectAll('path').data(states.features).join('path')
+      .attr('d', path)
+      .attr('fill', function(d){ return seen[d.properties.name] ? landSeen : land; })
+      .attr('stroke', function(d){ return seen[d.properties.name] ? edgeSeen : edge; })
+      .attr('stroke-width', function(d){ return seen[d.properties.name] ? 1 : 0.6; });
+
+    svg.append('g').selectAll('text').data(states.features).join('text').each(function(d){
+      var c = path.centroid(d); if(!c[0]) return;
+      var isSeen = !!seen[d.properties.name];
+      var label = small.indexOf(d.properties.name)>=0 ? (abbr[d.properties.name]||'') : d.properties.name;
+      if(!label) return;
+      d3.select(this).attr('x',c[0]).attr('y',c[1])
+        .attr('text-anchor','middle').attr('dominant-baseline','middle')
+        .attr('font-size', isSeen?11:9).attr('font-weight', isSeen?500:400)
+        .attr('fill', isSeen?lblSeen:lbl).style('pointer-events','none').text(label);
+    });
+
+    var g = svg.append('g');
+    places.forEach(function(p){
+      var c = projection([p.lon,p.lat]); if(!c) return;
+      g.append('circle').attr('cx',c[0]).attr('cy',c[1]).attr('r',12).attr('fill',pinCore).attr('opacity',0.16);
+      g.append('circle').attr('cx',c[0]).attr('cy',c[1]).attr('r',5).attr('fill',pinCore)
+        .attr('stroke', dark?'#16161a':'#ffffff').attr('stroke-width',1.6).style('cursor','pointer')
+        .on('mousemove', function(e){
+          var r = document.getElementById('usmap').getBoundingClientRect();
+          tip.style('opacity',1).html(p.name+' · '+p.state)
+             .style('left',(e.clientX-r.left+12)+'px').style('top',(e.clientY-r.top-8)+'px');
+        }).on('mouseleave', function(){ tip.style('opacity',0); });
+      g.append('text').attr('x',c[0]+p.dx).attr('y',c[1]+4).attr('text-anchor',p.anchor)
+        .attr('font-size',12).attr('font-weight',500).attr('fill',nameClr).text(p.name);
+    });
+
+    var list = d3.select('#triplist');
+    places.forEach(function(p){
+      var card = list.append('div').style('background', dark?'#1d1d22':'#ffffff')
+        .style('border','1px solid #e6e3dc').style('border-radius','8px').style('padding','10px 12px')
+        .style('display','flex').style('align-items','center').style('gap','8px');
+      card.append('span').style('width','8px').style('height','8px').style('border-radius','50%')
+        .style('background',pinCore).style('flex','none');
+      var t = card.append('div');
+      t.append('div').style('font-size','14px').style('font-weight','500').style('color',nameClr).text(p.name);
+      t.append('div').style('font-size','12px').style('color','#8a8782').text(p.state);
+    });
+  });
+})();
+</script>
