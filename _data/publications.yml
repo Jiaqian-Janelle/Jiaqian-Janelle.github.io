@@ -1,0 +1,17 @@
+# Each entry becomes one publication card on the homepage.
+# Bold your own name in `authors` with **double asterisks**.
+# Remove the sample entries and add your own.
+- title: "A Sample Paper Title That Says Something Interesting"
+  authors: "**Your Name**, Co Author, Senior Advisor"
+  venue: "ACL 2026 Findings"
+  links:
+    - { name: Project, url: "#" }
+    - { name: ArXiv, url: "#" }
+    - { name: Code, url: "#" }
+
+- title: "Another Representative Piece of Your Research"
+  authors: "First Author, **Your Name**, Last Author"
+  venue: "AAAI 2025"
+  links:
+    - { name: ArXiv, url: "#" }
+    - { name: Code, url: "#" }

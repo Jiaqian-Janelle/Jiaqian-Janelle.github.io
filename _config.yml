@@ -1,0 +1,63 @@
+# ─────────────────────────────────────────────────────────────
+#  Site settings — edit these to make the site yours
+# ─────────────────────────────────────────────────────────────
+title: Jiaqian Zhu (Janelle)
+tagline: PhD Student · NLP, LLMs & World Models
+email: jiaqianzhu915@gmail.com
+
+# Short bio shown under your name on the homepage (Markdown allowed)
+
+description: >-
+  My name is Jiaqian Zhu (Janelle), and I'm a PhD student in Computer Science
+  at Missouri University of Science and Technology working on large language models and NLP. I love trying
+  new directions — recently spanning biomedical, privacy, world models,
+  efficiency, and AI for science — and I'm always curious about new problems and
+  open to collaboration. Feel free to reach out!
+
+
+# Your affiliation / location (shown in the sidebar)
+affiliation: Missouri University of Science and Technology
+location: Rolla, MO
+
+# Profile photo: drop a square image in assets/images/ and put its name here
+avatar: profile.jpg
+
+# Set this when you deploy. For GitHub Pages at username.github.io leave url
+# blank and baseurl empty. For a project repo (username.github.io/repo) set
+# baseurl: "/repo".
+url: ""
+baseurl: ""
+
+# ─────────────────────────────────────────────────────────────
+#  Build settings — you usually don't need to touch these
+# ─────────────────────────────────────────────────────────────
+markdown: kramdown
+highlighter: rouge
+permalink: /blog/:title/
+
+collections:
+  papers:
+    output: true
+    permalink: /papers/:name/
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+  - scope:
+      path: ""
+      type: papers
+    values:
+      layout: paper
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor

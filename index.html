@@ -1,0 +1,125 @@
+---
+layout: default
+---
+<div class="wrap layout">
+  {% include sidebar.html %}
+
+  <main class="main">
+
+    <!-- ABOUT -->
+    <section class="section" id="about">
+      <div class="lead">
+        {{ site.description | markdownify }}
+      </div>
+      <div class="facets">
+        <div class="facet">
+          <h4>Research</h4>
+          <ul>
+            <li>Large language models &amp; NLP</li>
+            <li>Reasoning and evaluation</li>
+            <li>Open to collaboration</li>
+          </ul>
+        </div>
+        <div class="facet">
+          <h4>Writing</h4>
+          <ul>
+            <li>Essays on tech &amp; ideas</li>
+            <li>A daily paper-reading log</li>
+            <li>Notes from the field</li>
+          </ul>
+        </div>
+        <div class="facet">
+          <h4>Otherwise</h4>
+          <ul>
+            <li>Traveller</li>
+            <li>Reader</li>
+            <li>Always curious</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAPER READING — the daily log -->
+    <section class="section" id="papers">
+      <div class="section-head">
+        <h2>Paper Reading</h2>
+        <a class="all-link" href="{{ '/papers/' | relative_url }}">FULL LOG →</a>
+      </div>
+      <ul class="paperlog">
+        {% assign recent_papers = site.papers | sort: 'date' | reverse %}
+        {% for p in recent_papers limit: 5 %}
+        <li class="entry">
+          <div class="date">{{ p.date | date: "%Y.%m.%d" }}</div>
+          <h3><a href="{{ p.url | relative_url }}">{{ p.title }}</a></h3>
+          {% if p.gist %}<p class="gist">{{ p.gist }}</p>{% endif %}
+          <div class="tags">
+            {% for t in p.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+            {% if p.rating %}<span class="rating">{% for i in (1..p.rating) %}<span class="star">★</span>{% endfor %}</span>{% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- PUBLICATIONS -->
+    <section class="section" id="publications">
+      <div class="section-head"><h2>Publications</h2></div>
+      {% for pub in site.data.publications %}
+      <div class="pub">
+        <div class="venue">{{ pub.venue }}</div>
+        <h3>{{ pub.title }}</h3>
+        <p class="authors">{{ pub.authors | markdownify | remove: '<p>' | remove: '</p>' }}</p>
+        <div class="pub-links">
+          {% for l in pub.links %}<a href="{{ l.url }}" target="_blank" rel="noopener">{{ l.name }}</a>{% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+
+    <!-- BLOG -->
+    <section class="section" id="blog">
+      <div class="section-head">
+        <h2>Writing</h2>
+        <a class="all-link" href="{{ '/blog/' | relative_url }}">ALL POSTS →</a>
+      </div>
+      <ul class="postlist">
+        {% for post in site.posts limit: 4 %}
+        <li>
+          <div class="when">{{ post.date | date: "%b %Y" }}</div>
+          <div>
+            <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+            <p class="excerpt">{{ post.excerpt | strip_html | truncate: 140 }}</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section class="section" id="experience">
+      <div class="section-head"><h2>Experience</h2></div>
+      <ul class="timeline">
+        {% for e in site.data.experience %}
+        <li>
+          <div class="when">{{ e.period }}</div>
+          <div class="what">{{ e.detail | markdownify | remove: '<p>' | remove: '</p>' }}</div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- EDUCATION -->
+    <section class="section" id="education">
+      <div class="section-head"><h2>Education</h2></div>
+      <ul class="timeline">
+        {% for ed in site.data.education %}
+        <li>
+          <div class="when">{{ ed.period }}</div>
+          <div class="what">{{ ed.detail | markdownify | remove: '<p>' | remove: '</p>' }}</div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+  </main>
+</div>

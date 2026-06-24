@@ -1,0 +1,32 @@
+---
+layout: default
+title: Paper Reading
+---
+<div class="wrap" style="max-width:760px">
+  <article class="article" style="padding-left:0;padding-right:0">
+    <a class="back" href="{{ '/' | relative_url }}">← Home</a>
+    <header class="article-head">
+      <div class="date">A daily log</div>
+      <h1>Paper Reading</h1>
+      <p style="color:var(--ink-soft);margin:.6rem 0 0">
+        Notes on the papers I read. One entry a day, ideally.
+        {% assign count = site.papers | size %}<span style="font-family:var(--mono);font-size:.8rem;color:var(--ink-faint)"> · {{ count }} so far</span>
+      </p>
+    </header>
+
+    <ul class="paperlog">
+      {% assign all_papers = site.papers | sort: 'date' | reverse %}
+      {% for p in all_papers %}
+      <li class="entry">
+        <div class="date">{{ p.date | date: "%Y.%m.%d" }}</div>
+        <h3><a href="{{ p.url | relative_url }}">{{ p.title }}</a></h3>
+        {% if p.gist %}<p class="gist">{{ p.gist }}</p>{% endif %}
+        <div class="tags">
+          {% for t in p.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+          {% if p.rating %}<span class="rating">{% for i in (1..p.rating) %}<span class="star">★</span>{% endfor %}</span>{% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+</div>

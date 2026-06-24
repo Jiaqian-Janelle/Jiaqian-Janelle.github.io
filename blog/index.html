@@ -1,0 +1,25 @@
+---
+layout: default
+title: Writing
+---
+<div class="wrap" style="max-width:760px">
+  <article class="article" style="padding-left:0;padding-right:0">
+    <a class="back" href="{{ '/' | relative_url }}">← Home</a>
+    <header class="article-head">
+      <div class="date">Blog</div>
+      <h1>Writing</h1>
+    </header>
+
+    <ul class="postlist">
+      {% for post in site.posts %}
+      <li>
+        <div class="when">{{ post.date | date: "%b %-d, %Y" }}</div>
+        <div>
+          <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+          <p class="excerpt">{{ post.excerpt | strip_html | truncate: 180 }}</p>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+</div>

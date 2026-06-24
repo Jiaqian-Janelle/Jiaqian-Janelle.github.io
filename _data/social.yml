@@ -1,0 +1,17 @@
+# Sidebar links. Delete any you don't want; add your own.
+# icon must match a key in the SVG set defined in _includes/sidebar.html
+- name: Email
+  icon: email
+  url: mailto:you@example.com
+- name: GitHub
+  icon: github
+  url: https://github.com/yourname
+- name: Google Scholar
+  icon: scholar
+  url: https://scholar.google.com/citations?user=XXXX
+- name: Twitter
+  icon: twitter
+  url: https://twitter.com/yourname
+- name: LinkedIn
+  icon: linkedin
+  url: https://www.linkedin.com/in/yourname
