@@ -108,18 +108,5 @@ layout: default
       </ul>
     </section>
 
-    <!-- EDUCATION -->
-    <section class="section" id="education">
-      <div class="section-head"><h2>Education</h2></div>
-      <ul class="timeline">
-        {% for ed in site.data.education %}
-        <li>
-          <div class="when">{{ ed.period }}</div>
-          <div class="what">{{ ed.detail | markdownify | remove: '<p>' | remove: '</p>' }}</div>
-        </li>
-        {% endfor %}
-      </ul>
-    </section>
-
   </main>
 </div>
