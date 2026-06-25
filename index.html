@@ -61,6 +61,27 @@ layout: default
       </ul>
     </section>
 
+    <!-- READING LIST -->
+    <section class="section" id="reading">
+      <div class="section-head">
+        <h2>Reading List</h2>
+        <a class="all-link" href="{{ '/reading/' | relative_url }}">FULL LIST →</a>
+      </div>
+      <ul class="paperlog">
+        {% assign recent_reading = site.reading | sort: 'date' | reverse %}
+        {% for r in recent_reading limit: 5 %}
+        <li class="entry">
+          <div class="date">{{ r.date | date: "%Y.%m.%d" }}</div>
+          <h3><a href="{{ r.url | relative_url }}">{{ r.title }}</a></h3>
+          {% if r.gist %}<p class="gist">{{ r.gist }}</p>{% endif %}
+          <div class="tags">
+            {% for t in r.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
     <!-- STARTUP & BUSINESS -->
     <section class="section" id="startup">
       <div class="section-head">
