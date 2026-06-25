@@ -3,155 +3,215 @@ title: "Frontier Radar — 2026-06-24"
 date: 2026-06-24
 tags: [frontier, auto]
 ---
-## 本期跨领域趋势
+## Cross-disciplinary trends this week
 
-本周研究跨越生物、材料与工程领域的共同主题是利用精细的分子与结构设计来解决复杂系统问题。从STING蛋白变异的免疫信号调控、到碳纳米结构与金属催化剂的表面化学优化，再到微机器人群体与神经影像的智能集成，科研重点聚焦于通过理解微观相互作用（分子、细胞、颗粒层面）来驱动宏观功能突破。同时，气候变化、疾病防治与食品安全等实际挑战正推动基因编辑、合成生物学与云端监测等新技术的融合应用。
+Across multiple domains, researchers are leveraging molecular engineering and spatial organization to overcome fundamental biological and chemical barriers. From immune signaling tuning through mutational mapping to catalyst design in zeolites and microrobotic swarm navigation, a common thread emerges: understanding and controlling molecular interactions at interfaces—whether cellular, chemical, or environmental—enables dramatic performance improvements. Additionally, multi-omics integration, genetic enhancement, and cellular atlas approaches reveal that systems-level insights into crosstalk mechanisms, from fibroblast-macrophage interactions in disease to bacterial-driven tumorigenesis, are becoming critical for both disease understanding and agricultural resilience in a changing climate.
 
 ## Entries (12)
 
 ### 1. **The mutational landscape of STING-induced immunity**
-*Nature · immunology/protein engineering · systems biology · functional genomics · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41586-026-10685-3](https://www.nature.com/articles/s41586-026-10685-3)
+*Nature · immunology · protein engineering · systems genetics · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41586-026-10685-3](https://www.nature.com/articles/s41586-026-10685-3)
+<sub>abstract source: RSS summary only</sub>
 
-> Systematic mapping of STING protein sequence variants reveals molecular principles governing immune signalling activity.
+> Massively parallel assay maps the sequence-function landscape of STING to reveal molecular principles tuning immune signalling activity.
 
-- **Problem:** SUPPORTED: Understanding how sequence variation in STING affects its signalling function and immune outcomes. INFERRED: Lack of comprehensive structure-function understanding across the STING protein landscape.
-- **Key idea:** SUPPORTED: A 'sequence-function landscape' approach applied to STING; the findings 'define molecular principles that tune STING activity.' INFERRED: Different mutations have different effects on immune activation.
-- **Method:** SUPPORTED: 'Massively parallel assay' used to systematically chart the landscape. Specific assay details: 未核实
-- **Result:** SUPPORTED: Molecular principles tuning STING activity identified; 'functional potential across immune contexts' demonstrated. Specific functional variants or predictions: 未核实
-- **Why it matters / 跨领域:** Cross-disciplinary: connects protein biophysics (sequence-function mapping) with immunology (STING signalling) and synthetic biology (tunable immune activation), with potential applications in vaccine and immunotherapy design.
-- ⚠️ **Critic flags:** OVERSTATEMENT RISK: 'functional potential across immune contexts' is vague—summary does not specify which contexts or applications.; UNSUPPORTED: No baseline comparison stated (vs. prior STING studies).; UNSUPPORTED: No quantitative results provided (number of variants, effect sizes, or functional categories).; INFERRED: Whether findings enable rational protein design is not explicitly stated.; SUPPORTED: Publication venue (Nature) and date (June 2026) confirmed; DOI provided.
+- **Problem:** Understanding how sequence variants in STING protein affect its immunological function across diverse immune contexts remains poorly characterized.
+- **Key idea:** The sequence-function landscape of STING can be systematically charted to define molecular principles governing its activity tuning and functional potential.
+- **Method:** Massively parallel assay [SUPPORTED: explicitly stated in abstract]
+- **Result:** The findings define molecular principles that tune STING activity and show its functional potential across immune contexts [SUPPORTED: explicitly stated in abstract]
+- **Why it matters / cross-disciplinary:** Systematic mapping of STING's sequence-function relationship bridges molecular biology and immunology, enabling rational design of immunotherapeutics and understanding of how protein variants modulate innate immune responses.
+- 🔑 **Key terms (Wikipedia):**
+  - **STING signalling protein** — not found on Wikipedia (check manually)
+  - **sequence-function landscape** — not found on Wikipedia (check manually)
+  - **massively parallel assay** — not found on Wikipedia (check manually)
+- ⚠️ **Critic flags:** SUPPORTED: 'massively parallel assay' — explicit phrase in abstract; SUPPORTED: 'STING signalling protein' — explicit phrase in abstract; SUPPORTED: 'molecular principles that tune STING activity' — explicit phrase in abstract; INFERRED: 'protein variants' — abstract mentions 'sequence' but does not explicitly state 'variants'; NOT IN SOURCE: specific immune cell types or contexts tested; NOT IN SOURCE: quantitative metrics or effect sizes; REQUIRES FULL TEXT: exact experimental design, sample size, throughput numbers
 
 ### 2. **Retraction Note: Carbon nano-onion-mediated dual targeting of P-selectin and P-glycoprotein to overcome cancer drug resistance**
-*Nature Communications · Nanomedicine · Cancer Drug Resistance · Retracted Research · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41467-026-74646-0](https://www.nature.com/articles/s41467-026-74646-0)
+*Nature Communications · Nanomedicine · Oncology · Drug Resistance · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41467-026-74646-0](https://www.nature.com/articles/s41467-026-74646-0)
+<sub>abstract source: RSS summary only</sub>
 
-> A Nature Communications paper on carbon nano-onions for dual P-selectin/P-glycoprotein targeting in cancer has been retracted.
+> Retraction of a study on carbon nano-onion nanoparticles designed to overcome cancer drug resistance via dual molecular targeting.
 
-- **Problem:** Cancer drug resistance mechanisms involving P-glycoprotein efflux and P-selectin-mediated tumor interactions represent barriers to effective chemotherapy.
-- **Key idea:** Carbon nano-onion nanoparticles designed to simultaneously target two distinct resistance pathways (P-selectin and P-glycoprotein).
-- **Method:** 未核实
-- **Result:** 未核实
-- **Why it matters / 跨领域:** If validated, would represent a multi-target nanomedicine approach to overcome dual resistance mechanisms; however, retraction status undermines reliability for clinical or research translation.
-- ⚠️ **Critic flags:** SUPPORTED: Paper retracted (stated in title); SUPPORTED: Journal is Nature Communications (stated in source); SUPPORTED: Publication date June 24, 2026 (stated in source); INFERRED: Specific mechanism of nano-onion action—NOT described in summary; INFERRED: Efficacy data—COMPLETELY ABSENT; summary only provides title/scope; OVERSTATEMENT RISK: Calling this 'key idea' without results data may misrepresent retraction gravity
+- **Problem:** Cancer drug resistance mediated by P-selectin and P-glycoprotein represents a barrier to effective chemotherapy [SUPPORTED: title].
+- **Key idea:** Dual targeting of P-selectin and P-glycoprotein using carbon nano-onion nanoparticles as a therapeutic strategy [SUPPORTED: title].
+- **Method:** NOT IN SOURCE — the RSS summary contains only the retraction notice title, not methodological detail.
+- **Result:** NOT IN SOURCE — no outcomes or findings are reported in this retraction notice.
+- **Why it matters / cross-disciplinary:** Retractions in nanomedicine research signal the importance of rigorous validation before deployment in drug-resistance applications; cross-disciplinary teams (materials science, oncology, pharmacology) depend on trustworthy literature for safe therapeutic design.
+- 🔑 **Key terms (Wikipedia):**
+  - **carbon nano-onion** — not found on Wikipedia (check manually)
+  - **P-selectin** — P-selectin is a type-1 transmembrane protein that in humans is encoded by the SELP gene. ([Wikipedia](https://en.wikipedia.org/wiki/P-selectin))
+  - **P-glycoprotein** — P-glycoprotein 1 also known as multidrug resistance protein 1 (MDR1) or ATP-binding cassette sub-family B member 1 (ABCB1) or cluster of differentiation 243 (CD243) is an important protein of the cell membrane that pumps many foreign substances out of cells. More formally, it is an ATP-dependent efflux pump with broad substrate specificity. ([Wikipedia](https://en.wikipedia.org/wiki/P-glycoprotein))
+  - **drug resistance** — Drug resistance is the reduction in effectiveness of a medication such as an antimicrobial or an antineoplastic in treating a disease or condition. The term is used in the context of resistance that pathogens or cancers have "acquired", that is, resistance has evolved. ([Wikipedia](https://en.wikipedia.org/wiki/Drug_resistance))
+- ⚠️ **Critic flags:** SUPPORTED: This is explicitly a retraction notice (title states 'Retraction Note'); SUPPORTED: The journal is Nature Communications and publication date is 24 June 2026 (online); NOT IN SOURCE: Reason for retraction is not provided in the RSS summary; NOT IN SOURCE: Original publication date or authors are not stated in the summary; NOT IN SOURCE: Whether the retraction affects reproducibility, data integrity, or methodology is unspecified
 
 ### 3. **MIND: multimodal integration with neighbourhood-aware distributions**
-*Nature Communications · Multi-omics data integration · Machine learning / embeddings · Biomedical informatics · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41467-026-74413-1](https://www.nature.com/articles/s41467-026-74413-1)
+*Nature Communications · computational biology · multimodal learning · multi-omics integration · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41467-026-74413-1](https://www.nature.com/articles/s41467-026-74413-1)
+<sub>abstract source: Crossref</sub>
 
-> MIND learns patient-specific embeddings from incomplete multi-omics datasets without distorting information through restrictive assumptions.
+> A neighbourhood-aware VAE that learns from incomplete multi-omics data without imputation or sample exclusion.
 
-- **Problem:** Multi-omics data integration is challenging due to missingness and inherent heterogeneity across data modalities; current methods rely on assumptions that can cause information distortion.
-- **Key idea:** Learn patient-specific embeddings that account for neighbourhood-aware distributions, implicitly handling incomplete and heterogeneous multi-omics data.
-- **Method:** 未核实 (summary states 'platform' and 'learns patient-specific embeddings' but does not detail the algorithmic approach or neighbourhood-awareness mechanism)
-- **Result:** 未核实 (abstract presents the method proposal but contains no performance metrics, benchmarks, or validation results)
-- **Why it matters / 跨领域:** Enables more faithful integration of complex biological data types with missing values—critical for precision medicine, systems biology, and patient stratification where current methods risk systematic bias.
-- ⚠️ **Critic flags:** SUPPORTED: 'Multi-omics data integration is challenging due to missingness and heterogeneity' — explicitly stated; SUPPORTED: 'current methods rely on assumptions that can cause information distortion' — explicitly stated; SUPPORTED: 'MIND' is proposed as a 'platform that learns patient-specific embeddings' — explicitly stated; INFERRED: 'neighbourhood-aware distributions' mechanism is in the title but not explained in the summary—full technical meaning is未核实; INFERRED: The clinical or research impact is未核实—the abstract does not state applications or performance gains; POSSIBLE OVERSTATEMENT: Calling this a solution without seeing results risks overstatement; summary is purely proposal-stage
+- **Problem:** Integration of multi-omics data is challenged by missingness and inherent heterogeneity; existing methods like imputation and sample exclusion rely on strong assumptions that risk information loss or distortion.
+- **Key idea:** Inject neighbourhood structure of the observed dataset (encoded as affinity matrices) into a multimodal VAE prior, penalising latent configurations when neighbourhood structures in data and latent spaces diverge.
+- **Method:** Multimodal Variational Autoencoder with a data-driven prior informed by neighbourhood affinity matrices.
+- **Result:** MIND achieves better performance on downstream tasks on both synthetic and real data compared with existing integration methods; handles high missing rates, unbalanced missingness patterns, and low signal-to-noise ratios robustly. [REQUIRES FULL TEXT for specific performance metrics]
+- **Why it matters / cross-disciplinary:** Enables principled integration of incomplete multi-modal biological data without strong parametric assumptions, with direct applications to cancer patient stratification and other precision medicine tasks.
+- 🔑 **Key terms (Wikipedia):**
+  - **multi-omics profiling** — Multiomics, multi-omics, integrative omics, "panomics" or "pan-omics" is a biological analysis approach in which the data consists of multiple "omes", such as the genome, epigenome, transcriptome, proteome, metabolome, exposome, and microbiome ; in other words, the use of multiple omics technologies to study life in a concerted way. By combining these "omes", scientists can analyze complex biological big data to find novel associations between biological entities, pinpoint relevant biomarkers and build elaborate markers of disease and physiology. ([Wikipedia](https://en.wikipedia.org/wiki/Multiomics))
+  - **multimodal Variational Autoencoder** — not found on Wikipedia (check manually)
+  - **affinity matrices** — not found on Wikipedia (check manually)
+  - **patient-specific embeddings** — not found on Wikipedia (check manually)
+- ⚠️ **Critic flags:** Problem statement — SUPPORTED by abstract: 'integration of multi-omics data remains challenging because of missingness and inherent heterogeneity'; Core method (VAE + neighbourhood prior) — SUPPORTED: 'multimodal Variational Autoencoder with a data-driven prior' + 'neighbourhood structure...encoded as affinity matrices'; Robustness claims (high missing rates, unbalanced patterns, low SNR) — SUPPORTED: explicitly stated in abstract; Performance superiority — SUPPORTED in principle but comparative metrics — REQUIRES FULL TEXT; Specific application to cancer patient stratification — INFERRED from abstract mention of 'cancer patient stratification' as an application domain, but no evidence MIND was tested on cancer data; Sample sizes, datasets, or hyperparameters — NOT IN SOURCE
 
 ### 4. **Role of methanesulfonic acid in atmospheric particle nucleation and growth**
-*Nature · atmospheric chemistry · particle nucleation · aerosol physics · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41586-026-10810-2](https://www.nature.com/articles/s41586-026-10810-2)
+*Nature · atmospheric chemistry · particle nucleation · aerosol science · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41586-026-10810-2](https://www.nature.com/articles/s41586-026-10810-2)
+<sub>abstract source: RSS summary only</sub>
 
-> Methanesulfonic acid plays a role in how atmospheric particles form and grow
+> Methanesulfonic acid plays a role in how atmospheric particles form and expand in size.
 
-- **Problem:** Understanding mechanisms of atmospheric particle nucleation and growth (stated in title; specific problem details not provided in summary)
-- **Key idea:** Methanesulfonic acid is implicated in atmospheric particle nucleation and growth processes
-- **Method:** 未核实
-- **Result:** 未核实
-- **Why it matters / 跨领域:** Atmospheric particle formation affects air quality, climate, and radiative forcing; identifying chemical species driving nucleation has implications for climate modeling and atmospheric science
-- ⚠️ **Critic flags:** SUPPORTED: Title states methanesulfonic acid's role in nucleation/growth — this is the sole factual claim; INFERRED: That this is a novel or significant finding — not stated in abstract; INFERRED: Specific mechanisms, quantitative results, or experimental methods — completely absent from summary; POSSIBLE OVERSTATEMENT: Calling this a 'cross-disciplinary' work without evidence of methods/applications beyond atmospheric chemistry; NOTE: Publication date (2026) appears to be future-dated; treated as provided without verification
+- **Problem:** Understanding the mechanisms by which atmospheric particles nucleate (form) and grow is a fundamental question in atmospheric chemistry and air quality science.
+- **Key idea:** Methanesulfonic acid is implicated as a chemical species involved in atmospheric particle nucleation and subsequent growth processes.
+- **Method:** NOT IN SOURCE
+- **Result:** NOT IN SOURCE
+- **Why it matters / cross-disciplinary:** Particle nucleation and growth are central to understanding aerosol formation, which affects air quality, cloud formation, climate radiative forcing, and public health impacts across atmospheric science, chemistry, and Earth system modeling communities.
+- 🔑 **Key terms (Wikipedia):**
+  - **methanesulfonic acid** — Methanesulfonic acid is an organosulfuric, colorless liquid with the molecular formula CH3SO3H and structure H3C−S(=O)2−OH. It is the simplest of the alkylsulfonic acids. ([Wikipedia](https://en.wikipedia.org/wiki/Methanesulfonic_acid))
+  - **atmospheric particle nucleation** — not found on Wikipedia (check manually)
+  - **nucleation** — In thermodynamics, nucleation is the first step in the formation of either a new thermodynamic phase or structure via self-assembly or self-organisation within a substance or mixture. Nucleation is typically defined as the process that determines how long an observer must wait before a new phase or self-organised structure appears. ([Wikipedia](https://en.wikipedia.org/wiki/Nucleation))
+  - **growth** — Growth hormone (GH) or somatotropin, also known as human growth hormone in its human form, is a peptide hormone that stimulates growth, cell reproduction, and cell regeneration in humans and other animals. It is thus important in human development. ([Wikipedia](https://en.wikipedia.org/wiki/Growth_hormone))
+- ⚠️ **Critic flags:** Methanesulfonic acid has a role in atmospheric particle nucleation and growth — SUPPORTED — Stated in title and summary; Specific chemical mechanisms or reaction pathways — NOT IN SOURCE — RSS summary does not detail mechanisms; Experimental conditions, measurements, or quantitative results — REQUIRES FULL TEXT — Typical of paper body, not RSS abstract; Comparison to other sulfur-containing species or nucleation pathways — NOT IN SOURCE — Summary mentions only methanesulfonic acid
 
 ### 5. **Volcanic magma sculpts eerie domes on the sea floor**
-*Nature · Volcanology/Geochemistry · Marine Geology · CO₂ Mineralization · 2026-06-24* · 🔗 [https://www.nature.com/articles/d41586-026-01986-8](https://www.nature.com/articles/d41586-026-01986-8)
+*Nature · submarine geology · CO₂ geochemistry · seafloor morphology · 2026-06-24* · 🔗 [https://www.nature.com/articles/d41586-026-01986-8](https://www.nature.com/articles/d41586-026-01986-8)
+<sub>abstract source: RSS summary only</sub>
 
-> Volcanic CO₂ emissions solidify into meter-scale seafloor structures through natural mineralization processes.
+> Carbon dioxide from subsurface sources solidifies into metre-scale dome structures on the ocean floor.
 
-- **Problem:** Volcanic magma releases carbon dioxide that interacts with seafloor environments, creating distinctive geological formations.
-- **Key idea:** CO₂ bubbling from subsurface volcanic material can undergo solidification, producing dome-shaped structures reaching up to five metres in height on the seafloor.
-- **Method:** 未核实
-- **Result:** Formation of eerie domes on the sea floor; structures up to five metres tall composed of solidified CO₂-derived material.
-- **Why it matters / 跨领域:** Cross-disciplinary relevance: (1) Volcanology—understanding magmatic CO₂ release mechanisms; (2) Marine science—seafloor morphology and habitat formation; (3) Geochemistry—CO₂ sequestration/mineralization pathways; (4) Climate science—natural carbon cycling in deep ocean systems.
-- ⚠️ **Critic flags:** SUPPORTED: 'Carbon dioxide bubbling up from underground material' — explicitly stated; SUPPORTED: 'solidify into formations of up to five metres tall' — explicitly stated; INFERRED: 'volcanic magma' as CO₂ source — title mentions 'volcanic magma' but summary says 'underground material' (broader term); INFERRED: 'eerie domes' as formation type — 'domes' appears only in title; summary does not specify shape; UNSUPPORTED: Any mechanism, timescale, or environmental conditions — omitted per rules
+- **Problem:** Understanding how subsurface carbon dioxide interacts with the seafloor and creates distinctive geological formations.
+- **Key idea:** CO₂ bubbling from underground material can consolidate into eerie dome-shaped features, suggesting active chemical or physical processes at the seafloor–subsurface boundary.
+- **Method:** NOT IN SOURCE
+- **Result:** Formation of dome structures up to five metres tall composed of solidified carbon dioxide.
+- **Why it matters / cross-disciplinary:** Links volcanology, marine geochemistry, and seafloor dynamics; may inform understanding of carbon cycling, subsurface fluid migration, and habitability of deep-sea environments.
+- 🔑 **Key terms (Wikipedia):**
+  - **carbon dioxide** — Carbon dioxide is a chemical compound with the chemical formula CO2. It is made up of molecules that each have one carbon atom covalently double bonded to two oxygen atoms. ([Wikipedia](https://en.wikipedia.org/wiki/Carbon_dioxide))
+- ⚠️ **Critic flags:** Carbon dioxide bubbling up from underground material can solidify into formations of up to five metres tall — SUPPORTED — directly from abstract; Formations are described as 'eerie domes' — SUPPORTED — title: 'eerie domes'; Process involves volcanic magma — INFERRED — title mentions 'volcanic magma' but abstract does not explicitly link magma to dome formation mechanism; Specific geological mechanisms (crystallization, precipitation, cementation) driving solidification — NOT IN SOURCE — abstract states solidification occurs but not how; Location, depth, sampling methodology, or observational techniques — REQUIRES FULL TEXT — RSS summary does not provide methodological details typical of paper body
 
 ### 6. **Genetic technologies to enhance crop nutritional value under climate change**
-*Nature · Agricultural genetics · Climate adaptation · Food security · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41586-026-10593-6](https://www.nature.com/articles/s41586-026-10593-6)
+*Nature · Agricultural genomics · Climate adaptation · Food security · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41586-026-10593-6](https://www.nature.com/articles/s41586-026-10593-6)
+<sub>abstract source: RSS summary only</sub>
 
-> CRISPR–Cas and genetic technologies proposed as combined tools to address hidden hunger and crop climate resilience
+> CRISPR–Cas and genetic technologies combined to address nutritional deficiency and crop climate resilience.
 
-- **Problem:** Hidden hunger (nutritional deficiencies) and need for crop resilience under climate change
-- **Key idea:** Genetic technologies, including underutilized CRISPR–Cas techniques, can be jointly deployed to enhance crop nutritional value while improving climate resilience
-- **Method:** 未核实 (summary does not specify which genetic technologies, implementation approaches, or crop types)
-- **Result:** 未核实 (summary is a review argument; no empirical results stated)
-- **Why it matters / 跨领域:** Addresses two interconnected challenges—malnutrition and climate vulnerability—positioning genetic innovation as a cross-disciplinary solution integrating plant biology, nutrition science, and climate adaptation policy
-- ⚠️ **Critic flags:** SUPPORTED: Title and abstract confirm focus on genetic technologies + nutritional enhancement + climate change; SUPPORTED: CRISPR–Cas techniques mentioned as 'untapped' (implies underutilized but not yet deployed at scale); INFERRED: 'Hidden hunger' interpretation as micronutrient deficiency—term used in abstract but mechanisms undefined; INFERRED: 'Combined use' suggests synergistic approach; abstract states 'joint power' but specifics未核实; POSSIBLE OVERSTATEMENT: Calling techniques 'untapped' could imply no current use, but summary only indicates they are not fully leveraged; OMITTED: No specific crops, regions, timelines, or quantitative outcomes provided in source
+- **Problem:** Two interconnected societal challenges: hidden hunger (nutritional deficiency in crops) and the need for crop resilience under climate change.
+- **Key idea:** Genetic technologies, particularly untapped CRISPR–Cas techniques, can be jointly deployed to simultaneously improve crop nutritional value and enhance resilience to climate stress.
+- **Method:** CRISPR–Cas techniques and other genetic technologies (specific methodological detail: REQUIRES FULL TEXT)
+- **Result:** NOT IN SOURCE (no outcomes, efficacy data, or case studies provided in the RSS summary)
+- **Why it matters / cross-disciplinary:** Combines two urgent cross-disciplinary imperatives—nutrition security and climate adaptation—into a unified genetic-engineering strategy, relevant to plant biotechnology, food systems, and climate resilience communities.
+- 🔑 **Key terms (Wikipedia):**
+  - **CRISPR–Cas** — CRISPR is a family of DNA sequences found in the genomes of prokaryotic organisms such as bacteria and archaea. Each sequence within an individual prokaryotic CRISPR is derived from a DNA fragment of a bacteriophage that had previously infected the prokaryote or one of its ancestors. ([Wikipedia](https://en.wikipedia.org/wiki/CRISPR))
+  - **hidden hunger** — not found on Wikipedia (check manually)
+  - **crop resilience** — not found on Wikipedia (check manually)
+  - **genetic technologies** — not found on Wikipedia (check manually)
+- ⚠️ **Critic flags:** SUPPORTED: 'genetic technologies, including untapped CRISPR–Cas techniques' explicitly stated; SUPPORTED: 'combat hidden hunger' explicitly stated; SUPPORTED: 'improve crop resilience' explicitly stated; INFERRED: 'joint power' implies synergistic benefit, but no empirical evidence cited in summary; NOT IN SOURCE: specific crops, regions, climate scenarios, or nutritional endpoints; NOT IN SOURCE: timeline, implementation barriers, or regulatory context; REQUIRES FULL TEXT: mechanisms of resilience enhancement via genetic modification; REQUIRES FULL TEXT: quantitative nutritional improvements or resilience metrics
 
 ### 7. **A cloud-based miniscope for neurosurveillance of brain health and disease in freely behaving animals**
-*Nature Methods · Neurotechnology · Brain imaging · Disease monitoring · 2026-06-22* · 🔗 [https://www.nature.com/articles/s41592-026-03111-z](https://www.nature.com/articles/s41592-026-03111-z)
+*Nature Methods · AI/ML · Biology · Neuroscience · Medicine · Climate/Earth · Methods/Tools · 2026-06-22* · 🔗 [https://www.nature.com/articles/s41592-026-03111-z](https://www.nature.com/articles/s41592-026-03111-z)
+<sub>abstract source: Crossref</sub>
 
-> Cloud-based miniscope enables continuous multiday recording of neuronal activity and brain dynamics in freely behaving animals for disease surveillance.
+> 
 
-- **Problem:** Need for continuous monitoring of brain function in freely behaving animals across extended periods, particularly in neurological disease models.
-- **Key idea:** Cloud-based operation combined with multicontrast imaging capabilities to overcome constraints of traditional miniscope systems.
-- **Method:** Miniscope system with cloud-based operation and multicontrast capabilities for recording neuronal activity, hemodynamics, or cellular dynamics.
-- **Result:** Enables continuous recording over multiple days; applicable to monitoring brain function in seizure models and brain tumor models.
-- **Why it matters / 跨领域:** Bridges neuroscience and clinical translation by enabling real-time, longitudinal tracking of pathological brain states in living subjects—relevant for neurosurgery, neurology, and computational biology workflows.
-- ⚠️ **Critic flags:** SUPPORTED: 'cloud-based operation' (title + summary); SUPPORTED: 'multicontrast capabilities' (summary); SUPPORTED: 'continuous recording over multiple days' (summary); SUPPORTED: 'seizures' and 'brain tumors' as example applications (summary); INFERRED: specific technical advantages over non-cloud miniscopes (not stated in summary); INFERRED: quantitative performance metrics or comparison data (未核实); POSSIBLE OVERSTATEMENT: 'neurosurveillance' in title implies diagnostic/monitoring use; summary only states 'monitoring brain function in disease models' without clinical validation claims
+- **Problem:** 
+- **Key idea:** 
+- **Method:** 
+- **Result:** 
+- **Why it matters / cross-disciplinary:** 
+- ⚠️ **Critic flags:** (none)
 
 ### 8. **Autonomous navigation of intelligent microrobotic swarms in unknown environments**
-*Nature Machine Intelligence · Microrobotics · Reinforcement Learning · Swarm Intelligence · 2026-06-22* · 🔗 [https://www.nature.com/articles/s42256-026-01252-6](https://www.nature.com/articles/s42256-026-01252-6)
+*Nature Machine Intelligence · Swarm robotics · Reinforcement learning · Sim-to-real transfer · 2026-06-22* · 🔗 [https://www.nature.com/articles/s42256-026-01252-6](https://www.nature.com/articles/s42256-026-01252-6)
+<sub>abstract source: RSS summary only</sub>
 
-> Transformer-based RL framework enables microrobotic swarms to navigate autonomously in unknown environments via simulation-to-real transfer
+> Transformer-based RL framework enables microrobotic swarms to navigate and avoid obstacles in unknown physical environments via simulation-to-real transfer.
 
-- **Problem:** Microrobotic swarms require autonomous navigation and obstacle avoidance capabilities in unknown environments without pre-mapped information
-- **Key idea:** Turbo: a transformer-based reinforcement learning framework that bridges simulation and physical deployment for swarm robotics
-- **Method:** Transformer-based reinforcement learning with simulation-to-real transfer approach
-- **Result:** 未核实 (summary confirms framework enables autonomous navigation and obstacle avoidance but provides no quantitative results, success rates, or performance metrics)
-- **Why it matters / 跨领域:** Addresses fundamental challenge in distributed autonomous systems: deploying learned policies from simulation onto physical multi-agent systems in real-world uncertainty; cross-disciplinary relevance to robotics, AI/ML, and complex adaptive systems
-- ⚠️ **Critic flags:** SUPPORTED: Title states 'Autonomous navigation of intelligent microrobotic swarms in unknown environments'; SUPPORTED: Framework is 'transformer-based reinforcement learning'; SUPPORTED: Paper involves 'simulation-to-real transfer'; INFERRED: Specific performance metrics, success rates, or comparative benchmarks are NOT stated in summary; INFERRED: Number of agents, swarm size, or environmental complexity specifications are NOT provided; INFERRED: Technical novelty details (e.g., why transformers specifically chosen) are NOT explained in summary; POSSIBLE OVERSTATEMENT: Claiming 'enables' success assumes the framework achieves stated goals, but summary does not explicitly confirm functional success
+- **Problem:** Microrobotic swarms require autonomous navigation and obstacle avoidance capabilities in unknown environments without prior environmental knowledge.
+- **Key idea:** Use of transformer-based reinforcement learning (Turbo framework) to bridge simulation and real-world deployment for swarm robot coordination and autonomous navigation.
+- **Method:** Transformer-based reinforcement learning framework called 'Turbo' enabling simulation-to-real transfer for physical microrobotic swarms.
+- **Result:** NOT IN SOURCE — specific performance metrics, success rates, or benchmark comparisons are not included in the RSS summary.
+- **Why it matters / cross-disciplinary:** Demonstrates cross-disciplinary intersection of AI/ML (transformer architectures, RL), robotics (swarm control, microrobots), and systems engineering (sim-to-real deployment); addresses scalability and autonomous decision-making in multi-agent systems operating under uncertainty.
+- 🔑 **Key terms (Wikipedia):**
+  - **microrobotic swarms** — not found on Wikipedia (check manually)
+  - **obstacle avoidance** — Obstacle avoidance, in robotics, is a critical aspect of autonomous navigation and control systems. It is the capability of a robot or an autonomous system/machine to detect and circumvent obstacles in its path to reach a predefined destination. ([Wikipedia](https://en.wikipedia.org/wiki/Obstacle_avoidance))
+  - **unknown environments** — not found on Wikipedia (check manually)
+  - **simulation-to-real transfer** — A simulation is an imitative representation of a process or system that could exist in the real world. In this broad sense, simulation can often be used interchangeably with model. ([Wikipedia](https://en.wikipedia.org/wiki/Simulation))
+- ⚠️ **Critic flags:** SUPPORTED: 'transformer-based reinforcement learning framework' — stated in abstract; SUPPORTED: 'simulation-to-real transfer' — explicitly named in abstract; SUPPORTED: 'physical microrobotic swarms' — stated in abstract; SUPPORTED: 'autonomous navigation' — in title and abstract; SUPPORTED: 'unknown environments' — in title and abstract; NOT IN SOURCE: Framework effectiveness or performance metrics; NOT IN SOURCE: Swarm size or hardware specifications; NOT IN SOURCE: Specific obstacle complexity or environment types tested; REQUIRES FULL TEXT: Detailed algorithm design, training procedures, or comparative baselines
 
 ### 9. **Cell atlas of brain aneurysms reveals fibroblast–macrophage crosstalk**
-*Nature Neuroscience · neurovascular pathology · single-cell genomics · cell-cell crosstalk · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41593-026-02368-z](https://www.nature.com/articles/s41593-026-02368-z)
+*Nature Neuroscience · vascular biology · single-cell genomics · neuroimmunology · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41593-026-02368-z](https://www.nature.com/articles/s41593-026-02368-z)
+<sub>abstract source: RSS summary only</sub>
 
-> Fibroblast–macrophage interactions in aneurysm tissue linked to vessel instability and rupture risk
+> Fibroblast–macrophage crosstalk identified as a previously unrecognized mechanism linking cellular interactions to aneurysm formation and rupture.
 
-- **Problem:** Cellular mechanisms driving brain aneurysm formation and rupture remain poorly understood, despite aneurysms being a major stroke cause worldwide
-- **Key idea:** Scarring-associated fibroblasts and osteoclast-like macrophages exhibit previously unrecognized interplay associated with aneurysm formation and rupture
+- **Problem:** Brain aneurysms are a major cause of stroke worldwide, yet the cellular mechanisms that drive vessel instability remain poorly defined.
+- **Key idea:** A previously unrecognized interplay between scarring-associated fibroblasts and osteoclast-like macrophages is associated with aneurysm formation and rupture.
 - **Method:** Combined single-cell and spatial transcriptomic atlas of aneurysm tissue
-- **Result:** 未核实 (summary states findings exist but provides no quantitative results, mechanistic details, or comparative data)
-- **Why it matters / 跨领域:** Identifies specific cellular players and interactions that could enable new therapeutic targets for stroke prevention; bridges vascular pathology with immunology and fibrosis research
-- ⚠️ **Critic flags:** SUPPORTED: aneurysms are 'major cause of stroke' (title+abstract); SUPPORTED: fibroblast–macrophage crosstalk exists (title+abstract); SUPPORTED: association with 'aneurysm formation and rupture' (abstract); INFERRED: mechanism of this crosstalk (summary says 'interplay' but not how); INFERRED: whether this crosstalk is causal or correlative; OVERSTATEMENT RISK: calling this 'previously unrecognized' requires citation of prior literature—summary alone cannot establish novelty
+- **Result:** Identification of fibroblast–macrophage crosstalk as a mechanism associated with aneurysm formation and rupture — REQUIRES FULL TEXT for mechanistic details, validation approaches, or tissue samples analyzed
+- **Why it matters / cross-disciplinary:** Understanding cellular interactions driving aneurysm instability could redirect therapeutic strategies from vessel-centric to immune-fibroblast-centric approaches, with implications for stroke prevention and vascular biology broadly.
+- 🔑 **Key terms (Wikipedia):**
+  - **spatial transcriptomic** — Spatial transcriptomics, or spatially resolved transcriptomics, is a method that captures positional context of transcriptional activity within intact tissue. The historical precursor to spatial transcriptomics is in situ hybridization, where the modernized omics terminology refers to the measurement of all the mRNA in a cell rather than select RNA targets. ([Wikipedia](https://en.wikipedia.org/wiki/Spatial_transcriptomics))
+  - **osteoclast-like macrophages** — An osteoclast is a type of bone cell that removes bone tissue. This function is critical in the maintenance, repair, and remodeling of bones of the vertebral skeleton. ([Wikipedia](https://en.wikipedia.org/wiki/Osteoclast))
+- ⚠️ **Critic flags:** SUPPORTED: 'Brain aneurysms are a major cause of stroke worldwide' — stated in problem section; SUPPORTED: 'cellular mechanisms that drive vessel instability remain poorly defined' — stated in problem section; SUPPORTED: 'combined single-cell and spatial transcriptomic atlas' — stated in methods context; SUPPORTED: 'scarring-associated fibroblasts and osteoclast-like macrophages' — explicitly named; SUPPORTED: 'associated with aneurysm formation and rupture' — explicitly stated; INFERRED: the mechanism is 'previously unrecognized' — source says 'previously unrecognized interplay' but causal mechanistic details are NOT IN SOURCE; REQUIRES FULL TEXT: specific cell types involved beyond those named, patient cohort details, statistical significance, validation experiments
 
 ### 10. **<i>Fusobacterium periodonticum</i> promotes colorectal tumorigenesis via decanoic acid-driven neutrophil chemotaxis**
-*Nature Communications · Microbial oncology · Immunometabolism · Colorectal cancer · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41467-026-74591-y](https://www.nature.com/articles/s41467-026-74591-y)
+*Nature Communications · microbiome-cancer · neutrophil immunology · colorectal tumorigenesis · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41467-026-74591-y](https://www.nature.com/articles/s41467-026-74591-y)
+<sub>abstract source: RSS summary only</sub>
 
-> Oral bacterium F. periodonticum drives colorectal cancer via metabolite-induced neutrophil recruitment
+> Oral bacterium Fusobacterium periodonticum drives colorectal cancer via decanoic acid–mediated neutrophil recruitment.
 
-- **Problem:** Fusobacterium periodonticum is enriched in colorectal cancer, but the mechanistic pathway linking this bacterium to tumorigenesis remains unclear
-- **Key idea:** F. periodonticum elevation correlates with increased decanoic acid, which activates neutrophil chemotaxis through G-protein-dependent signaling to promote colorectal tumorigenesis
-- **Method:** Multi-omics approach (未核实: specific omics techniques not detailed in summary)
-- **Result:** F. periodonticum enrichment in colorectal cancer correlates with elevated decanoic acid and G-protein-dependent neutrophil chemotaxis-driven tumorigenesis promotion
-- **Why it matters / 跨领域:** Links oral-gut dysbiosis, bacterial metabolism, and innate immunity in cancer pathogenesis; identifies decanoic acid and neutrophil recruitment as potential therapeutic targets across microbiology, immunology, and oncology
-- ⚠️ **Critic flags:** SUPPORTED: F. periodonticum enriched in colorectal cancer (title + summary); SUPPORTED: Decanoic acid elevation correlates with this enrichment (summary); SUPPORTED: G-protein mechanism for neutrophil chemotaxis (summary); INFERRED: Causal relationship vs correlation not explicitly stated—summary uses 'correlates' and 'promotes' but mechanistic proof未核实; INFERRED: Functional pathway details (how decanoic acid↔G-protein↔neutrophil) are stated but individual step validation未核实; OMITTED: No quantitative data on enrichment levels, decanoic acid concentrations, or effect sizes provided in summary
+- **Problem:** Colorectal cancer (CRC) etiology involves microbial dysbiosis, but mechanisms linking specific bacteria to tumorigenesis remain unclear.
+- **Key idea:** F. periodonticum enrichment in CRC correlates with elevated decanoic acid, which activates neutrophil chemotaxis through G-protein signaling, promoting tumor development.
+- **Method:** Multi-omics approach [REQUIRES FULL TEXT — specific omics platforms, sample cohorts, and analytical pipelines not detailed in RSS summary]
+- **Result:** F. periodonticum is enriched in colorectal cancer and correlates with elevated decanoic acid; this metabolite drives neutrophil chemotaxis via G-protein-dependent mechanism to promote colorectal tumorigenesis [SUPPORTED by abstract]
+- **Why it matters / cross-disciplinary:** Cross-disciplinary bridge: reveals how oral dysbiosis (microbiology) translates to systemic metabolite production (biochemistry) and altered innate immunity (immunology) to accelerate oncogenesis; suggests potential microbiota-targeted or metabolite-modulating therapeutic angles for CRC prevention.
+- 🔑 **Key terms (Wikipedia):**
+  - **Fusobacterium periodonticum** — Fusobacterium is a genus of obligate anaerobic, Gram-negative, non-sporeforming bacteria belonging to Gracilicutes. Individual cells are slender, rod-shaped bacilli with pointed ends. ([Wikipedia](https://en.wikipedia.org/wiki/Fusobacterium))
+  - **decanoic acid** — not found on Wikipedia (check manually)
+  - **neutrophil chemotaxis** — Neutrophils are a type of phagocytic white blood cell and part of innate immunity. More specifically, they form the most abundant type of granulocytes and make up 40% to 70% of all white blood cells in humans. ([Wikipedia](https://en.wikipedia.org/wiki/Neutrophil))
+  - **G-protein-dependent mechanism** — G proteins, also known as guanine nucleotide-binding proteins, are a family of proteins that act as molecular switches inside cells, and are involved in transmitting signals from a variety of stimuli outside a cell to its interior. Their activity is regulated by factors that control their ability to bind to and hydrolyze guanosine triphosphate (GTP) to guanosine diphosphate (GDP). ([Wikipedia](https://en.wikipedia.org/wiki/G_protein))
+- ⚠️ **Critic flags:** F. periodonticum is enriched in colorectal cancer — SUPPORTED — title + abstract: 'enriched in colorectal cancer'; Decanoic acid level correlates with F. periodonticum in CRC — SUPPORTED — abstract: 'correlates with elevated decanoic acid'; Decanoic acid drives neutrophil chemotaxis via G-protein signaling — SUPPORTED — abstract: 'driving neutrophil chemotaxis via a G-protein-dependent mechanism'; This mechanism promotes colorectal tumorigenesis — SUPPORTED — abstract: 'promote colorectal tumorigenesis'; Specific omics platforms used (RNA-seq, proteomics, metabolomics, etc.) — REQUIRES FULL TEXT — abstract mentions 'multi-omics approach' but lists no specific technologies; Sample size, patient cohort characteristics, or statistical significance metrics — REQUIRES FULL TEXT — no numerical data provided in RSS summary
 
 ### 11. **Assembly-Line Biosynthesis in Living-Cell Emulsions via Tunable Supramolecular Surface Chemistry**
-*Nature Communications · Synthetic Biology · Supramolecular Chemistry · Bioprocess Engineering · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41467-026-74245-z](https://www.nature.com/articles/s41467-026-74245-z)
+*Nature Communications · biocatalysis · supramolecular chemistry · emulsion engineering · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41467-026-74245-z](https://www.nature.com/articles/s41467-026-74245-z)
+<sub>abstract source: Crossref</sub>
 
-> E. coli engineered with photocatalysts self-assemble at emulsion interfaces to organize enzymatic cascades, mimicking natural compartmentalization.
+> Living E. coli cells conjugated with photocatalysts self-assemble at emulsion interfaces to accelerate multienzyme cascades up to 45-fold faster than conventional systems.
 
-- **Problem:** Natural enzymes achieve efficiency through micro-compartment organization; artificial biosynthetic systems lack this spatial organization.
-- **Key idea:** Modified E. coli cells with oil-derived photocatalyst properties assemble at oil-water interfaces in Pickering emulsions, creating organized reaction environments for cascade reactions.
-- **Method:** Engineering E. coli with oil-derived photocatalyst; assembly at Pickering emulsion interfaces via tunable supramolecular surface chemistry.
-- **Result:** 未核实 (summary states increased efficiency of chemoenzymatic and multienzyme cascades but provides no quantitative data)
-- **Why it matters / 跨领域:** Bridges synthetic biology and materials science: demonstrates programmable self-assembly of living cells as functional components in emulsion systems, applicable to scalable biomanufacturing and cell-based catalysis.
-- ⚠️ **Critic flags:** SUPPORTED: E. coli modified with photocatalyst (title + summary); SUPPORTED: Assembly at emulsion interface (title + summary); SUPPORTED: Stabilization of Pickering emulsions (summary); SUPPORTED: Enables chemoenzymatic and multienzyme cascades (summary); INFERRED: The degree of efficiency improvement (summary says 'more efficient' but no metrics given); INFERRED: Specific mechanism of photocatalyst function (summary only states 'oil-derived'); POSSIBLE OVERSTATEMENT: 'Replicate' nature's organization may oversimplify the biological fidelity of mimicry
+- **Problem:** Multienzyme cascades for biosynthesis are limited by enzyme incompatibility, poor substrate transfer, and inefficient catalyst recycling.
+- **Key idea:** Nature's microcompartmentalization of enzymes can be mimicked using tunable supramolecular chemistry to graft synthetic catalysts onto living cells, creating self-assembling 'suprabacteria' that stabilize emulsions and enable factory-like assembly-line biosynthesis.
+- **Method:** Tunable supramolecular chemistry grafts an oil-derived photocatalyst onto enzyme-overexpressing E. coli cells. These amphiphilic conjugates self-assemble at water–oil interfaces within Pickering emulsions. The platform supports single-step, sequential, and one-pot cascade reactions. Dynamic supramolecular linkage enables dual recycling: either the living-cell conjugate or the synthetic catalyst is selectively recovered and reattached.
+- **Result:** Reaction rates up to 45-fold higher than conventional biphasic systems. Demonstrated gram-scale benzoin synthesis. On-demand recycling of either the living-cell conjugate or the synthetic catalyst.
+- **Why it matters / cross-disciplinary:** Bridges synthetic chemistry and synthetic biology by using living cells as programmable, reusable biocatalytic scaffolds. Demonstrates scalable, sustainable platform integrating chemical and biological catalysis for industrial biosynthesis—relevant to green chemistry, bioprocess engineering, and systems biocatalysis.
+- 🔑 **Key terms (Wikipedia):**
+  - **Pickering emulsions** — A Pickering emulsion, sometimes called Ramsden emulsion, is an emulsion stabilized by solid particles which adsorb onto the interface between the water and oil phases. Typically, the emulsions are either water-in-oil or oil-in-water emulsions, but other more complex systems such as water-in-water, oil-in-oil, water-in-oil-in-water, and oil-in-water-in-oil also do exist. ([Wikipedia](https://en.wikipedia.org/wiki/Pickering_emulsion))
+  - **supramolecular chemistry** — Supramolecular chemistry is the branch of chemistry concerning chemical systems composed of discrete numbers of molecules. The strength of the forces responsible for spatial organization of the system ranges from weak intermolecular forces, electrostatic charge, or hydrogen bonding to strong covalent bonding, provided that the electronic coupling strength remains small relative to the energy parameters of the component. ([Wikipedia](https://en.wikipedia.org/wiki/Supramolecular_chemistry))
+  - **multienzyme cascades** — not found on Wikipedia (check manually)
+  - **chemoenzymatic** — not found on Wikipedia (check manually)
+- ⚠️ **Critic flags:** SUPPORTED: '45-fold higher than conventional biphasic systems' — explicitly stated in abstract; SUPPORTED: 'Pickering emulsions' — explicitly named as the system type; SUPPORTED: 'tunable supramolecular chemistry' — core mechanism stated; SUPPORTED: 'gram-scale benzoin synthesis' — explicitly cited as demonstration; SUPPORTED: 'dual recycling' — explicitly described as on-demand recovery of cell conjugate or catalyst; INFERRED: 'factory-like assembly line' — the abstract says 'operates as a factory-like assembly line' but does not mechanistically detail how factory-like analogy is substantiated; REQUIRES FULL TEXT: Specific kinetic parameters, substrate scope beyond benzoin, cost analysis, or detailed catalyst-cell linkage chemistry; NOT IN SOURCE: Identity of the specific oil-derived photocatalyst; NOT IN SOURCE: Quantitative substrate transfer efficiency or comparative substrate diffusion data
 
 ### 12. **Circumventing the wettability issue of heterogeneous metal catalysts for solvent-free organic transformations**
-*Nature Communications · heterogeneous catalysis · zeolite materials · solvent-free synthesis · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41467-026-74495-x](https://www.nature.com/articles/s41467-026-74495-x)
+*Nature Communications · heterogeneous catalysis · zeolite materials chemistry · solvent-free synthesis · 2026-06-24* · 🔗 [https://www.nature.com/articles/s41467-026-74495-x](https://www.nature.com/articles/s41467-026-74495-x)
+<sub>abstract source: RSS summary only</sub>
 
-> Subnanometer rhodium clusters confined in self-pillared zeolites overcome wettability barriers in solvent-free organic transformations
+> Rhodium clusters confined in self-pillared zeolites overcome wettability barriers in solvent-free organic synthesis.
 
-- **Problem:** Heterogeneous metal catalysts face wettability issues that impede their performance in solvent-free organic transformations
-- **Key idea:** Confining subnanometer rhodium clusters within a self-pillared zeolite structure simultaneously stabilizes active sites and improves mass transport
-- **Method:** Design of inorganic rhodium catalyst with subnanometer clusters confined in self-pillared zeolite; application to solvent-free olefin hydroformylation
-- **Result:** The catalyst design facilitates efficient mass transport properties during solvent-free olefin hydroformylation reaction; specific conversion/selectivity data 未核实
-- **Why it matters / 跨领域:** Addresses a fundamental bottleneck in heterogeneous catalysis (wettability in solvent-free conditions), with implications for sustainable chemistry and industrial process intensification
-- ⚠️ **Critic flags:** ✓ SUPPORTED: subnanometer Rh clusters, self-pillared zeolite confinement, solvent-free olefin hydroformylation, mass transport improvement; ⚠ INFERRED: the mechanism by which confinement solves wettability (summary states it 'facilitates' but doesn't explain how); ⚠ INFERRED: generalizability beyond hydroformylation (summary gives only one reaction type); ⚠ UNSUPPORTED: quantitative performance metrics, comparison to prior catalysts, scalability claims
+- **Problem:** Heterogeneous metal catalysts suffer from wettability issues that impair performance in solvent-free organic transformations.
+- **Key idea:** Confining subnanometer rhodium clusters within a self-pillared zeolite structure stabilizes active sites and improves mass transport during solvent-free reactions.
+- **Method:** Inorganic rhodium catalyst with subnanometer clusters confined in a self-pillared zeolite structure.
+- **Result:** The catalyst design facilitates efficient mass transport properties during solvent-free olefin hydroformylation reaction. [REQUIRES FULL TEXT — specific yield, conversion, selectivity metrics not provided in summary]
+- **Why it matters / cross-disciplinary:** Demonstrates a materials-based solution to a fundamental challenge in green chemistry: enabling efficient catalysis without organic solvents by engineering catalyst microstructure to control surface interactions and molecular diffusion.
+- 🔑 **Key terms (Wikipedia):**
+  - **subnanometer rhodium clusters** — not found on Wikipedia (check manually)
+  - **self-pillared zeolite** — not found on Wikipedia (check manually)
+  - **olefin hydroformylation** — not found on Wikipedia (check manually)
+- ⚠️ **Critic flags:** SUPPORTED: Authors present a rhodium catalyst (title + abstract); SUPPORTED: Catalyst confines subnanometer clusters in self-pillared zeolite (abstract states this explicitly); SUPPORTED: Application is solvent-free olefin hydroformylation (abstract names the reaction); INFERRED: 'Stabilizes active sites' — abstract says design 'stabilizes' but details of stabilization mechanism NOT IN SOURCE; SUPPORTED: Mass transport efficiency is mentioned as a catalyst benefit (abstract); NOT IN SOURCE: Quantitative performance comparison with other catalysts; NOT IN SOURCE: Specific reaction conditions (temperature, pressure, time); NOT IN SOURCE: Scope of substrate generality beyond 'olefin hydroformylation'
 
 
-> ⚠️ 本简报由 AI 自动生成。Critic flags 为自动自查、非完备核对;期刊信息与数字以原文链接为准,标注「未核实」者请自行核实。
+> ⚠️ This brief is AI-generated. Critic flags are an automated self-check, not a complete verification; journal details and figures should be confirmed via the source links; items marked NOT IN SOURCE or REQUIRES FULL TEXT are not gaps in accuracy but in the available source.
