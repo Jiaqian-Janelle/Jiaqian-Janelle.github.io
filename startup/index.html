@@ -1,0 +1,32 @@
+---
+layout: default
+title: Startup & Business
+---
+<div class="wrap" style="max-width:760px">
+  <article class="article" style="padding-left:0;padding-right:0">
+    <a class="back" href="{{ '/' | relative_url }}">← Home</a>
+    <header class="article-head">
+      <div class="date">Notes, talks &amp; lessons</div>
+      <h1>Startup &amp; Business</h1>
+      <p style="color:var(--ink-soft);margin:.6rem 0 0">
+        Talks, articles, and resources I've learned from — plus the lessons I'm taking away.
+        {% assign count = site.startup | size %}<span style="font-family:var(--mono);font-size:.8rem;color:var(--ink-faint)"> · {{ count }} so far</span>
+      </p>
+    </header>
+
+    <ul class="paperlog">
+      {% assign all_notes = site.startup | sort: 'date' | reverse %}
+      {% for n in all_notes %}
+      <li class="entry">
+        <div class="date">{{ n.date | date: "%Y.%m.%d" }}{% if n.source %} · {{ n.source | upcase }}{% endif %}</div>
+        <h3><a href="{{ n.url | relative_url }}">{{ n.title }}</a></h3>
+        {% if n.gist %}<p class="gist">{{ n.gist }}</p>{% endif %}
+        <div class="tags">
+          {% for t in n.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+          {% if n.rating %}<span class="rating">{% for i in (1..n.rating) %}<span class="star">★</span>{% endfor %}</span>{% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+</div>
