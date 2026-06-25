@@ -11,7 +11,7 @@ layout: default
   <dl class="paper-meta">
     {% if page.by %}<dt>By</dt><dd>{{ page.by }}</dd>{% endif %}
     {% if page.source %}<dt>Type</dt><dd>{{ page.source }}</dd>{% endif %}
-    {% if page.link %}<dt>Link</dt><dd><a href="{{ page.link }}" target="_blank" rel="noopener">{{ page.link }}</a></dd>{% endif %}
+    {% if page.link %}<dt>Link</dt><dd><a href="{{ page.link }}" target="_blank" rel="noopener">Open →</a></dd>{% endif %}
     {% if page.rating %}<dt>Rating</dt><dd>{% for i in (1..page.rating) %}★{% endfor %}{% assign rest = 5 | minus: page.rating %}{% for i in (1..rest) %}☆{% endfor %}</dd>{% endif %}
     {% if page.tags and page.tags.size > 0 %}
     <dt>Tags</dt>
