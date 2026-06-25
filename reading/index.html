@@ -1,0 +1,31 @@
+---
+layout: default
+title: Reading List
+---
+<div class="wrap" style="max-width:760px">
+  <article class="article" style="padding-left:0;padding-right:0">
+    <a class="back" href="{{ '/' | relative_url }}">← Home</a>
+    <header class="article-head">
+      <div class="date">Great papers worth reading</div>
+      <h1>Reading List</h1>
+      <p style="color:var(--ink-soft);margin:.6rem 0 0">
+        Papers I've come across and want to read — each with a one-line idea.
+        {% assign count = site.reading | size %}<span style="font-family:var(--mono);font-size:.8rem;color:var(--ink-faint)"> · {{ count }} so far</span>
+      </p>
+    </header>
+
+    <ul class="paperlog">
+      {% assign all_reading = site.reading | sort: 'date' | reverse %}
+      {% for r in all_reading %}
+      <li class="entry">
+        <div class="date">{{ r.date | date: "%Y.%m.%d" }}</div>
+        <h3><a href="{{ r.url | relative_url }}">{{ r.title }}</a></h3>
+        {% if r.gist %}<p class="gist">{{ r.gist }}</p>{% endif %}
+        <div class="tags">
+          {% for t in r.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+</div>

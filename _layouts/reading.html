@@ -1,0 +1,24 @@
+---
+layout: default
+---
+<article class="article">
+  <a class="back" href="{{ '/reading/' | relative_url }}">← Reading list</a>
+  <header class="article-head">
+    <div class="date">{% if page.date %}{{ page.date | date: "%B %-d, %Y" }}{% endif %}</div>
+    <h1>{{ page.title }}</h1>
+  </header>
+
+  <dl class="paper-meta">
+    {% if page.authors %}<dt>Authors</dt><dd>{{ page.authors }}</dd>{% endif %}
+    {% if page.venue %}<dt>Venue</dt><dd>{{ page.venue }}</dd>{% endif %}
+    {% if page.link %}<dt>Link</dt><dd><a href="{{ page.link }}" target="_blank" rel="noopener">Open →</a></dd>{% endif %}
+    {% if page.tags and page.tags.size > 0 %}
+    <dt>Tags</dt>
+    <dd class="tags">{% for t in page.tags %}<span class="tag">{{ t }}</span>{% endfor %}</dd>
+    {% endif %}
+  </dl>
+
+  <div class="article-content">
+    {{ content }}
+  </div>
+</article>

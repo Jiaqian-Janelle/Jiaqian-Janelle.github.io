@@ -10,7 +10,7 @@ email: jiaqianzhu915@gmail.com
 description: >-
   My name is Jiaqian Zhu (Janelle), and I'm a PhD student in Computer Science
   at Missouri University of Science and Technology. My research interests
-  include agentic AI, world models, NLP, and AI for science. I'm also looking
+  include Agentic AI, World Models, NLP, and AI for science. I'm also looking
   for startup opportunities, and I love exploring new things across all kinds
   of disciplines. Always happy to connect, exchange ideas, and learn together —
   feel free to reach out!
@@ -42,6 +42,9 @@ collections:
   startup:
     output: true
     permalink: /startup/:name/
+  reading:
+    output: true
+    permalink: /reading/:name/
 
 defaults:
   - scope:
@@ -59,6 +62,11 @@ defaults:
       type: startup
     values:
       layout: startup
+  - scope:
+      path: ""
+      type: reading
+    values:
+      layout: reading
 
 plugins:
   - jekyll-feed
