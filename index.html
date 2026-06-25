@@ -15,9 +15,9 @@ layout: default
         <div class="facet">
           <h4>Research</h4>
           <ul>
-            <li>World models</li>
-            <li>LLMs &amp; NLP</li>
-            <li><a href="https://aideadlin.es/" target="_blank" rel="noopener">AI deadlines →</a></li>
+            <li>Agentic AI &amp; world models</li>
+            <li>NLP · AI for science</li>
+            <li><a href="https://aideadlines.org/?sub=ML,CV,NLP,RO,SP,DM,AP,KR,HCI,IRSM,MISC" target="_blank" rel="noopener">AI deadlines →</a></li>
           </ul>
         </div>
         <div class="facet">
@@ -55,6 +55,28 @@ layout: default
           <div class="tags">
             {% for t in p.tags %}<span class="tag">{{ t }}</span>{% endfor %}
             {% if p.rating %}<span class="rating">{% for i in (1..p.rating) %}<span class="star">★</span>{% endfor %}</span>{% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- STARTUP & BUSINESS -->
+    <section class="section" id="startup">
+      <div class="section-head">
+        <h2>Startup &amp; Business</h2>
+        <a class="all-link" href="{{ '/startup/' | relative_url }}">FULL LOG →</a>
+      </div>
+      <ul class="paperlog">
+        {% assign recent_notes = site.startup | sort: 'date' | reverse %}
+        {% for n in recent_notes limit: 5 %}
+        <li class="entry">
+          <div class="date">{{ n.date | date: "%Y.%m.%d" }}{% if n.source %} · {{ n.source | upcase }}{% endif %}</div>
+          <h3><a href="{{ n.url | relative_url }}">{{ n.title }}</a></h3>
+          {% if n.gist %}<p class="gist">{{ n.gist }}</p>{% endif %}
+          <div class="tags">
+            {% for t in n.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+            {% if n.rating %}<span class="rating">{% for i in (1..n.rating) %}<span class="star">★</span>{% endfor %}</span>{% endif %}
           </div>
         </li>
         {% endfor %}
