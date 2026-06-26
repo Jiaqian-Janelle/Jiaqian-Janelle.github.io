@@ -179,7 +179,7 @@ pre code { background: none; padding: 0; }
 /* facets row under bio */
 .facets {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.4rem;
   margin-top: 1.8rem;
 }
