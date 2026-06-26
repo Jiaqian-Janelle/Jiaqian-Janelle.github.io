@@ -23,36 +23,36 @@ layout: default
         <div class="facet">
           <h4>Writing</h4>
           <ul>
-            <li>Writing summaries &amp; reflections</li>
-            <li>Breaking down great essays</li>
-            <li>A daily paper-reading log</li>
+            <li>Summaries &amp; reflections</li>
+            <li>Breaking down essays</li>
+            <li>Daily paper-reading log</li>
           </ul>
         </div>
         <div class="facet">
           <h4>Startup</h4>
           <ul>
-            <li>From AI PhD to founder</li>
-            <li>Skills, teardowns &amp; notes</li>
+            <li>AI PhD → founder</li>
+            <li>Skills &amp; teardowns</li>
             <li><a href="{{ '/startup/' | relative_url }}">Startup log →</a></li>
           </ul>
         </div>
         <div class="facet">
           <h4>Otherwise</h4>
           <ul>
-            <li>Musicals &amp; figure skating</li>
-            <li>French · fitness · F1</li>
+            <li>Fitness</li>
             <li><a href="{{ '/travels/' | relative_url }}">Solo travels →</a></li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- PAPER READING — the daily log -->
+    <!-- PAPER READING — papers actually read -->
     <section class="section" id="papers">
       <div class="section-head">
         <h2>Paper Reading</h2>
         <a class="all-link" href="{{ '/papers/' | relative_url }}">FULL LOG →</a>
       </div>
+      <p style="margin:-0.6rem 0 1.1rem;color:var(--ink-faint);font-size:.85rem">Papers I've actually read, with notes.</p>
       <ul class="paperlog">
         {% assign recent_papers = site.papers | sort: 'date' | reverse %}
         {% for p in recent_papers limit: 5 %}
@@ -69,12 +69,13 @@ layout: default
       </ul>
     </section>
 
-    <!-- READING LIST -->
+    <!-- READING LIST — papers I want to read -->
     <section class="section" id="reading">
       <div class="section-head">
         <h2>Reading List</h2>
         <a class="all-link" href="{{ '/reading/' | relative_url }}">FULL LIST →</a>
       </div>
+      <p style="margin:-0.6rem 0 1.1rem;color:var(--ink-faint);font-size:.85rem">Frontier papers I want to read — updated daily.</p>
       <ul class="paperlog">
         {% assign recent_reading = site.reading | sort: 'date' | reverse %}
         {% for r in recent_reading limit: 5 %}
