@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 680 285" role="img"><style>
+text{font-family:'Helvetica Neue',Arial,sans-serif}
+.t{font-size:14px;fill:#3d3d3a}
+.ts{font-size:12px;fill:#73726c}
+.th{font-size:14px;font-weight:500;fill:#2c2c2a}
+.box{fill:#f7f6f2;stroke:#d8d6cd}
+.arr{stroke:#73726c;stroke-width:1.5;fill:none}
+.leader{stroke:#b4b2a9;stroke-width:.5;stroke-dasharray:4 3;fill:none}
+.c-blue{fill:#E6F1FB;stroke:#185FA5}.c-blue text.t,.c-blue text.th{fill:#0C447C}.c-blue text.ts{fill:#185FA5}
+.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-teal text.t,.c-teal text.th{fill:#085041}.c-teal text.ts{fill:#0F6E56}
+.c-coral{fill:#FAECE7;stroke:#993C1D}.c-coral text.t,.c-coral text.th{fill:#712B13}.c-coral text.ts{fill:#993C1D}
+.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-purple text.t,.c-purple text.th{fill:#3C3489}.c-purple text.ts{fill:#534AB7}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-amber text.t,.c-amber text.th{fill:#633806}.c-amber text.ts{fill:#854F0B}
+.c-green{fill:#EAF3DE;stroke:#3B6D11}.c-green text.t,.c-green text.th{fill:#27500A}.c-green text.ts{fill:#3B6D11}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-gray text.t,.c-gray text.th{fill:#2C2C2A}.c-gray text.ts{fill:#5F5E5A}
+</style>
+<line x1="70" y1="210" x2="610" y2="210" stroke="#d8d6cd" stroke-width="1"/>
+<path d="M70 210 C150 210 160 95 205 95 C255 95 295 160 340 160 C385 160 425 95 475 95 C520 95 530 210 610 210" fill="none" stroke="#73726c" stroke-width="1.5"/>
+<line x1="205" y1="100" x2="205" y2="210" class="leader"/>
+<circle class="c-teal" cx="205" cy="95" r="5"/>
+<text class="ts" x="205" y="230" text-anchor="middle">sharp sample A</text>
+<line x1="475" y1="100" x2="475" y2="210" class="leader"/>
+<circle class="c-teal" cx="475" cy="95" r="5"/>
+<text class="ts" x="475" y="230" text-anchor="middle">sharp sample B</text>
+<line x1="340" y1="166" x2="340" y2="204" class="leader"/>
+<circle class="c-coral" cx="340" cy="210" r="6"/>
+<text class="ts" x="348" y="150" text-anchor="start">average of A &amp; B</text>
+<text class="ts" x="340" y="230" text-anchor="middle">L2 / MSE output</text>
+<text class="ts" x="340" y="246" text-anchor="middle">= the mean, in the gap</text>
+<text class="ts" x="340" y="272" text-anchor="middle">space of plausible next frames</text>
+</svg>
