@@ -1,0 +1,14 @@
+# Blogs / writers / labs worth following. Add or remove freely.
+# `note` is optional — delete the line if you just want the link.
+- name: "Lil'Log — Lilian Weng"
+  url: "https://lilianweng.github.io/"
+  note: "Rigorous deep-dives on LLMs, RL, and ML fundamentals."
+- name: "Gary Marcus"
+  url: "https://garymarcus.substack.com/"
+  note: "Skeptical takes on AI hype, its limits, and where the field is heading."
+- name: "OpenAI"
+  url: "https://openai.com/news/"
+  note: "Frontier model releases, research, and announcements."
+- name: "Google DeepMind"
+  url: "https://deepmind.google/discover/blog/"
+  note: "Frontier AI research and Gemini updates."

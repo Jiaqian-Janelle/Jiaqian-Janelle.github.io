@@ -147,6 +147,20 @@ layout: default
       </ul>
     </section>
 
+    <!-- BLOGROLL — excellent blogs I follow -->
+    <section class="section" id="blogroll">
+      <div class="section-head"><h2>Blogroll</h2></div>
+      <p style="margin:-0.6rem 0 1.1rem;color:var(--ink-faint);font-size:.85rem">Writers and labs I follow.</p>
+      <ul class="paperlog">
+        {% for b in site.data.blogroll %}
+        <li class="entry">
+          <h3><a href="{{ b.url }}" target="_blank" rel="noopener">{{ b.name }} →</a></h3>
+          {% if b.note %}<p class="gist">{{ b.note }}</p>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
     <!-- AWARDS & PROJECTS -->
     <section class="section" id="awards">
       <div class="section-head"><h2>Awards &amp; Projects</h2></div>
