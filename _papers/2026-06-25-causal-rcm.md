@@ -1,6 +1,6 @@
 ---
 title: "Causal-rCM: Study Notes"
-date: 2026-06-26
+date: 2026-06-25
 authors: "Kaiwen Zheng, Guande He, Min Zhao, Jintao Zhang, et al."
 venue: "arXiv 2606.25473"
 link: "https://arxiv.org/abs/2606.25473"

@@ -1,0 +1,867 @@
+---
+layout: null
+title: "AI Research Q&A — Agentic RL, World Models & Embodied AI"
+date: 2026-06-26
+tags: [agentic-rl, world-models, vla, embodied-ai, rope, kv-cache, study-notes]
+gist: "A consolidated Q&A study log from the 6.26 daily-papers list — on-policy distillation, VLA/WAM/world models, JEPA, Goodhart, RoPE attention, and KV-cache quantization, with diagrams."
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Research Q&A — Study Compendium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F8F8F4; --surface:#FFFFFF; --ink:#1B1B18; --muted:#5C5B53;
+    --faint:#86857C; --hair:#E4E3DA; --accent:#4A3FA0; --accent-soft:#EEEDF8;
+    --link:#1F5FA0; --teal:#0F6E56; --code-bg:#EEEDE6; --quote-bg:#F0EFE8;
+    --maxw:780px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;font-size:16.5px;line-height:1.72;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px 120px}
+  header.masthead{max-width:var(--maxw);margin:0 auto;padding:64px 22px 30px}
+  .eyebrow{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 14px}
+  h1{font-family:"Spectral",serif;font-weight:600;font-size:39px;line-height:1.12;letter-spacing:-.01em;margin:0 0 14px}
+  .subtitle{font-family:"Spectral",serif;font-size:19px;font-style:italic;color:var(--muted);margin:0 0 22px;line-height:1.5}
+  .meta{font-size:13.5px;color:var(--faint);border-top:1px solid var(--hair);padding-top:16px;display:flex;flex-wrap:wrap;gap:6px 20px}
+  .meta b{color:var(--muted);font-weight:500}
+
+  nav.toc{background:var(--surface);border:1px solid var(--hair);border-radius:14px;padding:22px 26px;margin:8px 0 50px}
+  nav.toc h2{font-family:"Inter";font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 14px;font-weight:600}
+  nav.toc ol{margin:0;padding:0;list-style:none;counter-reset:part}
+  nav.toc .part{font-family:"Spectral";font-weight:600;font-size:15.5px;color:var(--ink);margin:16px 0 7px}
+  nav.toc .part:first-child{margin-top:0}
+  nav.toc a{display:block;color:var(--link);text-decoration:none;font-size:14.5px;padding:3px 0 3px 14px;border-left:2px solid transparent}
+  nav.toc a:hover{border-left-color:var(--accent);color:var(--accent)}
+
+  .part-head{margin:64px 0 8px;padding-top:24px;border-top:2px solid var(--ink)}
+  .part-head .pnum{font-family:"Spectral";font-style:italic;color:var(--accent);font-size:16px}
+  .part-head h2{font-family:"Spectral";font-weight:600;font-size:27px;margin:6px 0 0;letter-spacing:-.01em}
+
+  section.qa{margin:42px 0 0}
+  section.qa h3{font-family:"Spectral";font-weight:600;font-size:21.5px;margin:0 0 4px;letter-spacing:-.005em}
+  section.qa h3 .num{color:var(--accent);font-style:italic;font-weight:500;margin-right:10px}
+  .q{background:var(--quote-bg);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+     padding:13px 18px;margin:14px 0 22px;font-size:15px;color:#403F39}
+  .q .lab{display:block;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:5px}
+  .q p{margin:0 0 7px}.q p:last-child{margin:0}
+
+  p{margin:0 0 16px}
+  .lead{font-size:17.5px}
+  strong{font-weight:600}
+  code{font-family:ui-monospace,"SFMono-Regular",Menlo,monospace;font-size:.86em;background:var(--code-bg);
+       padding:1.5px 6px;border-radius:5px;color:#3A3A33}
+  a.ref{color:var(--accent);text-decoration:none;font-weight:600;font-size:.74em;vertical-align:super;padding:0 1px}
+  a.ref:hover{text-decoration:underline}
+  a.ext{color:var(--link);text-decoration:none;border-bottom:1px solid #cdd9e6}
+  a.ext:hover{border-bottom-color:var(--link)}
+
+  ul.tight,ol.tight{margin:0 0 16px;padding-left:22px}
+  ul.tight li,ol.tight li{margin:0 0 9px}
+
+  .callout{background:var(--accent-soft);border-radius:12px;padding:16px 20px;margin:20px 0;font-size:15.5px}
+  .callout .k{font-weight:600;color:var(--accent);display:block;margin-bottom:3px;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+
+  figure{margin:26px 0;background:var(--surface);border:1px solid var(--hair);border-radius:14px;padding:22px 20px 12px}
+  figure svg{display:block;width:100%;height:auto}
+  figcaption{font-size:13.5px;color:var(--muted);margin-top:12px;line-height:1.55;padding-top:10px;border-top:1px solid var(--hair)}
+  figcaption b{color:var(--ink);font-weight:600}
+
+  .tbl{width:100%;border-collapse:collapse;margin:22px 0;font-size:14.5px;background:var(--surface);
+       border:1px solid var(--hair);border-radius:12px;overflow:hidden}
+  .tbl th,.tbl td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--hair);vertical-align:top}
+  .tbl thead th{background:#F3F2EB;font-weight:600;font-size:12.5px;letter-spacing:.04em;color:var(--muted)}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl td:first-child{font-weight:500;color:var(--ink);white-space:nowrap}
+
+  .divider{height:1px;background:var(--hair);margin:38px 0}
+
+  .refs{margin-top:30px}
+  .refs h2{font-family:"Spectral";font-weight:600;font-size:25px;border-top:2px solid var(--ink);padding-top:24px}
+  .refs .grp{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;margin:24px 0 10px}
+  ol.reflist{margin:0;padding-left:0;list-style:none;counter-reset:r}
+  ol.reflist li{counter-increment:r;position:relative;padding:9px 0 9px 38px;border-bottom:1px solid var(--hair);font-size:14px;line-height:1.5}
+  ol.reflist li::before{content:"["counter(r)"]";position:absolute;left:0;top:9px;color:var(--accent);font-weight:600;font-size:13px}
+  ol.reflist a{color:var(--link);text-decoration:none;word-break:break-word}
+  ol.reflist a:hover{text-decoration:underline}
+  .note{font-size:13.5px;color:var(--faint);font-style:italic}
+
+  .totop{display:inline-block;margin-top:8px;font-size:13px;color:var(--faint);text-decoration:none}
+  .totop:hover{color:var(--accent)}
+
+  .papers{margin:6px 0 50px}
+  .papers h2{font-family:"Spectral";font-weight:600;font-size:25px;border-top:2px solid var(--ink);padding-top:24px;margin:0 0 4px}
+  .papers .intro{font-size:14.5px;color:var(--muted);margin:0 0 18px}
+  .paper{display:flex;gap:16px;padding:15px 0;border-bottom:1px solid var(--hair)}
+  .paper:last-child{border-bottom:none}
+  .paper .idx{flex:0 0 26px;font-family:"Spectral";font-size:19px;font-weight:600;color:var(--accent);line-height:1.35}
+  .paper .pbody{flex:1;min-width:0}
+  .paper .ptitle{font-family:"Spectral";font-weight:600;font-size:16.5px;line-height:1.32;margin:0 0 3px}
+  .paper .ptitle a{color:var(--ink);text-decoration:none}
+  .paper .ptitle a:hover{color:var(--accent)}
+  .paper .pmeta{font-size:12px;color:var(--faint);margin:0 0 6px}
+  .paper .pgist{font-size:14px;line-height:1.55;margin:0 0 8px}
+  .paper .pxref a{display:inline-block;background:var(--accent-soft);color:var(--accent);text-decoration:none;border-radius:6px;padding:2px 9px;margin:0 6px 4px 0;font-weight:500;font-size:12.5px}
+  .paper .pxref a:hover{background:#e3e0f3}
+  .paper .pxref .none{color:var(--faint);font-size:12.5px;font-style:italic}
+  .buzz{display:inline-block;font-size:11px;font-weight:600;color:#854F0B;background:#FAEEDA;border-radius:5px;padding:1px 7px}
+  .buzz.hot{color:#993C1D;background:#FAECE7}
+
+  @media (max-width:560px){
+    h1{font-size:30px}header.masthead{padding-top:42px}
+    .part-head h2{font-size:23px}section.qa h3{font-size:19px}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <a href="/papers/" style="display:inline-block;margin-bottom:16px;font-family:Inter,sans-serif;font-size:13.5px;color:#86857C;text-decoration:none">← All paper notes</a>
+  <p class="eyebrow">Daily-papers study log · consolidated</p>
+  <h1>Agentic RL, World Models &amp; Embodied AI</h1>
+  <p class="subtitle">A consolidated Q&amp;A compendium — every question from the thread, with the full detailed answers, diagrams, and sources.</p>
+  <div class="meta">
+    <span><b>Compiled</b> 26 Jun 2026</span>
+    <span><b>Scope</b> OPID · VLA · WAM · world models · SSL · JEPA · proxies · Goodhart · RoPE · KV-cache quantization · attention variants</span>
+    <span><b>Sources</b> 13 primary + foundational</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section class="papers" id="papers">
+  <h2>Today's papers — 6.26 list</h2>
+  <p class="intro">The ten papers behind today's questions, from the 6.26 daily list. Tags link to the Q&amp;A section where each one is discussed.</p>
+
+  <div class="paper">
+    <div class="idx">1</div>
+    <div class="pbody">
+      <p class="ptitle"><a href="https://arxiv.org/abs/2606.26790">OPID: On-Policy Skill Distillation for Agentic Reinforcement Learning</a></p>
+      <p class="pmeta">arXiv 2606.26790 · Yang, Wu, Lu, Shen et al. · <span class="buzz hot">buzz 27</span></p>
+      <p class="pgist">Extracts dense token-level supervision from the agent's own on-policy trajectories by turning hindsight into hierarchical skills (episode-level workflows + step-level decisions) and injecting them into the interaction history — avoiding external skill memories. A critical-first router picks step-level skills at key timesteps; the old policy re-scores under original vs. skill-augmented context to form a self-distillation advantage. Tested on ALFWorld, WebShop, Search-QA.</p>
+      <p class="pxref"><a href="#s3">§3 skill injection</a><a href="#s4">§4 memory</a><a href="#s5">§5 walked trajectories</a><a href="#s6">§6 new scenarios</a></p>
+    </div>
+  </div>
+
+  <div class="paper">
+    <div class="idx">2</div>
+    <div class="pbody">
+      <p class="ptitle"><a href="https://arxiv.org/abs/2606.18239">EBench: Elemental Diagnosis of Generalist Mobile Manipulation Policies</a></p>
+      <p class="pmeta">arXiv 2606.18239 · Gao, Zheng, Gao, Ma et al. · <span class="buzz">buzz 15</span></p>
+      <p class="pgist">A diagnostic benchmark (26 sim tasks) that decomposes manipulation-policy evaluation into 5 capability + 4 generalization axes, exposing that models with near-identical success rates have very different capability profiles (π₀, π₀.₅, XVLA, InternVLA-A1) — aggregate scores hide the gaps.</p>
+      <p class="pxref"><a href="#s8">§8 mobile manipulation</a><a href="#s10">§10 benchmarks</a><a href="#s12">§12 diagnostic proxies</a></p>
+    </div>
+  </div>
+
+  <div class="paper">
+    <div class="idx">3</div>
+    <div class="pbody">
+      <p class="ptitle"><a href="https://arxiv.org/abs/2606.24033">RoPE-Aware Bit Allocation for KV-Cache Quantization</a></p>
+      <p class="pmeta">arXiv 2606.24033 · Liang, Zhang, Jia · <span class="buzz">buzz 6</span> · <em>the paper from your screenshot</em></p>
+      <p class="pgist">Block-GTQ: a KV-cache quantizer that exploits RoPE's frequency-block structure. It computes label-free <em>energy scores</em> per RoPE block per layer/head, then greedily assigns integer bit-widths by marginal gain (an <strong>offline</strong>, static allocation) on a TurboQuant-MSE backbone. Big long-context gains (e.g. Llama-3.1-8B NIAH 70.6→97.4) and sub-3-bit quantization without collapse on reasoning tasks. This answers the open question from our discussion: the allocation is computed offline, energy-based, validated on Llama-3.1-8B and DeepSeek-R1-Distill-7B.</p>
+      <p class="pxref"><a href="#s20">§20 block structure</a><a href="#s22">§22 derivation</a><a href="#s24">§24 reconstruction vs logit</a><a href="#s30">§30 quantization</a></p>
+    </div>
+  </div>
+
+  <div class="paper">
+    <div class="idx">4</div>
+    <div class="pbody">
+      <p class="ptitle"><a href="https://arxiv.org/abs/2606.27326">Hallucination in World Models is Predictable and Preventable</a></p>
+      <p class="pmeta">arXiv 2606.27326 · Hansen, Wang · <span class="buzz">buzz 1</span></p>
+      <p class="pgist">Frames world-model hallucination as a data-coverage problem: predictable signals flag failure regions, and the same signals drive coverage-aware sampling + curiosity finetuning. Introduces MMBench2 and adapts 350M world models to unseen environments with ~50 real trajectories.</p>
+      <p class="pxref"><a href="#s11">§11 WAM vs WM</a><a href="#s9">§9 world models</a></p>
+    </div>
+  </div>
+
+  <div class="paper">
+    <div class="idx">5</div>
+    <div class="pbody">
+      <p class="ptitle"><a href="https://arxiv.org/abs/2606.22953">Plans Don't Persist: Why Context Management Is Load Bearing for LLM Agents</a></p>
+      <p class="pmeta">arXiv 2606.22953 · Mehta, Datta · <span class="buzz">buzz 1</span></p>
+      <p class="pgist">Shows agent plans don't internalize into persistent hidden state but stay context-dependent — plan signal drops ~4.1× within one step. Introduces "replay pairing" (run with/without plan history, measure hidden-state distance) and corrects a reasoning-trace confound. The benchmark I referenced for negative transfer / skills not persisting.</p>
+      <p class="pxref"><a href="#s6">§6 new scenarios</a><a href="#s4">§4 memory</a></p>
+    </div>
+  </div>
+
+  <div class="paper">
+    <div class="idx">6</div>
+    <div class="pbody">
+      <p class="ptitle"><a href="https://arxiv.org/abs/2606.24775">Are We Ready For An Agent-Native Memory System?</a></p>
+      <p class="pmeta">arXiv 2606.24775 · Zhou, Zhou, Han, Xu et al. · <span class="buzz hot">buzz 95</span></p>
+      <p class="pgist">Decomposes agent memory into four components (storage, extraction, retrieval/routing, maintenance) and evaluates 12 systems as a data-systems problem rather than black-box end-to-end. Finding: no architecture dominates — effectiveness depends on workload alignment; localized maintenance beats global reorganization. The "memory as data systems" framing behind Mode B.</p>
+      <p class="pxref"><a href="#s4">§4 memory management</a></p>
+    </div>
+  </div>
+
+  <div class="paper">
+    <div class="idx">7</div>
+    <div class="pbody">
+      <p class="ptitle"><a href="https://arxiv.org/abs/2606.26027">Why Multi-Step Tool-Use RL Collapses and How Supervisory Signals Fix It</a></p>
+      <p class="pmeta">arXiv 2606.26027 · Hao, Jin, Liao, Liu et al. · <span class="buzz">buzz 10</span></p>
+      <p class="pgist">Pinpoints catastrophic collapse in tool-use RL to probability spikes in control tokens that break the execution format (the underlying capability stays intact). Interleaving SFT with RL substantially stabilizes training. The "tool-use RL work" from the briefing.</p>
+      <p class="pxref"><a href="#s2">§2 agentic RL</a></p>
+    </div>
+  </div>
+
+  <div class="paper">
+    <div class="idx">8</div>
+    <div class="pbody">
+      <p class="ptitle"><a href="https://arxiv.org/abs/2606.18394">JetSpec: Breaking the Scaling Ceiling of Speculative Decoding with Parallel Tree Drafting</a></p>
+      <p class="pmeta">arXiv 2606.18394 · Hu, Feng, Wu, Yuan et al. · <span class="buzz">buzz 18</span></p>
+      <p class="pgist">Speculative decoding that breaks the draft-budget scaling ceiling: a causal parallel draft head over fused hidden states yields candidate trees aligned with the target's autoregressive factorization. Up to 9.64× on MATH-500, with vLLM integration. The "speculative inference" thread from the briefing.</p>
+      <p class="pxref"><a href="#s21">§21 inference efficiency</a></p>
+    </div>
+  </div>
+
+  <div class="paper">
+    <div class="idx">9</div>
+    <div class="pbody">
+      <p class="ptitle"><a href="https://arxiv.org/abs/2606.26904">Confidence-Aware Tool Orchestration for Robust Video Understanding</a></p>
+      <p class="pmeta">arXiv 2606.26904 · He, Choi, Yoon · <span class="buzz">buzz 6</span></p>
+      <p class="pgist">Robust-TO attaches per-frame trustworthiness scores throughout the reasoning pipeline so video agents stop "blindly trusting" degraded frames (motion blur, glare, occlusion), routing trustworthy frames to specialist tools and aggregating with confidence-cost GRPO. The "tool orchestration robustness" signal from the briefing.</p>
+      <p class="pxref"><span class="none">context only — not discussed directly</span></p>
+    </div>
+  </div>
+
+  <div class="paper">
+    <div class="idx">10</div>
+    <div class="pbody">
+      <p class="ptitle"><a href="https://arxiv.org/abs/2606.25319">V-Zero: Answer-Label-Free On-Policy Distillation with Contrastive Evidence Gating</a></p>
+      <p class="pmeta">arXiv 2606.25319 · Sun, Yi, Deng, Zhou et al. · <span class="buzz">buzz 21</span></p>
+      <p class="pgist">Answer-label-free on-policy distillation for fine-grained visual reasoning, adding contrastive evidence gating (a question-relevant crop paired with a negative view) to supply the missing trajectory-level discrimination. ~5× faster than SFT, ~10× than RL. The "V-Zero" paper from the briefing's OPD cluster.</p>
+      <p class="pxref"><a href="#s1">§1 self-supervised</a><a href="#s2">§2 on-policy distillation</a></p>
+    </div>
+  </div>
+</section>
+
+<nav class="toc" id="top">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#papers">Today's papers — 6.26 list</a></li>
+    <li class="part">Part I — Agentic RL &amp; On-Policy Distillation</li>
+    <li><a href="#s1">1 · Self-supervised learning</a></li>
+    <li><a href="#s2">2 · Agentic RL (and on-policy distillation)</a></li>
+    <li><a href="#s3">3 · OPID's hierarchical skill injection</a></li>
+    <li><a href="#s4">4 · Memory management of injected skills</a></li>
+    <li><a href="#s5">5 · "Only already-walked trajectories?"</a></li>
+    <li><a href="#s6">6 · Do hindsight skills help in new scenarios?</a></li>
+    <li class="part">Part II — VLA, WAM &amp; World Models</li>
+    <li><a href="#s7">7 · How VLA and WAM relate</a></li>
+    <li><a href="#s8">8 · Generalist mobile manipulation policies</a></li>
+    <li><a href="#s9">9 · Is WAM mainly video-trained?</a></li>
+    <li><a href="#s10">10 · Common benchmarks</a></li>
+    <li><a href="#s11">11 · WAM vs. WM (world model)</a></li>
+    <li class="part">Part III — Foundational Concepts</li>
+    <li><a href="#s12">12 · Diagnostic vs. deployment proxies</a></li>
+    <li><a href="#s13">13 · Embedding space vs. latent space</a></li>
+    <li><a href="#s14">14 · JEPA in detail</a></li>
+    <li><a href="#s15">15 · Why a WAM can also be a VLA</a></li>
+    <li><a href="#s16">16 · Goodhart's law</a></li>
+    <li><a href="#s17">17 · Stop-gradient &amp; EMA target encoder</a></li>
+    <li class="part">Part IV — Worked Example &amp; Vocabulary</li>
+    <li><a href="#s18">18 · The cobra effect</a></li>
+    <li><a href="#s19">19 · Vocabulary: <i>venomous</i>, <i>bounty</i></a></li>
+    <li class="part">Part V — RoPE Attention &amp; KV-Cache Quantization</li>
+    <li><a href="#s20">20 · RoPE: block structure — inherent or by definition?</a></li>
+    <li><a href="#s21">21 · KV-cache quantization &amp; bit allocation</a></li>
+    <li><a href="#s22">22 · RoPE re-derived: per-head, formula, block-diagonal</a></li>
+    <li><a href="#s23">23 · SO(2), the rotation group</a></li>
+    <li><a href="#s24">24 · Reconstruction error vs. logit error</a></li>
+    <li><a href="#s25">25 · NoPE (no positional encoding)</a></li>
+    <li><a href="#s26">26 · MHA / MQA / GQA</a></li>
+    <li><a href="#s27">27 · MLA, low-rank compression &amp; commuting</a></li>
+    <li><a href="#s28">28 · Softmax attention &amp; alternatives</a></li>
+    <li><a href="#s29">29 · Offline vs. online (inference time)</a></li>
+    <li><a href="#s30">30 · Per-channel vs. per-token &amp; outlier channels</a></li>
+    <li><a href="#s31">31 · FP8 precision, and llama.cpp</a></li>
+    <li><a href="#refs">References</a></li>
+  </ol>
+</nav>
+
+<!-- ============ PART I ============ -->
+<div class="part-head"><span class="pnum">Part I</span><h2>Agentic RL &amp; On-Policy Distillation</h2></div>
+
+<section class="qa" id="s1">
+  <h3><span class="num">1</span>Self-supervised learning</h3>
+  <div class="q"><span class="lab">Question</span><p>What is self-supervised learning?</p></div>
+  <p class="lead">In one sentence: the supervision signal comes from the <strong>data itself</strong>, not from human annotation.</p>
+  <p>It sits between the two classic paradigms. <em>Supervised</em> learning needs humans to provide (input, label) pairs — e.g. ten thousand images hand-labeled "cat/dog." <em>Unsupervised</em> learning has no labels at all and just finds structure. <em>Self-supervised</em> learning is the clever middle ground: it automatically manufactures labels out of the data's own structure, so you neither need humans nor lack a clear prediction target.</p>
+  <p>The canonical example is the language model itself: given the preceding words, predict the next token. The "label" is just the next token already present in the text — nobody annotated anything; the text supervises itself. BERT masks words and makes the model guess them; vision has masked autoencoders (reconstruct hidden patches) and contrastive learning (two augmentations of one image should match).</p>
+  <p>Why it matters: human annotation is expensive and slow — it is <em>the</em> bottleneck for scaling. Self-supervision lets a model consume the vast unlabeled data on the internet directly, which is one reason large models can scale. In the briefing's context, extracting "dense, self-supervised learning signals … without external labels" from agent trajectories means distilling learning signal out of trajectories the agent produces itself, rather than relying on external reward annotation. The trajectory already contains learnable structure — that is what "self-supervised" means here.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s2">
+  <h3><span class="num">2</span>Agentic RL (and on-policy distillation)</h3>
+  <div class="q"><span class="lab">Question</span><p>What is agentic RL?</p></div>
+  <p>The skeleton of RL: an agent takes an <strong>action</strong> in an <strong>environment</strong>, receives a <strong>reward</strong>, and learns a <strong>policy</strong> that maximizes cumulative reward. <em>Agentic RL</em> specifically means using RL to train LLM-based agents — models that do multi-step reasoning, call tools, plan, and interact with an environment (search the web, run code, click buttons).</p>
+  <p>The key contrast with RLHF: RLHF (ChatGPT-style alignment) is basically <strong>single-step</strong> — one answer, one reward, update, done. Agentic RL is <strong>long-horizon and multi-step</strong> — an agent might take ~50 steps (search → filter → call tool → reason → verify), and feedback often arrives only at the very end (did the task succeed?). This creates three core difficulties, which the papers attack:</p>
+  <ul class="tight">
+    <li><strong>Credit assignment</strong> — 50 steps but one terminal reward; which steps were right vs. wrong?</li>
+    <li><strong>Sparse reward</strong> — feedback is too rare and too late.</li>
+    <li><strong>Data bottleneck</strong> — annotating every step's quality is prohibitively expensive.</li>
+  </ul>
+  <div class="callout"><span class="k">Aside — on-policy distillation</span>The title term means the student model is corrected on trajectories <strong>it generated itself</strong>. The advantage: it learns to fix the mistakes it actually makes, rather than fitting a teacher's distribution it would never encounter on its own.</div>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s3">
+  <h3><span class="num">3</span>OPID's hierarchical skill injection</h3>
+  <div class="q"><span class="lab">Question</span><p>I don't fully understand OPID's "hierarchical skill injection — representing hindsight as two-level abstractions (episode workflows + step-level decisions) and injecting them back into the interaction history." Explain it carefully.</p></div>
+  <p>Three components, then two extensions.</p>
+  <p><strong>1 · Hindsight.</strong> In RL, hindsight means waiting until a trajectory finishes and the outcome is known, then going back to reinterpret it. The classic source is Hindsight Experience Replay<a class="ref" href="#r14">14</a>: a robot meant to reach point A but reaching point B is a "failure" — yet it did successfully reach B, so you <em>relabel</em> the trajectory as a successful example of "how to reach B." Even failures yield signal. In one line: hindsight uses the god's-eye view of "I already know the outcome" to retroactively assign new meaning to a trajectory.</p>
+  <p><strong>2 · Two-level abstraction (= "hierarchical").</strong> OPID doesn't do hindsight monolithically; it splits retrospective understanding into two granularities. The <em>episode workflow</em> (macro) is the overall strategy — "first search X, then converge on Y, finally verify Z," a coarse playbook. The <em>step-level decisions</em> (micro) ask, at each concrete step given that state, whether the local decision was good and why. The same experience is abstracted at both levels at once.</p>
+  <p><strong>3 · Skill injection.</strong> These two levels are not just used as training targets — they are fed back into the context (interaction history) the agent can see. The agent effectively writes itself two sticky notes after a task: "the playbook that worked was X" and "here is why each step's decision was correct." Next time it reads its history, those notes condition its behavior. It is a "skill" because the distilled workflow + decisions form a reusable capability; injecting it into history lets the model invoke that skill at the in-context level.</p>
+  <p><strong>Putting it together:</strong> take a self-generated trajectory → look back in hindsight → split into workflow + per-step decisions → inject them back into context as a skill. You get dense supervision at two granularities at once, all sourced from the trajectory itself, with no external annotation — easing all three difficulties (coarse signal helps globally, fine signal helps per-step credit assignment, self-generation solves the data bottleneck).</p>
+  <p><strong>Why "immediately extensible" — two directions.</strong> First, <em>decouple reasoning traces from execution traces</em>: a trajectory entangles "thinking" (chain of thought) and "doing" (actions, tool calls). The two-level template can split one level for reasoning, one for execution — so a failed plan can be attributed to "thought wrong" (bad plan) vs. "did wrong" (botched action) and each improved independently. Second, <em>long-horizon credit assignment in embodied robotics</em>: horizons are enormous and per-step supervision is scarce; the episode workflow gives a coarse skeleton ("approach → grasp → lift → place") and step decisions push credit down to concrete actions — all generated in hindsight, no external per-step labels. The reason it's elegant is that "hierarchical hindsight + injection into context" is domain-agnostic: the two levels map onto any natural hierarchy — workflow/step, reasoning/execution, subtask/atomic action.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s4">
+  <h3><span class="num">4</span>Memory management of injected skills</h3>
+  <div class="q"><span class="lab">Question</span><p>If you inject episode workflows + step-level decisions into context, how is memory managed? Does the agent read all this from context every time, as prior knowledge?</p></div>
+  <p>The instinct is right — literally dumping everything into context every turn would blow up. There are two modes, differing on <strong>training-time vs. inference-time</strong> use.</p>
+  <p><strong>Mode A — distillation scaffolding (primary for OPID).</strong> Because the method is on-policy distillation, injection is mainly a training-time vehicle. The pipeline: generate a trajectory → build an <em>augmented</em> context where the hindsight workflow + step decisions are present → train the student to act conditioned on that augmented context → <strong>distill the behavior into the weights.</strong> Afterward the skill lives in the parameters and the scaffold is discarded. That is distillation's whole purpose: move knowledge out of context (expensive, ephemeral, token-limited) and into weights (cheap at inference, permanent). So "does it read from context every time?" → <strong>no</strong>; the injection was a temporary teaching mechanism.</p>
+  <p><strong>Mode B — external retrievable memory</strong> (the "agent memory as data systems" framing). The abstractions live in an external store (vector DB or structured store); on a new task you retrieve only the top-<em>k</em> relevant entries and inject those — never the whole library. This is essentially RAG-for-skills, matching the "prior knowledge" intuition.</p>
+  <p>Either way you never load everything every turn — which is exactly why the field treats agent memory as a data-systems problem (retrieval, indexing, eviction, staleness). And note the hierarchy is itself a compression scheme: storing "workflow + decisions" (a few sentences) instead of the raw trajectory (thousands of tokens) already does part of the memory management.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s5">
+  <h3><span class="num">5</span>"Only already-walked trajectories?"</h3>
+  <div class="q"><span class="lab">Question</span><p>Isn't what this provides only trajectories that already worked?</p></div>
+  <p>Partly yes, partly no — and the "no" is the whole point of hindsight. The HER trick <em>rescues failures</em>: a trajectory that failed its original goal still reached some other outcome, and you relabel it toward what it actually achieved, so the raw material isn't restricted to successes. The suspicion holds for one specific use — the <em>positive skill library</em> (workflows injected as "do this") is naturally biased toward what led somewhere good. But failures get used differently: as <strong>contrastive signal</strong> ("this pattern leads nowhere") or negative examples, not as playbooks to imitate. The method isn't blind to failure; it files it under a different label.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s6">
+  <h3><span class="num">6</span>Do hindsight skills help in new scenarios?</h3>
+  <div class="q"><span class="lab">Question</span><p>These come from completed trajectories — for genuinely new scenarios, are the hindsight skills useful?</p></div>
+  <p>This is the sharpest question, and it is where the hierarchy earns its keep, because the two levels generalize differently — the hierarchy is a <strong>generalization dial</strong>. Step-level decisions are <em>brittle</em>: "when search returned zero results, I broadened the query" is tied to a specific state that won't recur, so they transfer poorly. Episode workflows are <em>transferable</em>: "search → filter → verify → synthesize" is a strategy schema, not a state-specific reflex, so a new task with different content but the same shape can reuse it.</p>
+  <div class="callout"><span class="k">The honest limitation</span>Hindsight skills are <strong>interpolative, not extrapolative</strong>. They help when the new scenario sits inside the convex hull of what's been seen. For something truly out-of-distribution (a new tool, an unseen failure mode), step decisions are useless and the workflow can even <em>hurt</em> — the agent over-applies a stale pattern (negative transfer). The "Plans Don't Persist" benchmark is a diagnostic for exactly this.</div>
+  <p>Two mitigations. The <strong>on-policy</strong> part matters: the student keeps generating fresh trajectories on its current distribution — including new scenarios — and those get hindsight-abstracted too, so the skill library co-evolves rather than freezing. And hindsight can manufacture signal even from a first failed attempt in a new scenario; the one thing it cannot do is conjure signal from a scenario the agent has never touched — there must be at least one trajectory to look back on. The honest value proposition: these abstractions <strong>amortize exploration</strong> so that similar future scenarios become cheap; they do not replace exploration for genuinely novel ones.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<!-- ============ PART II ============ -->
+<div class="part-head"><span class="pnum">Part II</span><h2>VLA, WAM &amp; World Models</h2></div>
+
+<section class="qa" id="s7">
+  <h3><span class="num">7</span>How VLA and WAM relate</h3>
+  <div class="q"><span class="lab">Question</span><p>What is the connection between VLA (Vision-Language-Action) and WAM (World Action Models)?</p></div>
+  <p>Both are paradigms for robot/embodied policies — turning what a robot sees (and is told) into actions. The difference is <em>how</em> they decide. A <strong>VLA</strong> learns a reactive mapping: observation + instruction → action, directly; VLAs are pretrained on static image-text data and predict actions directly from visual and language inputs<a class="ref" href="#r3">3</a> (RT-2, OpenVLA, NVIDIA GR00T). A <strong>WAM</strong> adds a predictive layer: instead of going straight to an action, it models how the world will evolve, targeting a joint distribution over future states and actions rather than actions alone<a class="ref" href="#r4">4</a>.</p>
+  <p>So: VLA asks "given what I see, what do I do?"; WAM asks "given what I see, what will happen next, and therefore what should I do?" WAMs emerged as a fix for a VLA weakness — VLAs excel at semantic generalization but struggle to generalize to unseen physical motions in novel environments<a class="ref" href="#r1">1</a>. WAMs attack that gap by learning physical dynamics from large-scale video, developing transferable motion priors<a class="ref" href="#r3">3</a>. Genealogically, WAMs emerge from the convergence of VLA policies and predictive world models<a class="ref" href="#r8">8</a>. Crucially the categories overlap: a WAM built on a pretrained VLM is simultaneously both a VLA and a WAM<a class="ref" href="#r5">5</a> — RynnVLA-002 is a concrete unified example<a class="ref" href="#r10">10</a>.</p>
+  <table class="tbl">
+    <thead><tr><th>&nbsp;</th><th>VLA</th><th>WAM</th></tr></thead>
+    <tbody>
+      <tr><td>Core question</td><td>"What action, given observation?"</td><td>"What future, therefore what action?"</td></tr>
+      <tr><td>Mechanism</td><td>Reactive observation → action</td><td>Predictive: models dynamics, then acts</td></tr>
+      <tr><td>Main data</td><td>Image-text + robot demos</td><td>Large-scale video (dynamics)</td></tr>
+      <tr><td>Strength</td><td>Semantic / language generalization</td><td>Physical / motion generalization</td></tr>
+      <tr><td>Relationship</td><td>Predecessor paradigm</td><td>Absorbs VLA + world models</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Caveat: this taxonomy is very fresh (early–mid 2026); definitions are still settling, and many "WAM beats VLA" claims come from the proposing groups, though independent robustness studies are beginning to test it<a class="ref" href="#r9">9</a>.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s8">
+  <h3><span class="num">8</span>Generalist mobile manipulation policies</h3>
+  <div class="q"><span class="lab">Question</span><p>What are generalist mobile manipulation policies?</p></div>
+  <p>Three parts. <strong>Mobile manipulation</strong> = a robot that must both navigate (a mobile base moving through space) and manipulate (an arm/gripper acting on objects) — as opposed to a fixed arm on a table. The canonical framing is OVMM (Open-Vocabulary Mobile Manipulation): picking any object in any unseen environment and placing it at a commanded location, requiring perception, language understanding, navigation, and manipulation at once<a class="ref" href="#r6">6</a>. The hard part is the <em>integration</em> and the <em>long horizon</em> (find → approach → grasp → carry → place) — the same credit-assignment regime as Part I.</p>
+  <p><strong>Generalist</strong> = one policy across many tasks, objects, scenes, and often embodiments, rather than one task-specific policy. So a generalist mobile manipulation policy is a single learned controller that drives a mobile-base-plus-arm robot to follow open-ended language across novel objects and scenes — the most demanding corner of embodied AI, stacking navigation, manipulation, open-vocabulary grounding, and long-horizon planning into one policy.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s9">
+  <h3><span class="num">9</span>Is WAM mainly video-trained?</h3>
+  <div class="q"><span class="lab">Question</span><p>You mentioned WAM is mainly trained on large-scale videos?</p></div>
+  <p>Yes — that is the defining data choice. WAMs learn physical dynamics from diverse, large-scale video rather than memorizing task-specific demonstrations; trained to predict how the world evolves visually across many motions, they develop transferable motion priors<a class="ref" href="#r3">3</a>. DreamZero, which coined "WAM," is built on a video-diffusion backbone<a class="ref" href="#r1">1</a>. The logic is the self-supervised one again: video is an abundant, unlabeled record of "how the world moves," far cheaper than labeled robot trajectories.</p>
+  <p><strong>Important nuance:</strong> "world model" does <em>not</em> imply "video." LeWM is a world model trained from raw pixels of control environments, not internet-scale video — so the video-substrate claim is specific to the WAM line (especially the DreamZero/video-diffusion family), not to world models in general.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s10">
+  <h3><span class="num">10</span>Common benchmarks</h3>
+  <div class="q"><span class="lab">Question</span><p>Could you list several common benchmarks?</p></div>
+  <p>Split by what they actually test.</p>
+  <p><strong>Mobile manipulation (navigation + manipulation, long-horizon):</strong></p>
+  <ul class="tight">
+    <li><strong>HomeRobot OVMM</strong> — the open-vocabulary mobile-manipulation benchmark; an agent navigates household environments to grasp novel objects and place them on target receptacles, with both a simulation component and a real Hello Robot Stretch stack<a class="ref" href="#r6">6</a>.</li>
+    <li><strong>BEHAVIOR / BEHAVIOR-1K</strong> — long-horizon everyday household activities.</li>
+    <li><strong>Habitat rearrangement</strong> — embodied navigation + object rearrangement in 3D homes.</li>
+    <li><strong>RoboCasa</strong> — large-scale simulation of everyday tasks for generalist robots<a class="ref" href="#r11">11</a> (kitchen-scale).</li>
+  </ul>
+  <p><strong>Tabletop / fixed-arm manipulation (where most VLA &amp; WAM numbers are reported):</strong></p>
+  <ul class="tight">
+    <li><strong>LIBERO</strong> / <strong>LIBERO-Plus</strong> — lifelong &amp; robustness manipulation; very common for VLA eval.</li>
+    <li><strong>CALVIN</strong> — long-horizon language-conditioned manipulation.</li>
+    <li><strong>RLBench, ManiSkill / ManiSkill2, MetaWorld</strong> — broad skill suites.</li>
+    <li><strong>THE COLOSSEUM</strong> — generalization under systematic perturbations<a class="ref" href="#r16">16</a>.</li>
+    <li><strong>RoboTwin (2.0 / -Plus)</strong> — bimanual/dual-arm generalization; used alongside LIBERO-Plus in WAM-vs-VLA robustness studies<a class="ref" href="#r9">9</a>.</li>
+  </ul>
+  <p><strong>Real-world generalist evaluation (newer, deployment-oriented):</strong> <strong>RoboArena</strong> (distributed real-world evaluation of generalist policies<a class="ref" href="#r11">11</a>), <strong>AutoEval</strong> (autonomous real-world evaluation<a class="ref" href="#r11">11</a>), and <strong>SimplerEnv</strong> (sim eval calibrated to predict real performance).</p>
+  <div class="callout"><span class="k">Carry this caveat</span>These are diagnostics, not deployment proxies. As one 2026 dataset survey bluntly puts it: none of these benchmarks are production proxies — do not treat high LIBERO scores as deployment readiness<a class="ref" href="#r12">12</a>. (See §12 and §16.)</div>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s11">
+  <h3><span class="num">11</span>WAM vs. WM (world model)</h3>
+  <div class="q"><span class="lab">Question</span><p>I've run world-model experiments with LeWM as the base substrate. Explain the difference between the two schemes: WAM versus WM.</p></div>
+  <p>LeWM is the perfect reference point because it sits cleanly on the <strong>WM</strong> side of the line.</p>
+  <p><strong>World Model (WM) — what LeWM is.</strong> A WM is a predictive model of dynamics: given the current latent state and an action, predict the future state/embedding. Crucially it does <em>not</em> itself produce the action. LeWM is a Joint-Embedding Predictive Architecture that maps observations into a latent space and predicts future embeddings conditioned on actions<a class="ref" href="#r7">7</a>. To act, you wrap the WM with an <em>external</em> decision procedure — planning/MPC/sampling in the latent space (what you'd do with LeWM), or train a separate actor "in imagination" (the Dreamer/DayDreamer pattern, where an actor-critic optimizes a policy from imagined latent rollouts<a class="ref" href="#r13">13</a>). The world model is the simulator; the policy lives outside it.</p>
+  <p><strong>World Action Model (WAM) — the coupling.</strong> A WAM folds action generation into the predictive model itself: it unifies predictive state modeling with action generation, targeting a joint distribution over future states <em>and</em> actions<a class="ref" href="#r4">4</a>. The sharp test: future-state prediction must be part of the policy, not just an auxiliary backbone or external simulator<a class="ref" href="#r8">8</a>. That last clause is exactly what separates it from your LeWM setup, where prediction is an external simulator you plan against.</p>
+  <table class="tbl">
+    <thead><tr><th>&nbsp;</th><th>World Model (LeWM, Dreamer)</th><th>World Action Model (DreamZero)</th></tr></thead>
+    <tbody>
+      <tr><td>Predicts future states?</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>Generates actions itself?</td><td>No — selection is external</td><td>Yes — generation is internal</td></tr>
+      <tr><td>Prediction's role</td><td>External simulator to plan against</td><td>Part of the policy</td></tr>
+      <tr><td>Typical substrate</td><td>Raw pixels, latent JEPA (compact)</td><td>Large-scale video (diffusion backbone)</td></tr>
+      <tr><td>Output target</td><td>future state</td><td>joint (future state, action)</td></tr>
+    </tbody>
+  </table>
+  <p>The field subdivides WAMs by coupling tightness: <em>Cascaded</em> WAMs predict the future then derive the action; <em>Joint</em> WAMs model future states and actions together in one distribution<a class="ref" href="#r8">8</a>. The Cascaded variant is the closest bridge from a pure WM — almost "a WM plus an action head wired into the same policy." Mental model across all the terms: a <strong>WM</strong> predicts dynamics; bolt action selection <em>outside</em> it → classic model-based RL/planning (LeWM); fuse action <em>generation</em> into it → a <strong>WAM</strong>; if that WAM also inherits a VLM's language grounding → it is a <strong>VLA</strong> too.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<!-- ============ PART III ============ -->
+<div class="part-head"><span class="pnum">Part III</span><h2>Foundational Concepts</h2></div>
+
+<section class="qa" id="s12">
+  <h3><span class="num">12</span>Diagnostic vs. deployment proxies</h3>
+  <div class="q"><span class="lab">Question</span><p>What is the difference between diagnostic proxies and deployment proxies? Are there other proxies?</p></div>
+  <p>A <strong>proxy</strong> is a measurable stand-in for something you care about but can't measure directly or cheaply; every proxy has a <em>gap</em> to the true quantity. A <strong>diagnostic proxy</strong> isolates a specific capability under controlled conditions ("does the policy survive lighting changes?") — narrow, high-signal debugging that deliberately isn't realistic about everything else. A <strong>deployment / production proxy</strong> tries to predict real-world success on the actual target task ("will this work on my robot, in my building?"). The earlier warning is precisely that LIBERO etc. are good diagnostic proxies but bad deployment proxies<a class="ref" href="#r12">12</a>. This maps onto the briefing's "diagnostic benchmarking replacing monolithic metrics."</p>
+  <p>Other proxies worth naming: a <strong>surrogate training objective</strong> (next-token prediction is a proxy for "understands language"; video prediction a proxy for "understands physics"); a <strong>reward proxy</strong> (a hand-designed reward standing in for the true goal — see reward hacking / Goodhart in §16); a <strong>sim-to-real proxy</strong> (sim performance for real performance; the "sim-to-real gap" is the proxy gap); and an <strong>offline-for-online proxy</strong> (validation loss for online task success). The unifying principle is Goodhart's law (§16).</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s13">
+  <h3><span class="num">13</span>Embedding space vs. latent space</h3>
+  <div class="q"><span class="lab">Question</span><p>The concepts of embedding space and latent space are fuzzy to me.</p></div>
+  <p>They overlap heavily — both mean "a vector space where data lives as points" — and are often used interchangeably. The difference is emphasis. <strong>Embedding space</strong> emphasizes the map from raw input to a vector representation (a word/image/sentence embedding you then use for similarity, retrieval, downstream heads); the image is "input → encoder → embedding." <strong>Latent space</strong> emphasizes a hidden internal variable of a model — especially generative/predictive ones (a VAE bottleneck, diffusion latent, a world model's state); "latent" literally means "not directly observed," and the image is "a compressed internal space you can sample from, reconstruct from, or roll forward in time."</p>
+  <div class="callout"><span class="k">Crisp heuristic</span>"Embedding" stresses representation (the encoding of something real); "latent" stresses generation/dynamics (a hidden variable you operate on). An embedding <em>is</em> a point in a latent space, so they aren't disjoint.</div>
+  <p>LeWM illustrates why people sometimes keep them distinct: the encoder maps pixels → a vector (call it the <em>embedding</em>), and the predictor rolls that vector forward under actions (call it <em>latent dynamics</em>). Same vectors, two framings. The whole JEPA pitch is "predict in latent/embedding space rather than in pixel space" — that's where the distinction carries weight.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s14">
+  <h3><span class="num">14</span>JEPA in detail</h3>
+  <div class="q"><span class="lab">Question</span><p>More details on Joint-Embedding Predictive Architecture (JEPA)?</p></div>
+  <p>JEPA is LeCun's proposed architecture<a class="ref" href="#r15">15</a>, with I-JEPA (images), V-JEPA (video) and now LeWM (world model) instantiations. Understand it by contrast with two other families:</p>
+  <ol class="tight">
+    <li><strong>Generative / reconstructive</strong> (autoencoders, MAE): predict the actual input — reconstruct pixels. Problem: forced to model every detail, including unpredictable noise, wasting capacity.</li>
+    <li><strong>Contrastive joint-embedding</strong> (SimCLR-style): encode two views, pull embeddings together, push from negatives. Problem: needs negatives and careful anti-collapse tricks.</li>
+    <li><strong>JEPA (joint-embedding <em>predictive</em>)</strong>: encode context <code>x</code> and target <code>y</code> separately into embeddings, then a <strong>predictor</strong> maps the context-embedding to the predicted target-embedding — optionally conditioned on a latent <code>z</code> or an action <code>a</code>. You predict in representation space, not input space.</li>
+  </ol>
+  <p>The motivating principle: don't predict pixels if what you care about is how the world changes — learn a compact latent state, predict how actions move it forward, and plan in that space<a class="ref" href="#r7">7</a>. Predicting embeddings lets the encoder discard unpredictable detail and keep only predictable, semantic structure.</p>
+  <figure>
+    <svg viewBox="0 0 680 330" role="img" aria-labelledby="jepatitle jepadesc">
+      <title id="jepatitle">JEPA architecture</title>
+      <desc id="jepadesc">Target y goes through an EMA target encoder (stop-gradient) to embedding s_y; context x goes through the online encoder to s_x, then a predictor conditioned on an action produces a predicted embedding; a prediction loss compares the prediction to s_y. An EMA-copy arrow links the online encoder up to the target encoder.</desc>
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+      </defs>
+      <!-- top path: target -->
+      <rect x="26" y="48" width="104" height="44" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+      <text x="78" y="74" text-anchor="middle" font-family="Inter" font-size="14" fill="#444441">Target y</text>
+      <rect x="178" y="48" width="156" height="44" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.6"/>
+      <text x="256" y="68" text-anchor="middle" font-family="Inter" font-size="13.5" fill="#0F6E56">Target encoder</text>
+      <text x="256" y="84" text-anchor="middle" font-family="Inter" font-size="11.5" fill="#0F6E56">EMA copy · frozen</text>
+      <rect x="384" y="50" width="74" height="40" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+      <text x="421" y="74" text-anchor="middle" font-family="Inter" font-size="13.5" fill="#444441">s_y</text>
+      <rect x="510" y="46" width="120" height="48" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.6"/>
+      <text x="570" y="66" text-anchor="middle" font-family="Inter" font-size="13.5" fill="#854F0B">Prediction</text>
+      <text x="570" y="82" text-anchor="middle" font-family="Inter" font-size="13.5" fill="#854F0B">loss</text>
+      <!-- bottom path: context -->
+      <rect x="26" y="200" width="104" height="44" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+      <text x="78" y="226" text-anchor="middle" font-family="Inter" font-size="14" fill="#444441">Context x</text>
+      <rect x="178" y="200" width="156" height="44" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.6"/>
+      <text x="256" y="226" text-anchor="middle" font-family="Inter" font-size="13.5" fill="#0F6E56">Online encoder</text>
+      <rect x="384" y="202" width="74" height="40" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+      <text x="421" y="226" text-anchor="middle" font-family="Inter" font-size="13.5" fill="#444441">s_x</text>
+      <rect x="500" y="200" width="130" height="44" rx="8" fill="#EEEDFE" stroke="#7F77DD" stroke-width="0.6"/>
+      <text x="565" y="226" text-anchor="middle" font-family="Inter" font-size="13.5" fill="#3C3489">Predictor</text>
+      <!-- action input -->
+      <rect x="500" y="278" width="130" height="36" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+      <text x="565" y="300" text-anchor="middle" font-family="Inter" font-size="12.5" fill="#444441">action a / latent z</text>
+      <!-- arrows top -->
+      <line x1="130" y1="70" x2="172" y2="70" stroke="#73726c" stroke-width="1" marker-end="url(#ah)"/>
+      <line x1="334" y1="70" x2="378" y2="70" stroke="#73726c" stroke-width="1" marker-end="url(#ah)"/>
+      <line x1="458" y1="70" x2="504" y2="70" stroke="#73726c" stroke-width="1" marker-end="url(#ah)"/>
+      <text x="481" y="40" text-anchor="middle" font-family="Inter" font-size="11.5" fill="#a3322f">stop-grad ✕</text>
+      <!-- arrows bottom -->
+      <line x1="130" y1="222" x2="172" y2="222" stroke="#73726c" stroke-width="1" marker-end="url(#ah)"/>
+      <line x1="334" y1="222" x2="378" y2="222" stroke="#73726c" stroke-width="1" marker-end="url(#ah)"/>
+      <line x1="458" y1="222" x2="494" y2="222" stroke="#73726c" stroke-width="1" marker-end="url(#ah)"/>
+      <line x1="565" y1="278" x2="565" y2="248" stroke="#73726c" stroke-width="1" marker-end="url(#ah)"/>
+      <!-- predictor -> loss -->
+      <path d="M600 200 L600 100" fill="none" stroke="#73726c" stroke-width="1" marker-end="url(#ah)"/>
+      <text x="618" y="150" text-anchor="middle" font-family="Inter" font-size="11.5" fill="#5C5B53">ŝ_y</text>
+      <!-- EMA dashed -->
+      <path d="M256 200 L256 96" fill="none" stroke="#1D9E75" stroke-width="1" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+      <text x="300" y="150" text-anchor="middle" font-family="Inter" font-size="11.5" fill="#0F6E56">EMA weight copy</text>
+    </svg>
+    <figcaption><b>JEPA (action-conditioned, world-model form).</b> Two encoders produce embeddings; the predictor maps the context embedding (plus action) to a predicted target embedding, scored against the target. <b>Stop-gradient</b> freezes the target side in the backward pass; the target encoder's weights are an <b>EMA copy</b> of the online encoder (§17). LeWM removes both tricks, using a Gaussian-latent regularizer instead.</figcaption>
+  </figure>
+  <p>The central failure mode is <strong>representation collapse</strong>: the encoder can map different frames to nearly identical embeddings, making prediction trivially easy but destroying the representation<a class="ref" href="#r7">7</a>. Every JEPA needs an anti-collapse mechanism — I-JEPA/V-JEPA use stop-gradient + an EMA target encoder; LeWM instead trains stably end-to-end from raw pixels with only two loss terms (a next-embedding prediction loss + a regularizer forcing latent embeddings toward a Gaussian), dropping the EMA/stop-gradient/pretrained-encoder hacks<a class="ref" href="#r7">7</a>. For the world-model case (your setup), the predictor is action-conditioned — <code>(state embedding, action) → next state embedding</code> — a latent dynamics model learned without pixel reconstruction or rewards.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s15">
+  <h3><span class="num">15</span>Why a WAM can also be a VLA</h3>
+  <div class="q"><span class="lab">Question</span><p>You said WAM is more advanced than VLA — so why add a pretrained VLM's language grounding to a WAM to "turn it into" a VLA?</p></div>
+  <p>The "WAM &gt; VLA on one ladder" framing (including my earlier "superset" phrasing) was too glib. WAM and VLA improve <strong>different axes</strong>, not points on one line. VLA's strength is semantic / language grounding (from a pretrained VLM) — understanding "pick up the red mug left of the sink." WAM's strength is physical-dynamics / motion generalization (from video prediction) — anticipating how the world moves.</p>
+  <p>A <em>pure</em> WAM (built only on a video-diffusion backbone) can have excellent motion priors yet relatively weak open-vocabulary language understanding. So adding VLM grounding is <strong>not downgrading</strong> a WAM into a VLA — it gives the WAM the <em>other</em> capability it lacked. The result has both axes and therefore satisfies both definitions at once. "Being a VLA" just means "takes vision + language, outputs action"; a VLM-backed WAM does exactly that, so it <em>is</em> a VLA, while also being a WAM. The statement "simultaneously a VLA too" is categorical, not a capability claim.</p>
+  <figure>
+    <svg viewBox="0 0 680 470" role="img" aria-labelledby="axtitle axdesc">
+      <title id="axtitle">VLA and WAM as two orthogonal capability axes</title>
+      <desc id="axdesc">Horizontal axis is semantic/language grounding; vertical axis is physical-dynamics modeling. A plain policy is low on both; a VLA is high on grounding only; a pure WAM is high on dynamics only; a WAM built on a VLM is high on both and is therefore also a VLA.</desc>
+      <defs>
+        <marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+      </defs>
+      <line x1="130" y1="410" x2="575" y2="410" stroke="#73726c" stroke-width="1" marker-end="url(#ah2)"/>
+      <line x1="130" y1="410" x2="130" y2="58" stroke="#73726c" stroke-width="1" marker-end="url(#ah2)"/>
+      <text x="352" y="448" text-anchor="middle" font-family="Inter" font-size="12.5" fill="#5C5B53">Semantic / language grounding →</text>
+      <text x="120" y="46" text-anchor="start" font-family="Inter" font-size="12.5" fill="#5C5B53">↑ Physical-dynamics modeling</text>
+      <!-- plain -->
+      <rect x="148" y="328" width="156" height="52" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+      <text x="226" y="349" text-anchor="middle" font-family="Inter" font-size="14" fill="#444441">Plain BC policy</text>
+      <text x="226" y="367" text-anchor="middle" font-family="Inter" font-size="11.5" fill="#5F5E5A">neither axis</text>
+      <!-- VLA -->
+      <rect x="395" y="328" width="160" height="52" rx="8" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.6"/>
+      <text x="475" y="349" text-anchor="middle" font-family="Inter" font-size="14" fill="#0C447C">VLA</text>
+      <text x="475" y="367" text-anchor="middle" font-family="Inter" font-size="11.5" fill="#185FA5">RT-2, OpenVLA</text>
+      <!-- pure WAM -->
+      <rect x="140" y="128" width="170" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.6"/>
+      <text x="225" y="149" text-anchor="middle" font-family="Inter" font-size="14" fill="#0F6E56">Pure WAM</text>
+      <text x="225" y="167" text-anchor="middle" font-family="Inter" font-size="11.5" fill="#0F6E56">DreamZero (video)</text>
+      <!-- combined -->
+      <rect x="380" y="128" width="180" height="52" rx="8" fill="#EEEDFE" stroke="#7F77DD" stroke-width="0.6"/>
+      <text x="470" y="149" text-anchor="middle" font-family="Inter" font-size="14" fill="#3C3489">WAM + VLM grounding</text>
+      <text x="470" y="167" text-anchor="middle" font-family="Inter" font-size="11.5" fill="#534AB7">also a VLA · GR00T 2</text>
+    </svg>
+    <figcaption><b>Two axes, not a ladder.</b> Moving up is the WAM contribution (dynamics); moving right is the VLA contribution (grounding). Adding a VLM pushes a pure WAM <em>rightward</em> into the top-right corner — strongest on both, and a model there is a VLA <em>and</em> a WAM at once.</figcaption>
+  </figure>
+  <p>So you aren't "turning a WAM into a VLA" — you're adding the axis the pure WAM was missing, landing in the corner that's strongest on both. The frontier models (RynnVLA-002, GR00T 2) deliberately want both.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s16">
+  <h3><span class="num">16</span>Goodhart's law</h3>
+  <div class="q"><span class="lab">Question</span><p>Does Goodhart's law mean: if we treat metrics as optimization targets, the metric becomes a failed metric because it induces people to use inappropriate means to get a better result rather than be evaluated fairly?</p></div>
+  <p>Correct in spirit — and worth sharpening in one place. Your version is one real mechanism, but it's a special case of something broader. The deeper statement is about the gap between a <strong>proxy</strong> and the <strong>true thing</strong> you care about. A metric is only a correlate of real quality; under normal conditions the two move together. The moment you apply hard optimization pressure, the optimizer (person or algorithm) finds the cheapest way to raise the metric, and the cheapest way is almost always to exploit the slack between proxy and true goal rather than improve the goal. The correlation that made the metric useful was a "statistical regularity" — and, exactly as Goodhart's original wording says, that regularity dissolves once you push on it for control<a class="ref" href="#r17">17</a>.</p>
+  <p>The key widening: the failure does <em>not</em> require bad faith. It happens even with honest, blind optimization:</p>
+  <ul class="tight">
+    <li><strong>Human gaming (your case):</strong> teaching to the test — scores were a proxy for learning, so optimizing scores yields test-taking tricks, not learning.</li>
+    <li><strong>Pure optimization, no malice:</strong> an RL agent maximizing a proxy reward finds degenerate shortcuts ("reward hacking") that score high while doing the wrong thing. Nobody cheated; the optimizer just exploited the proxy-target gap.</li>
+    <li><strong>The original:</strong> once the Bank of England targeted a money-supply aggregate, the historical relationship between that aggregate and the economy broke down<a class="ref" href="#r17">17</a>.</li>
+  </ul>
+  <p>So the precise version: optimizing a proxy exploits the gap between proxy and true objective, so the proxy stops tracking what you care about — via gaming, via blind shortcut-finding, or via the regularity simply collapsing. Your "fair evaluation" instinct is the flip side: a metric stays a good <em>measure</em> only while it isn't the <em>target</em>. This is exactly why LIBERO is a fine diagnostic but a bad deployment proxy (§10, §12): once a whole field overfits to a benchmark, a high score stops meaning real-world competence.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s17">
+  <h3><span class="num">17</span>Stop-gradient &amp; EMA target encoder</h3>
+  <div class="q"><span class="lab">Question</span><p>In "plus an EMA target encoder," what are stop-gradients and EMA?</p></div>
+  <p>Both are tricks for the same purpose: preventing representation collapse in self-supervised setups with <em>two</em> encoders (used in I-JEPA/V-JEPA/BYOL<a class="ref" href="#r18">18</a>). The setup is a student-teacher pair: an <strong>online encoder</strong> (the one being trained) produces a context embedding, and a <strong>target encoder</strong> produces the embedding you're trying to predict. The collapse danger is the trivial solution "map every input to the same constant vector" — prediction becomes perfect and the representation worthless.</p>
+  <p><strong>Stop-gradient</strong> is an operation that's an identity in the forward pass but blocks gradients in the backward pass — anything behind it is treated as a constant (gradient zero). Wrapping the target embeddings in a stop-gradient makes the loss update <em>only</em> the online encoder toward the target, never the target side. Why this prevents collapse: if gradients flowed into both encoders symmetrically, the laziest way to match two embeddings is to drag both toward the same constant (mutual collapse). Stop-gradient breaks the symmetry — the online encoder must actually learn to predict a target it cannot trivially pull to zero. Image: you're aiming at a target; if the target could slide to wherever you point, you'd both meet at a meaningless spot — stop-gradient pins the target.</p>
+  <p><strong>EMA (Exponential Moving Average) target encoder</strong> answers: if the target encoder isn't trained by gradients, where do its weights come from? They're a slowly-updated copy of the online encoder's weights:</p>
+  <div class="callout"><span class="k">Update rule</span><code>θ_target ← τ · θ_target + (1 − τ) · θ_online</code>, with τ close to 1 (often 0.99–0.999).</div>
+  <p>So the target encoder is a lagging, smoothed "slow teacher" trailing the "fast student." EMA itself is just a weighted average favoring recent values and decaying old ones exponentially (Adam's moment estimates and Polyak weight-averaging are EMAs too); here it's applied to the encoder weights. The point is stability: a target identical to the online encoder every step is a moving goalpost that destabilizes training and invites collapse; the EMA makes the target evolve slowly and consistently. Together they form an asymmetric student-teacher loop — the target is an EMA copy (not directly trained), and stop-gradient guarantees the loss never optimizes it — which is what lets these methods avoid collapse <em>without</em> negative samples.</p>
+  <p>And this closes the LeWM thread: LeWM's selling point is throwing both of these out, replacing the stop-gradient + EMA machinery with a single explicit regularizer (force the latent toward an isotropic Gaussian), training end-to-end with one encoder and two loss terms<a class="ref" href="#r7">7</a>.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<!-- ============ PART IV ============ -->
+<div class="part-head"><span class="pnum">Part IV</span><h2>Worked Example &amp; Vocabulary</h2></div>
+
+<section class="qa" id="s18">
+  <h3><span class="num">18</span>The cobra effect</h3>
+  <div class="q"><span class="lab">Question</span><p>"A bounty on dead cobras leads people to breed cobras" — what is this?</p></div>
+  <p>It's the anecdote that gives Goodhart's law its nickname, the "cobra effect." The story (told about British colonial Delhi): worried about venomous cobras, the government offered a <em>bounty</em> — cash for every dead cobra turned in. The logic was sensible: pay for dead cobras → people kill cobras → fewer cobras. It worked at first. Then people realized that if the government pays for dead cobras, the smart move isn't to hunt wild ones (hard, dangerous, limited) but to <strong>breed cobras at home</strong> specifically to kill them and collect the bounty — farming cobras as a cash crop. When the government discovered this and scrapped the program, the breeders' now-worthless snakes were released, leaving <strong>more cobras than before.</strong></p>
+  <p>It's the perfect Goodhart example: the true goal was <em>fewer cobras in the city</em>; the target metric was <em>dead cobras turned in</em>. Normally those track together, but once the metric had money attached, the cheapest way to raise it (breeding) decoupled from — even opposed — the real goal. Note nobody was being elaborately "evil"; they were rational agents optimizing the reward given, the same structure as <strong>reward hacking</strong> in RL (§16).</p>
+  <p class="note">Honest footnote: the Delhi cobra story is the standard textbook anecdote but is poorly documented historically. A better-documented case is colonial Hanoi, where the French paid a bounty per rat — proven with a severed tail — and ended up with tailless rats breeding in the city, because cutting a tail and releasing the rat was more profitable than killing it. Same mechanism, sturdier evidence.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s19">
+  <h3><span class="num">19</span>Vocabulary: <i>venomous</i>, <i>bounty</i></h3>
+  <div class="q"><span class="lab">Question</span><p>Explain "venomous" and "bounty."</p></div>
+  <p><strong>venomous.</strong> An animal that produces <em>venom</em> — a toxic substance it injects into another creature to kill prey or defend itself. For a snake, venomous means it can bite and inject poison through its fangs; a cobra bite can seriously harm or kill, which is why the government wanted them gone. The easily-confused pair: <em>venomous</em> = it injects the toxin into you (a snake bite, a scorpion sting); <em>poisonous</em> = it harms you when you touch or eat it (a poison dart frog, certain mushrooms). Memory aid: <em>if it bites you and you get sick, it's venomous; if you bite it and you get sick, it's poisonous.</em> A cobra is venomous, not poisonous.</p>
+  <p><strong>bounty.</strong> A reward (usually money) offered by an authority for accomplishing a specific task — often catching, killing, or capturing something. "A bounty on dead cobras" means a price on every dead cobra: hand one in, get paid. (Hence "bounty hunter" — someone who catches wanted criminals for the reward posted for them.) So "a bounty on dead cobras leads people to breed cobras" reads as: because the government offered cash for each dead venomous snake, people raised cobras on purpose just to kill them and collect the payments.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<!-- ============ PART V ============ -->
+<div class="part-head"><span class="pnum">Part V</span><h2>RoPE Attention &amp; KV-Cache Quantization</h2></div>
+
+<section class="qa" id="s20">
+  <h3><span class="num">20</span>RoPE: block structure — inherent or by definition?</h3>
+  <div class="q"><span class="lab">Question</span><p>What is the principle of RoPE attention? Is the block-wise feature inherent or by definition? What other attentions are there?</p></div>
+  <p>RoPE (Rotary Position Embedding<a class="ref" href="#r19">19</a>) encodes position by <em>rotating</em> the query and key vectors. The block structure is <strong>by construction — but a well-motivated construction, not an arbitrary one.</strong> It is not an emergent property of trained weights, nor a property of attention in general; it is baked into RoPE's definition.</p>
+  <p>RoPE splits a head vector into <code>d_h/2</code> coordinate-pairs and rotates pair <code>i</code> by an angle proportional to the token's position, using frequency <code>θᵢ</code> (a geometric series). So the rotation matrix <code>R_m</code> is block-diagonal with <code>d_h/2</code> 2×2 rotation blocks. Because rotations compose (<code>R_mᵀ R_n = R_{n−m}</code>), the logit <code>(R_m q)ᵀ(R_n k) = qᵀ R_{n−m} k</code> depends only on the relative offset <code>Δ = n−m</code> — RoPE's whole reason to exist. And since <code>R_Δ</code> is block-diagonal, the logit is a sum of independent per-block terms: <code>𝒦_Δ(q,k) = Σᵢ q⁽ⁱ⁾ᵀ R(Δθᵢ) k⁽ⁱ⁾</code>.</p>
+  <p>The consequence the paper exploits: a cached key is <em>not</em> used through a flat-vector interface. When a future query attends to it at relative distance <code>Δ</code>, the key passes through <code>R_Δ</code> — consumed block-by-block. Each block contributes its own additive term and the blocks differ in frequency (and so in error-sensitivity), so a uniform quantizer wastes precision. <strong>RoPE-aware bit allocation</strong> instead hands each block bits in proportion to its logit impact (the paper here is Block-GTQ<a class="ref" href="#r2">2</a>).</p>
+  <figure>
+    <svg viewBox="0 0 680 250" role="img" aria-labelledby="bittitle bitdesc">
+      <title id="bittitle">RoPE key consumed as blocks with per-block bit allocation</title>
+      <desc id="bitdesc">A cached key splits into d_h/2 two-dimensional blocks, each rotated by its own angle and contributing one additive term to the logit; quantization bits are allocated per block by logit impact, then summed into the logit.</desc>
+      <defs><marker id="ab" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <text x="340" y="24" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" fill="#5C5B53">Cached key k — dₕ/2 independent 2-D blocks</text>
+      <g font-family="Inter,sans-serif">
+        <rect x="70" y="42" width="118" height="76" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+        <text x="129" y="58" text-anchor="middle" font-size="11.5" fill="#5C5B53">Block 1</text>
+        <text x="129" y="78" text-anchor="middle" font-size="13.5" fill="#444441">rotate Δθ₁</text>
+        <rect x="84" y="88" width="90" height="8" rx="4" fill="#D3D1C7"/><rect x="84" y="88" width="81" height="8" rx="4" fill="#378ADD"/>
+        <text x="129" y="112" text-anchor="middle" font-size="11.5" fill="#5C5B53">high bits</text>
+        <rect x="208" y="42" width="118" height="76" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+        <text x="267" y="58" text-anchor="middle" font-size="11.5" fill="#5C5B53">Block 2</text>
+        <text x="267" y="78" text-anchor="middle" font-size="13.5" fill="#444441">rotate Δθ₂</text>
+        <rect x="222" y="88" width="90" height="8" rx="4" fill="#D3D1C7"/><rect x="222" y="88" width="32" height="8" rx="4" fill="#378ADD"/>
+        <text x="267" y="112" text-anchor="middle" font-size="11.5" fill="#5C5B53">few bits</text>
+        <rect x="346" y="42" width="118" height="76" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+        <text x="405" y="58" text-anchor="middle" font-size="11.5" fill="#5C5B53">Block 3</text>
+        <text x="405" y="78" text-anchor="middle" font-size="13.5" fill="#444441">rotate Δθ₃</text>
+        <rect x="360" y="88" width="90" height="8" rx="4" fill="#D3D1C7"/><rect x="360" y="88" width="66" height="8" rx="4" fill="#378ADD"/>
+        <text x="405" y="112" text-anchor="middle" font-size="11.5" fill="#5C5B53">mid bits</text>
+        <text x="474" y="86" text-anchor="middle" font-size="14" fill="#444441">⋯</text>
+        <rect x="484" y="42" width="118" height="76" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+        <text x="543" y="58" text-anchor="middle" font-size="11.5" fill="#5C5B53">Block dₕ/2</text>
+        <text x="543" y="78" text-anchor="middle" font-size="13.5" fill="#444441">rotate Δθ_dₕ/2</text>
+        <rect x="498" y="88" width="90" height="8" rx="4" fill="#D3D1C7"/><rect x="498" y="88" width="45" height="8" rx="4" fill="#378ADD"/>
+        <text x="543" y="112" text-anchor="middle" font-size="11.5" fill="#5C5B53">bits ∝ impact</text>
+        <line x1="129" y1="118" x2="300" y2="172" stroke="#73726c" stroke-width="1" marker-end="url(#ab)"/>
+        <line x1="267" y1="118" x2="318" y2="172" stroke="#73726c" stroke-width="1" marker-end="url(#ab)"/>
+        <line x1="405" y1="118" x2="342" y2="172" stroke="#73726c" stroke-width="1" marker-end="url(#ab)"/>
+        <line x1="543" y1="118" x2="360" y2="172" stroke="#73726c" stroke-width="1" marker-end="url(#ab)"/>
+        <rect x="250" y="174" width="150" height="46" rx="8" fill="#EEEDFE" stroke="#7F77DD" stroke-width="0.6"/>
+        <text x="325" y="192" text-anchor="middle" font-size="13.5" fill="#3C3489">Σ over blocks</text>
+        <text x="325" y="209" text-anchor="middle" font-size="11.5" fill="#534AB7">qᵢᵀ R(Δθᵢ) kᵢ</text>
+        <line x1="400" y1="197" x2="436" y2="197" stroke="#73726c" stroke-width="1" marker-end="url(#ab)"/>
+        <rect x="438" y="174" width="190" height="46" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.6"/>
+        <text x="533" y="192" text-anchor="middle" font-size="13.5" fill="#0F6E56">logit 𝒦_Δ(q,k)</text>
+        <text x="533" y="209" text-anchor="middle" font-size="11.5" fill="#0F6E56">= qᵀ R_Δ k</text>
+      </g>
+    </svg>
+    <figcaption><b>The paper's thesis in one picture.</b> The key is really dₕ/2 rotated blocks, each with its own logit impact — so bits should follow impact, not be spread uniformly over a flat vector.</figcaption>
+  </figure>
+  <p><strong>Other attentions</strong> split into two axes. <em>Positional schemes</em> (RoPE's actual category): absolute (sinusoidal/learned), relative (Shaw, T5 bias), RoPE (rotary), ALiBi (linear logit penalty), NoPE (none, §25). Under absolute/ALiBi/NoPE the key is a genuinely flat vector, so this paper's trick doesn't apply — it is specific to RoPE. <em>Architecture variants</em> (how heads/KV are organised, §26–27): MHA, MQA, GQA, MLA, plus sliding-window/sparse/linear attention.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s21">
+  <h3><span class="num">21</span>KV-cache quantization &amp; bit allocation</h3>
+  <div class="q"><span class="lab">Question</span><p>Is key-cache quantization a research topic? What are its applications? What is the relationship between bit allocation and KV-cache quantization? What is the default setting?</p></div>
+  <p>Yes — it's an active subfield of LLM inference efficiency / model compression. The KV cache stores every past key and value so the model needn't recompute them each step, but its size grows as <code>layers × heads × head_dim × seq_len × batch</code>; at long context or high concurrency it dominates GPU memory <em>and</em> bandwidth, and decoding is bandwidth-bound, so a fatter cache directly slows generation. Quantizing K/V from 16-bit to 8/4/2-bit shrinks both. Representative directions: KIVI, KVQuant, GEAR<a class="ref" href="#r20">20</a>; in production, FP8 KV in vLLM/TensorRT-LLM and KV-quant flags in llama.cpp<a class="ref" href="#r26">26</a>. Applications: long-context inference, serving many users cheaply, on-device/edge LLMs.</p>
+  <div class="callout"><span class="k">Quantization vs. bit allocation</span>Quantization is the operation (map floats to a few levels via a shared scale). <strong>Bit allocation is the policy deciding how many bits each part gets</strong> — a design axis <em>inside</em> quantization. Uniform quantization gives every element the same bits; mixed-precision allocates unevenly by importance. "RoPE-aware bit allocation" is one informed policy: spread a fixed budget across RoPE blocks by logit impact.</div>
+  <p><strong>Default setting</strong> shared by RoPE models: RoPE on Q/K per head with base 10000 and even head_dim; KV quantization typically per-channel (asymmetric) int8/int4 for keys, per-token for values (§30), with a calibration pass. The full modern default looks like: softmax attention, RoPE, GQA, and a quantized KV cache.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s22">
+  <h3><span class="num">22</span>RoPE re-derived: per-head, formula, why block-diagonal</h3>
+  <div class="q"><span class="lab">Question</span><p>Does RoPE only act on the head? Can you re-describe the whole process with the formula and subscripts, draw a picture, and explain why it's block-diagonal?</p></div>
+  <p><strong>Per-head:</strong> RoPE acts on the per-head query and key vectors, independently for each head, and only on Q and K — never on V, and not on the residual stream. The "head vector" is the slice of dimension <code>d_h = d_model / n_heads</code> for one head; RoPE rotates that head's <code>q</code> and <code>k</code> just before the logit is computed, with the same frequencies usually shared across heads.</p>
+  <p>The process, with subscripts: (1) token at position <code>m</code> has query <code>q_m ∈ ℝ^{d_h}</code>; cached token at <code>n</code> has key <code>k_n</code>. (2) Split <code>d_h</code> into <code>d_h/2</code> pairs; pair <code>i</code> is a 2-D vector. (3) Frequency <code>θᵢ = base^{-2(i-1)/d_h}</code> (fast for small <code>i</code>, slow for large <code>i</code>). (4) Rotate pair <code>i</code> by angle <code>m·θᵢ</code> with the 2×2 matrix <code>R(mθᵢ)</code>. (5) Stacking gives <code>R_m = block-diag(R(mθ₁), …)</code>, and <code>q̃_m = R_m q_m</code>, <code>k̃_n = R_n k_n</code>. (6) Logit <code>= q̃_mᵀ k̃_n = q_mᵀ R_mᵀ R_n k_n = q_mᵀ R_{n−m} k_n</code> — only <code>Δ = n−m</code> survives.</p>
+  <p><strong>Why block-diagonal:</strong> each 2-D pair is rotated on its own, with no mixing between pairs. A block-diagonal matrix is exactly "a separate transform per disjoint coordinate-group, zero elsewhere." The independence is deliberate: it is cheap (<code>O(d_h)</code>), it makes rotations compose per block so the relative-position identity holds, and it provides many frequencies at once (Fourier-feature-like).</p>
+  <figure>
+    <svg viewBox="0 0 680 330" role="img" aria-labelledby="bdtitle bddesc">
+      <title id="bdtitle">RoPE rotation matrix is block-diagonal</title>
+      <desc id="bddesc">R_m is block-diagonal: each 2-by-2 diagonal block rotates one coordinate-pair by its own angle m times theta_i, with zeros off the diagonal, so pairs do not mix; because rotations compose, R_m transpose times R_n equals R of (n minus m).</desc>
+      <g font-family="Inter,sans-serif">
+        <text x="300" y="28" text-anchor="middle" font-size="12.5" fill="#5C5B53">R_m = block-diagonal stack of 2-D rotations (example dₕ = 6)</text>
+        <rect x="210" y="58" width="168" height="168" rx="4" fill="none" stroke="#888780" stroke-width="1"/>
+        <line x1="266" y1="58" x2="266" y2="226" stroke="#E4E3DA" stroke-width="0.5"/><line x1="322" y1="58" x2="322" y2="226" stroke="#E4E3DA" stroke-width="0.5"/>
+        <line x1="210" y1="114" x2="378" y2="114" stroke="#E4E3DA" stroke-width="0.5"/><line x1="210" y1="170" x2="378" y2="170" stroke="#E4E3DA" stroke-width="0.5"/>
+        <rect x="210" y="58" width="56" height="56" rx="3" fill="#5DCAA5"/><text x="238" y="90" text-anchor="middle" font-size="11.5" fill="#04342C">R(mθ₁)</text>
+        <rect x="266" y="114" width="56" height="56" rx="3" fill="#AFA9EC"/><text x="294" y="146" text-anchor="middle" font-size="11.5" fill="#26215C">R(mθ₂)</text>
+        <rect x="322" y="170" width="56" height="56" rx="3" fill="#EF9F27"/><text x="350" y="202" text-anchor="middle" font-size="11.5" fill="#412402">R(mθ₃)</text>
+        <text x="294" y="90" text-anchor="middle" font-size="12" fill="#A0A097">0</text><text x="350" y="90" text-anchor="middle" font-size="12" fill="#A0A097">0</text>
+        <text x="238" y="146" text-anchor="middle" font-size="12" fill="#A0A097">0</text><text x="350" y="146" text-anchor="middle" font-size="12" fill="#A0A097">0</text>
+        <text x="238" y="202" text-anchor="middle" font-size="12" fill="#A0A097">0</text><text x="294" y="202" text-anchor="middle" font-size="12" fill="#A0A097">0</text>
+        <text x="398" y="148" text-anchor="middle" font-size="15" fill="#1B1B18">×</text>
+        <text x="424" y="50" text-anchor="middle" font-size="12" fill="#5C5B53">q_m</text>
+        <rect x="410" y="58" width="28" height="56" rx="3" fill="#9FE1CB" stroke="#888780" stroke-width="0.4"/>
+        <rect x="410" y="114" width="28" height="56" rx="3" fill="#CECBF6" stroke="#888780" stroke-width="0.4"/>
+        <rect x="410" y="170" width="28" height="56" rx="3" fill="#FAC775" stroke="#888780" stroke-width="0.4"/>
+        <text x="456" y="148" text-anchor="middle" font-size="15" fill="#1B1B18">=</text>
+        <text x="486" y="50" text-anchor="middle" font-size="12" fill="#5C5B53">R_m q_m</text>
+        <rect x="472" y="58" width="28" height="56" rx="3" fill="#9FE1CB" stroke="#888780" stroke-width="0.4"/>
+        <rect x="472" y="114" width="28" height="56" rx="3" fill="#CECBF6" stroke="#888780" stroke-width="0.4"/>
+        <rect x="472" y="170" width="28" height="56" rx="3" fill="#FAC775" stroke="#888780" stroke-width="0.4"/>
+        <text x="300" y="260" text-anchor="middle" font-size="12" fill="#5C5B53">each pair rotated independently → no cross-pair mixing → block-diagonal</text>
+        <text x="210" y="292" text-anchor="start" font-size="14" fill="#4A3FA0">R_mᵀ R_n = R_{n−m}</text>
+        <text x="210" y="312" text-anchor="start" font-size="12" fill="#5C5B53">angles subtract per block ⇒ logit depends only on Δ = n − m</text>
+      </g>
+    </svg>
+    <figcaption><b>Block-diagonal structure.</b> Coloured 2×2 blocks rotate matching coordinate-pairs of the vector; off-diagonal zeros mean pairs never mix. Composition of rotations gives the relative-position identity.</figcaption>
+  </figure>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s23">
+  <h3><span class="num">23</span>SO(2), the rotation group</h3>
+  <div class="q"><span class="lab">Question</span><p>I've met SO(2) before but want it explained more clearly.</p></div>
+  <p><code>SO(2)</code> is the <strong>special orthogonal group in 2-D</strong> — all rotations of a plane. <em>Orthogonal</em> (<code>O</code>): matrices with <code>QᵀQ = I</code>, preserving lengths and angles. <em>Special</em> (<code>S</code>): determinant <code>+1</code>, dropping reflections and keeping proper rotations. <em>(2)</em>: acting on 2-vectors. So <code>SO(2)</code> is exactly the matrices <code>R(θ) = [[cosθ, −sinθ],[sinθ, cosθ]]</code>, one per angle.</p>
+  <p>Two properties power RoPE: it's a group (rotations compose, each has an inverse), and <strong>angles add under composition</strong>: <code>R(α)R(β) = R(α+β)</code>. Since the inverse rotates back (<code>R_mᵀ = R(−mθ)</code>), <code>R_mᵀ R_n = R((n−m)θ) = R_{n−m}</code> — the whole relative-position trick. Each RoPE block is an <code>SO(2)</code> element; the full <code>R_m</code> is a block-diagonal product of <code>d_h/2</code> independent <code>SO(2)</code> rotations.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s24">
+  <h3><span class="num">24</span>Reconstruction error vs. logit error</h3>
+  <div class="q"><span class="lab">Question</span><p>How to understand that flat reconstruction error <code>‖k − k̂‖²</code> does not map linearly onto logit error?</p></div>
+  <p>Let <code>e = k − k̂</code> be the quantization error. <strong>Flat reconstruction error</strong> <code>‖e‖²</code> is the raw Euclidean size of the error — isotropic, every direction counts equally. <strong>Logit error</strong> is how much the score moves: <code>qᵀR_Δ(k − k̂) = qᵀR_Δ e = Σᵢ qᵢᵀ R(Δθᵢ) eᵢ</code>.</p>
+  <p>The logit error is a <em>linear functional of <code>e</code> weighted by <code>q</code> and the rotation</em>, not the magnitude of <code>e</code>. So two errors with identical <code>‖e‖</code> can give wildly different logit errors: error aligned with <code>R_Δᵀq</code> corrupts the logit a lot; error orthogonal to it is invisible. Per block, error in a block where <code>qᵢ</code> is large (or the rotation lines it up with <code>qᵢ</code>) hurts more. Minimizing <code>‖e‖²</code> spends bits equalizing every direction — including ones the logit ignores. The right objective is minimizing logit error, i.e. putting bits where <code>qᵀR_Δ</code> is sensitive. "Doesn't map linearly" = small <code>‖e‖²</code> does not guarantee small <code>|qᵀR_Δ e|</code>.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s25">
+  <h3><span class="num">25</span>NoPE (no positional encoding)</h3>
+  <div class="q"><span class="lab">Question</span><p>Is NoPE a future direction? Introduce it in detail.</p></div>
+  <p><strong>NoPE = No Positional Encoding.</strong> A decoder-only (causal) transformer can be trained with no explicit position signal at all, because the causal mask itself leaks position — token <code>t</code> can attend to exactly <code>t</code> previous tokens, so attention can "count" and implicitly reconstruct position. Kazemnejad et al. (2023)<a class="ref" href="#r24">24</a> showed NoPE decoders can match or beat explicit encodings on some <em>length-generalization</em> tasks (extrapolating beyond training length) — exactly where RoPE and other explicit PEs tend to struggle.</p>
+  <p>Is it a future direction? It's an active research area, and some models experiment with NoPE or hybrids (most layers RoPE, a few NoPE) for long-context extrapolation — but RoPE still dominates production, so NoPE is a promising angle, not the default. Connection to this paper: under NoPE the key really is a flat vector (no rotation interface), so the RoPE-aware trick wouldn't apply and flat reconstruction error <em>would</em> be the right quantization objective. The paper's value is tied to RoPE being present.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s26">
+  <h3><span class="num">26</span>MHA / MQA / GQA</h3>
+  <div class="q"><span class="lab">Question</span><p>MHA, MQA, GQA are common — explain the principles and use cases, with a comparison table.</p></div>
+  <p>These organise the key/value heads (orthogonal to position) and directly control KV-cache size. In standard attention each query head has its own K and V; the variants share K/V to shrink the cache. Decoding speed is limited by how much KV must be read per token, so fewer KV heads = less to read = faster and smaller<a class="ref" href="#r22">22</a>.</p>
+  <table class="tbl">
+    <thead><tr><th>&nbsp;</th><th>MHA (multi-head)</th><th>MQA (multi-query)</th><th>GQA (grouped-query)</th></tr></thead>
+    <tbody>
+      <tr><td>Query heads</td><td>h</td><td>h</td><td>h</td></tr>
+      <tr><td>KV heads</td><td>h (one per query head)</td><td>1 (all share)</td><td>g groups (1 &lt; g &lt; h)</td></tr>
+      <tr><td>KV-cache size</td><td>Largest (×h)</td><td>Smallest (×1)</td><td>In between (×g)</td></tr>
+      <tr><td>Quality</td><td>Best</td><td>Slight drop, can hurt</td><td>Near-MHA</td></tr>
+      <tr><td>Decoding speed</td><td>Slowest</td><td>Fastest</td><td>Fast, balanced</td></tr>
+      <tr><td>Typical use</td><td>Smaller models, max quality</td><td>Aggressive inference savings</td><td>Modern default for large LLMs</td></tr>
+    </tbody>
+  </table>
+  <p>MQA collapses to one shared KV head — maximal savings but can lose quality and destabilise training. <strong>GQA</strong> is the compromise: split query heads into <code>g</code> groups, each sharing one KV head — almost all of MHA's quality at a fraction of the cache, which is why it's the default in current large models. For this paper, all three still store RoPE-structured keys (GQA/MQA just store fewer), so per-key RoPE-aware allocation applies regardless.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s27">
+  <h3><span class="num">27</span>MLA, low-rank compression &amp; commuting</h3>
+  <div class="q"><span class="lab">Question</span><p>What are MLA models? "RoPE doesn't commute with the low-rank compression" — how to understand this? Is there a "high-rank" counterpart?</p></div>
+  <p><strong>MLA = Multi-head Latent Attention</strong> (DeepSeek-V2/V3<a class="ref" href="#r23">23</a>). It goes further than GQA: instead of caching K and V directly, it compresses them into a small latent vector via a down-projection, caches only that latent, and reconstructs K/V via an up-projection when needed — shrinking the cache far below even GQA.</p>
+  <p><strong>Low-rank compression</strong> means factoring a big projection into two thin matrices (down then up) with a narrow bottleneck of dimension <code>r ≪ d</code>; "rank" is how many independent dimensions the factorization can express. The opposite isn't a named "high-rank compression" technique — it's simply <strong>full-rank / uncompressed</strong> (plain MHA caches full K/V = full rank, no bottleneck).</p>
+  <p><strong>"Doesn't commute":</strong> two operations commute if <code>AB = BA</code> (order doesn't matter). MLA's efficiency trick folds the up-projection into the query projection so full keys are never materialized — but RoPE inserts a <em>position-dependent</em> rotation <code>R_m</code> between latent and key. You'd need <code>R_m(W_up c) = W_up(R_m c)</code>, but <code>R_m</code> depends on position while <code>W_up</code> is fixed across positions, so they don't commute and the fold-in breaks. DeepSeek's fix is <strong>decoupled RoPE</strong>: split the key into a compressed un-rotated part (low-rank, cached) and a small separate part that carries RoPE at full dimension. Because the RoPE dims are already isolated, RoPE-aware bit allocation is especially natural there.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s28">
+  <h3><span class="num">28</span>Softmax attention &amp; alternatives</h3>
+  <div class="q"><span class="lab">Question</span><p>Besides softmax, are there other options? Is softmax an activation function here?</p></div>
+  <p>"Standard softmax attention" normalizes the raw scores into attention weights with <strong>softmax</strong> (all positive, summing to 1, a distribution over keys). Alternatives exist: <em>linear attention</em> (Performer, Linear Transformers, RetNet) replaces softmax with a kernel feature map for linear-time/recurrent computation; <em>sparse</em> variants (sparsemax, entmax, top-k) give sparse weights; <em>non-softmax normalizers</em> like sigmoid or ReLU attention. So softmax is the default, not the only choice.</p>
+  <p>Is softmax an activation function? Yes — it's a vector-valued activation/normalization mapping reals to a probability simplex (the standard output activation for classification). The nuance: unlike a pointwise activation like ReLU, softmax normalizes <em>across the set of keys</em> (it couples the elements), so here it acts as the normalizer over the attention dimension rather than a per-element nonlinearity.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s29">
+  <h3><span class="num">29</span>Offline vs. online (inference time)</h3>
+  <div class="q"><span class="lab">Question</span><p>Does "offline" refer to inference time in most settings?</p></div>
+  <p>No — essentially the opposite. <strong>Offline = computed ahead of time, outside the live serving loop</strong> — typically a one-time calibration pass on sample data to fix quantization parameters or the bit-allocation budget, before deployment. <strong>Online (dynamic) = computed during inference</strong>, per token/sequence. So "compute the per-block budget offline" means decide it once via calibration (cheap at runtime, fixed); the alternative — adapting allocation per token while decoding — is the online/inference-time path (adaptive, but costs runtime compute). (Separately, "offline" can also mean batch vs. real-time, or "offline RL" = learning from a fixed dataset; here it means precomputed calibration.)</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s30">
+  <h3><span class="num">30</span>Per-channel vs. per-token &amp; outlier channels</h3>
+  <div class="q"><span class="lab">Question</span><p>How to understand "keys quantize better per-channel, values per-token"? And what is an outlier channel?</p></div>
+  <p>Quantization shares one <em>scale</em> across a group; the golden rule is to group values of similar magnitude, because a group that mixes very large and very small values forces a big scale that crushes the small values' resolution. The KV cache (per head) is a matrix of tokens (rows) × channels (columns); you can scale per row (per-token) or per column (per-channel).</p>
+  <p>The deciding fact: the <strong>key cache has outlier channels</strong>. An <em>outlier channel</em> is a specific feature dimension whose values are consistently far larger than the others, in the <em>same</em> dimensions across nearly all tokens (first documented for activations in LLM.int8(), central to SmoothQuant/AWQ<a class="ref" href="#r21">21</a>). They matter for quality, so can't be clipped.</p>
+  <figure>
+    <svg viewBox="0 0 680 315" role="img" aria-labelledby="pctitle pcdesc">
+      <title id="pctitle">Per-channel vs per-token quantization of the key cache</title>
+      <desc id="pcdesc">The key cache is a grid of tokens by channels with one outlier column. Per-token scaling inflates every row's scale; per-channel scaling confines the outlier to its own column scale, keeping other channels precise. Values lack this structure, so per-token works for them.</desc>
+      <g font-family="Inter,sans-serif">
+        <text x="340" y="26" text-anchor="middle" font-size="14" fill="#1B1B18">Why keys quantize per-channel, values per-token</text>
+        <text x="340" y="46" text-anchor="middle" font-size="12" fill="#5C5B53">grid = key cache · rows = tokens · columns = channels · dark column = outlier channel</text>
+        <text x="136" y="78" text-anchor="middle" font-size="14" fill="#1B1B18">Per-token: 1 scale / row</text>
+        <rect x="70" y="92" width="132" height="110" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+        <rect x="136" y="92" width="22" height="110" fill="#F0997B"/>
+        <line x1="92" y1="92" x2="92" y2="202" stroke="#D3D1C7" stroke-width="0.5"/><line x1="114" y1="92" x2="114" y2="202" stroke="#D3D1C7" stroke-width="0.5"/><line x1="158" y1="92" x2="158" y2="202" stroke="#D3D1C7" stroke-width="0.5"/><line x1="180" y1="92" x2="180" y2="202" stroke="#D3D1C7" stroke-width="0.5"/>
+        <line x1="70" y1="114" x2="202" y2="114" stroke="#D3D1C7" stroke-width="0.5"/><line x1="70" y1="136" x2="202" y2="136" stroke="#D3D1C7" stroke-width="0.5"/><line x1="70" y1="158" x2="202" y2="158" stroke="#D3D1C7" stroke-width="0.5"/><line x1="70" y1="180" x2="202" y2="180" stroke="#D3D1C7" stroke-width="0.5"/>
+        <rect x="210" y="96" width="16" height="14" rx="3" fill="#F09595"/><rect x="210" y="118" width="16" height="14" rx="3" fill="#F09595"/><rect x="210" y="140" width="16" height="14" rx="3" fill="#F09595"/><rect x="210" y="162" width="16" height="14" rx="3" fill="#F09595"/><rect x="210" y="184" width="16" height="14" rx="3" fill="#F09595"/>
+        <text x="136" y="224" text-anchor="middle" font-size="12" fill="#5C5B53">every row scale dragged up</text>
+        <text x="136" y="240" text-anchor="middle" font-size="12" fill="#5C5B53">by the outlier → bits wasted</text>
+        <text x="466" y="78" text-anchor="middle" font-size="14" fill="#1B1B18">Per-channel: 1 scale / channel</text>
+        <rect x="400" y="92" width="132" height="110" fill="#F1EFE8" stroke="#888780" stroke-width="0.6"/>
+        <rect x="466" y="92" width="22" height="110" fill="#F0997B"/>
+        <line x1="422" y1="92" x2="422" y2="202" stroke="#D3D1C7" stroke-width="0.5"/><line x1="444" y1="92" x2="444" y2="202" stroke="#D3D1C7" stroke-width="0.5"/><line x1="488" y1="92" x2="488" y2="202" stroke="#D3D1C7" stroke-width="0.5"/><line x1="510" y1="92" x2="510" y2="202" stroke="#D3D1C7" stroke-width="0.5"/>
+        <line x1="400" y1="114" x2="532" y2="114" stroke="#D3D1C7" stroke-width="0.5"/><line x1="400" y1="136" x2="532" y2="136" stroke="#D3D1C7" stroke-width="0.5"/><line x1="400" y1="158" x2="532" y2="158" stroke="#D3D1C7" stroke-width="0.5"/><line x1="400" y1="180" x2="532" y2="180" stroke="#D3D1C7" stroke-width="0.5"/>
+        <rect x="403" y="206" width="16" height="12" rx="3" fill="#5DCAA5"/><rect x="425" y="206" width="16" height="12" rx="3" fill="#5DCAA5"/><rect x="447" y="206" width="16" height="12" rx="3" fill="#5DCAA5"/><rect x="469" y="206" width="16" height="26" rx="3" fill="#BA7517"/><rect x="491" y="206" width="16" height="12" rx="3" fill="#5DCAA5"/><rect x="513" y="206" width="16" height="12" rx="3" fill="#5DCAA5"/>
+        <text x="466" y="250" text-anchor="middle" font-size="12" fill="#5C5B53">outlier kept in its own column scale</text>
+        <text x="466" y="266" text-anchor="middle" font-size="12" fill="#5C5B53">→ other channels stay precise</text>
+        <text x="340" y="298" text-anchor="middle" font-size="12" fill="#5C5B53">Values lack this channel structure → per-token is fine, and matches append-per-token decoding</text>
+      </g>
+    </svg>
+    <figcaption><b>Group along the axis the outliers live on.</b> Keys: outliers cluster in fixed channels → per-channel isolates them. Values: no channel structure → per-token, which also fits appending one token at a time during decoding.</figcaption>
+  </figure>
+  <p>So grouping keys <em>by channel</em> isolates each outlier into its own column scale (the outlier channel gets a big scale; other channels keep tight, precise ones). Grouping keys by token would put the outlier in every row, inflating every row's scale. <strong>Values</strong> lack the strong channel-aligned outliers, so per-token works — and it fits decoding, since tokens are appended one at a time, letting each new value vector be quantized on arrival. (Per-channel for keys is slightly awkward because a column's scale depends on all tokens, which is why methods like KIVI keep a small window of recent tokens in full precision.)</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<section class="qa" id="s31">
+  <h3><span class="num">31</span>FP8 precision, and llama.cpp</h3>
+  <div class="q"><span class="lab">Question</span><p>Is the FP8 in "FP8 KV cache" a precision (I've seen FP16 before)? And what is llama.cpp?</p></div>
+  <p><strong>FP8 is a precision.</strong> FP = floating point; the number is the total bit width, so FP8 is 8-bit, half the size of FP16. The ladder: <code>FP32</code> (single), <code>FP16 / BF16</code> (half — same 16 bits split differently: FP16 favors precision, BF16 favors range), <code>FP8</code> (variants E4M3 and E5M2 by exponent/mantissa split), and emerging <code>FP4</code>. FP8 is <em>floating-point</em> quantization — it keeps a small exponent, so it has wide dynamic range and tolerates outliers better than <code>INT8</code> (uniform fixed-point, needing explicit scales)<a class="ref" href="#r25">25</a>. It also has native support on recent NVIDIA hardware (Hopper/H100, Ada, Blackwell). "FP8 KV cache" = storing K/V in 8-bit floating point — half the memory/bandwidth, with the exponent absorbing most outlier pain.</p>
+  <p><strong>llama.cpp</strong> is an open-source C/C++ inference engine for LLMs, started by Georgi Gerganov<a class="ref" href="#r26">26</a>. Originally for Meta's LLaMA models on ordinary hardware (a laptop CPU, no data-center GPU), it now supports many model families and GPU backends. It's known for the GGUF format, very aggressive weight quantization (down to 4- or 2-bit), and being the engine under many local/desktop LLM apps. Its KV-cache quantization flags let you pick the precision the cache is stored at — a concrete, widely-used place the ideas above ship to end users, where shrinking the KV cache is often what lets a long context fit on consumer hardware at all.</p>
+  <a class="totop" href="#top">↑ contents</a>
+</section>
+
+<!-- ============ REFERENCES ============ -->
+<div class="refs" id="refs">
+  <h2>References</h2>
+  <p class="grp">Primary sources (retrieved)</p>
+  <ol class="reflist">
+    <li id="r1">DreamZero — "World Action Models are Zero-shot Policies." <a class="ext" href="https://arxiv.org/abs/2602.15922">arxiv.org/abs/2602.15922</a></li>
+    <li id="r2">Liang, Zhang, Jia, "RoPE-Aware Bit Allocation for KV-Cache Quantization" (Block-GTQ). <a class="ext" href="https://arxiv.org/abs/2606.24033">arxiv.org/abs/2606.24033</a></li>
+    <li id="r3">NVIDIA, "What Is a World Action Model (WAM)?" Glossary. <a class="ext" href="https://www.nvidia.com/en-us/glossary/world-action-model/">nvidia.com/en-us/glossary/world-action-model</a></li>
+    <li id="r4">"World Action Models: The Next Frontier in Embodied AI" (survey). <a class="ext" href="https://arxiv.org/abs/2605.12090">arxiv.org/abs/2605.12090</a></li>
+    <li id="r5">DravenALG, "awesome-vla-wam" (curated list; VLA∩WAM note). <a class="ext" href="https://github.com/DravenALG/awesome-vla-wam">github.com/DravenALG/awesome-vla-wam</a></li>
+    <li id="r6">Yenamandra et al., "HomeRobot: Open-Vocabulary Mobile Manipulation." <a class="ext" href="https://arxiv.org/abs/2306.11565">arxiv.org/abs/2306.11565</a></li>
+    <li id="r7">Maes, Le Lidec, Scieur, LeCun, Balestriero, "LeWorldModel (LeWM): Stable End-to-End JEPA from Pixels." <a class="ext" href="https://arxiv.org/abs/2603.19312">arxiv.org/abs/2603.19312</a></li>
+    <li id="r8">"World Action Models" survey site (Joint vs. Cascaded taxonomy; policy-internal prediction boundary). <a class="ext" href="https://openmoss.ai/Awesome-WAM/">openmoss.ai/Awesome-WAM</a></li>
+    <li id="r9">"Do World Action Models Generalize Better than VLAs? A Robustness Study." <a class="ext" href="https://arxiv.org/html/2603.22078v1">arxiv.org/html/2603.22078v1</a></li>
+    <li id="r10">RynnVLA-002: "A Unified Vision-Language-Action and World Model" (DAMO/Alibaba). <a class="ext" href="https://arxiv.org/abs/2511.17502">arxiv.org/abs/2511.17502</a></li>
+    <li id="r11">"RoboArena: Distributed Real-World Evaluation of Generalist Robot Policies" (refs RoboCasa, AutoEval). <a class="ext" href="https://arxiv.org/pdf/2506.18123">arxiv.org/pdf/2506.18123</a></li>
+    <li id="r12">Robotics Center, "Best Robot Learning Datasets 2026" (benchmarks-as-diagnostics vs. production). <a class="ext" href="https://www.roboticscenter.ai/datasets/best-2026">roboticscenter.ai/datasets/best-2026</a></li>
+    <li id="r13">Wu et al., "DayDreamer: World Models for Physical Robot Learning." <a class="ext" href="https://arxiv.org/pdf/2206.14176">arxiv.org/pdf/2206.14176</a></li>
+    <li id="r16">Pumacay et al., "THE COLOSSEUM: A Benchmark for Evaluating Generalization for Robotic Manipulation." <a class="ext" href="https://arxiv.org/pdf/2402.08191">arxiv.org/pdf/2402.08191</a></li>
+    <li id="r17">"Goodhart's law" (overview &amp; 1975 original wording). <a class="ext" href="https://en.wikipedia.org/wiki/Goodhart%27s_law">en.wikipedia.org/wiki/Goodhart's_law</a></li>
+  </ol>
+  <p class="grp">Foundational references (background)</p>
+  <ol class="reflist">
+    <li id="r14">Andrychowicz et al., "Hindsight Experience Replay," NeurIPS 2017.</li>
+    <li id="r15">LeCun, "A Path Towards Autonomous Machine Intelligence," 2022 (JEPA position paper); see also Assran et al., I-JEPA (CVPR 2023); Bardes et al., V-JEPA (2024).</li>
+    <li id="r18">Grill et al., "Bootstrap Your Own Latent (BYOL)," NeurIPS 2020 (stop-gradient + EMA target encoder).</li>
+  </ol>
+  <p class="grp">Part V — RoPE &amp; KV-quantization (background)</p>
+  <ol class="reflist">
+    <li id="r19">Su et al., "RoFormer: Enhanced Transformer with Rotary Position Embedding," 2021 (RoPE).</li>
+    <li id="r20">KV-cache quantization line: Liu et al., "KIVI" (2024); Hooper et al., "KVQuant" (2024); Kang et al., "GEAR" (2024). (Per-channel keys / per-token values.)</li>
+    <li id="r21">Dettmers et al., "LLM.int8()" (2022); Xiao et al., "SmoothQuant" (2023); Lin et al., "AWQ" (2023). (Outlier channels.)</li>
+    <li id="r22">Shazeer, "Fast Transformer Decoding" (2019, MQA); Ainslie et al., "GQA" (2023).</li>
+    <li id="r23">DeepSeek-AI, "DeepSeek-V2 / V3" (2024) — Multi-head Latent Attention &amp; decoupled RoPE.</li>
+    <li id="r24">Kazemnejad et al., "The Impact of Positional Encoding on Length Generalization in Transformers," 2023 (NoPE).</li>
+    <li id="r25">Micikevicius et al., "FP8 Formats for Deep Learning," 2022 (E4M3 / E5M2).</li>
+    <li id="r26">Gerganov et al., "llama.cpp" (open-source LLM inference). <a class="ext" href="https://github.com/ggerganov/llama.cpp">github.com/ggerganov/llama.cpp</a></li>
+  </ol>
+  <p class="note" style="margin-top:20px">Note on freshness: the WAM/VLA/world-model literature is concentrated in early–mid 2026 and the taxonomy is still settling. The WM-vs-WAM inference-time framing for any specific paper (distill-into-weights vs. external store) is reasoned from the mechanism and should be confirmed against the primary source. Several "WAM &gt; VLA" claims originate from proposing groups; treat headline numbers as provisional. The Part V background references (RoPE, KIVI/KVQuant, GQA/MQA, MLA, NoPE, FP8) are cited from background knowledge by author/title/year — verify the exact identifiers before formal use.</p>
+</div>
+
+</div>
+</body>
+</html>
