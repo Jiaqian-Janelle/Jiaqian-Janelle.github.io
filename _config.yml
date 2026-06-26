@@ -34,6 +34,8 @@ baseurl: ""
 markdown: kramdown
 highlighter: rouge
 permalink: /blog/:title/
+kramdown:
+  math_engine: null
 
 collections:
   papers:

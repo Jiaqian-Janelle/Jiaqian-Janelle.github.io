@@ -2,7 +2,43 @@
 <html lang="en">
 {% include head.html %}
 <body>
+
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1.2em 0;
+    }
+    table th,
+    table td {
+      border: 1px dashed #aaa;   /* 虚线;想换实线就把 dashed 改成 solid */
+      padding: 0.5em 0.8em;
+      text-align: left;
+    }
+    table thead th {
+      border-bottom: 2px solid #888;  /* 表头下方加重,和正文区分 */
+    }
+  </style>
+
   {{ content }}
+
   {% include footer.html %}
+
+  <!-- MathJax 数学公式渲染 -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
 </body>
 </html>
