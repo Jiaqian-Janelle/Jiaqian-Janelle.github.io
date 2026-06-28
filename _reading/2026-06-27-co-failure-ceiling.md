@@ -12,4 +12,4 @@ gist: "Argues a 'co-failure ceiling' caps routing / voting / mixture-of-agents g
 
 Routing, voting, and mixture-of-agents only help to the extent that models fail on *different* inputs. Across 67 frontier models, correlated (shared) failures impose a ceiling on the achievable gain from combining them — a useful sanity check before investing in multi-model orchestration.
 
-**Why flagged:** the author, Josef Chen, is also co-founder/CEO of [kaikaku.ai](https://www.kaikaku.ai/) — a London robotics-and-AI restaurant-automation startup. Flagged for the founder angle (confirm it's the same person if it matters).
+**Why flagged:** the author, Josef Chen, is co-founder and CEO of [kaikaku.ai](https://www.kaikaku.ai/) — a London startup using robotics and AI to automate restaurant operations (food-assembly robots, ~$1.8M seed). Flagged for the founder angle: a frontier-AI researcher also running a physical-AI / robotics startup.
