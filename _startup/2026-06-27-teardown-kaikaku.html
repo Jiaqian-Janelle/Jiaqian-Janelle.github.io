@@ -1,0 +1,412 @@
+---
+layout: null
+title: "Teardown: KAIKAKU"
+date: 2026-06-27
+module: strategy
+source: teardown
+tags: [ai-startup, teardown, robotics, food-automation]
+gist: "Back-of-house restaurant automation as a SaaS bet. The teardown: 20–70× less capital than peers, a 360-vs-60 throughput gap, a brutal sector graveyard — capital-efficient founding tactics worth copying, low odds of success."
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAIKAKU — Teardown</title>
+<style>
+  :root{
+    --bg:#fdfdfb;
+    --panel:#ffffff;
+    --panel-2:#f6f6f2;
+    --line:#e7e5dd;
+    --line-2:#efeee8;
+    --ink:#22251f;
+    --muted:#6c706a;
+    --dim:#a2a69e;
+    --teal:#2d8a70;        /* accent — matches blog */
+    --teal-deep:#1f6a55;
+    --teal-soft:#e7f1ec;
+    --teal-tint:#f1f7f4;
+    --clay:#b15441;        /* "dead" / bear — muted, not alarming */
+    --clay-soft:#f6e8e3;
+    --neutral:#cfcdc4;     /* competitor bars */
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--teal);text-decoration:none}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 26px}
+  .mono{font-family:var(--mono)}
+  .muted{color:var(--muted)} .dim{color:var(--dim)}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);font-weight:500}
+
+  /* top */
+  .topbar{border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:54px}
+  .brand{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--muted)}
+  .brand b{color:var(--ink)}
+  .tag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+
+  /* hero */
+  .hero{padding:52px 0 38px;border-bottom:1px solid var(--line)}
+  .hero-grid{display:grid;grid-template-columns:1fr 290px;gap:36px;align-items:end}
+  h1{font-family:var(--serif);font-size:clamp(36px,5.5vw,58px);line-height:1.02;
+    margin:16px 0 0;font-weight:600;letter-spacing:-.01em}
+  h1 .x{color:var(--teal);font-style:italic}
+  .sub{margin-top:18px;max-width:48ch;color:var(--muted);font-size:15.5px}
+  .sub b{color:var(--ink);font-weight:600}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+  .profile{padding:20px}
+  .pf-top{display:flex;gap:14px;align-items:center}
+  .avatar{width:52px;height:52px;border-radius:50%;flex:none;
+    background:linear-gradient(135deg,var(--teal),var(--teal-deep));
+    color:#fff;font-family:var(--serif);font-weight:600;font-size:19px;
+    display:flex;align-items:center;justify-content:center}
+  .pf-name{font-family:var(--serif);font-weight:600;font-size:17px}
+  .pf-role{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:3px;letter-spacing:.02em}
+  .links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+  .lnk{display:flex;align-items:center;gap:8px;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:8px;padding:9px 11px;
+    font-family:var(--mono);font-size:11px;color:var(--ink);transition:border-color .15s,background .15s}
+  .lnk:hover,.lnk:focus-visible{border-color:var(--teal);background:var(--teal-tint);outline:none}
+  .lnk .d{width:6px;height:6px;border-radius:50%;background:var(--teal);flex:none}
+  .pf-note{margin-top:13px;font-size:11px;color:var(--dim);line-height:1.5}
+
+  /* stat strip */
+  .strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+  .stat{padding:24px 22px;border-left:1px solid var(--line-2)}
+  .stat:first-child{border-left:none}
+  .stat .n{font-family:var(--serif);font-size:32px;font-weight:600;letter-spacing:-.01em}
+  .stat .n.t{color:var(--teal)}
+  .stat .l{font-size:11px;color:var(--muted);margin-top:5px;font-family:var(--mono);letter-spacing:.03em}
+
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:30px}
+  .sec-num{font-family:var(--mono);font-size:12px;color:var(--teal)}
+  h2{font-family:var(--serif);font-size:25px;margin:0;font-weight:600;letter-spacing:-.01em}
+  .sec-note{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--dim);max-width:30ch;text-align:right}
+
+  .takeaway{margin-top:26px;padding:15px 18px;border-left:3px solid var(--teal);
+    background:var(--teal-tint);border-radius:0 8px 8px 0;font-size:14.5px}
+  .takeaway b{color:var(--teal-deep)}
+
+  /* capital bars */
+  .bars{display:flex;flex-direction:column;gap:18px}
+  .bar-row{display:grid;grid-template-columns:128px 1fr;gap:16px;align-items:center}
+  .bar-label{font-family:var(--mono);font-size:12px}
+  .bar-label .meta{display:block;color:var(--dim);font-size:10px;margin-top:3px}
+  .bar-track{height:36px;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;overflow:hidden}
+  .bar-fill{height:100%;display:flex;align-items:center;border-radius:6px 0 0 6px;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+  .bar-val{font-family:var(--mono);font-size:12px;font-weight:600;padding:0 11px;white-space:nowrap}
+  .bf-neutral{background:var(--neutral)} .bf-neutral .bar-val{color:#4a4d46}
+  .bf-kk{background:linear-gradient(90deg,var(--teal),var(--teal-deep));min-width:fit-content}
+  .bf-kk .bar-val{color:#fff}
+
+  .ratio{display:flex;gap:30px;flex-wrap:wrap;margin-top:28px;padding-top:24px;border-top:1px dashed var(--line)}
+  .ratio .big{font-family:var(--serif);font-size:40px;font-weight:600;color:var(--teal);line-height:1}
+  .ratio .cap{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px;max-width:24ch;line-height:1.5}
+  .ratio .cap b{color:var(--clay)}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:720px){.two-col{grid-template-columns:1fr}}
+  .gauge{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px}
+  .gauge h3{margin:0 0 18px;font-family:var(--mono);font-size:11px;color:var(--muted);
+    font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+  .tube{height:18px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .tube .fill{height:100%;border-radius:9px}
+  .fill-claim{background:repeating-linear-gradient(45deg,var(--neutral),var(--neutral) 7px,#e0ded6 7px,#e0ded6 14px)}
+  .fill-real{background:linear-gradient(90deg,var(--teal),var(--teal-deep))}
+  .gline{display:flex;justify-content:space-between;align-items:baseline;margin-top:11px}
+  .gline .v{font-family:var(--serif);font-size:28px;font-weight:600}
+  .gline .v.claim{color:var(--muted)} .gline .v.real{color:var(--teal)}
+  .gline .u{font-family:var(--mono);font-size:11px;color:var(--dim)}
+
+  /* revenue paths */
+  .paths{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:720px){.paths{grid-template-columns:1fr}}
+  .path{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .path .pn{font-family:var(--mono);font-size:11px;color:var(--teal)}
+  .path h4{font-family:var(--serif);margin:9px 0 7px;font-size:17px;font-weight:600}
+  .path p{margin:0;font-size:12.5px;color:var(--muted)}
+  .path .mult{margin-top:14px;font-family:var(--mono);font-size:10.5px;padding:5px 9px;border-radius:6px;display:inline-block}
+  .mult.lo{background:var(--clay-soft);color:var(--clay)}
+  .mult.hi{background:var(--teal-soft);color:var(--teal-deep)}
+
+  /* graveyard */
+  .grave{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .tomb{border:1px solid var(--line);border-radius:10px;padding:17px;background:var(--panel)}
+  .tomb.dead{background:var(--clay-soft);border-color:#ecd6cf}
+  .tomb.alive{background:var(--teal-tint);border-color:#d8e8e0}
+  .tomb .st{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+  .tomb.dead .st{color:var(--clay)} .tomb.alive .st{color:var(--teal-deep)}
+  .tomb .co{font-family:var(--serif);font-weight:600;font-size:17px;margin-top:7px}
+  .tomb .amt{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:4px}
+  .tomb .fate{font-size:11px;color:var(--dim);margin-top:9px}
+
+  /* moat */
+  .moat-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;
+    padding:15px 0;border-bottom:1px solid var(--line-2)}
+  .moat-row:last-child{border-bottom:none}
+  .moat-name{font-size:14.5px}
+  .moat-name .k{display:block;font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:3px}
+  .dots{display:flex;gap:5px}
+  .dot{width:11px;height:11px;border-radius:50%;background:var(--line);border:1px solid #ddd}
+  .dot.on{background:var(--teal);border-color:var(--teal)}
+  .verdict{font-family:var(--mono);font-size:10px;color:var(--muted);width:94px;text-align:right}
+  .moat-end{display:flex;align-items:center;gap:14px}
+
+  /* bull/bear */
+  .bb{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.bb{grid-template-columns:1fr}}
+  .bb-col{border:1px solid var(--line);border-radius:12px;padding:20px}
+  .bb-col.bull{background:var(--teal-tint);border-color:#d8e8e0}
+  .bb-col.bear{background:var(--clay-soft);border-color:#ecd6cf}
+  .bb-col h3{margin:0 0 14px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  .bull h3{color:var(--teal-deep)} .bear h3{color:var(--clay)}
+  .bb-col ul{margin:0;padding:0;list-style:none}
+  .bb-col li{font-size:13px;padding:8px 0 8px 18px;position:relative}
+  .bb-col li::before{content:"";position:absolute;left:0;top:14px;width:6px;height:6px;border-radius:50%}
+  .bull li::before{background:var(--teal)} .bear li::before{background:var(--clay)}
+
+  /* timeline */
+  .tl{display:flex;flex-wrap:wrap}
+  .tl-step{flex:1;min-width:150px;padding:0 18px;border-left:1px solid var(--line)}
+  .tl-step:first-child{border-left:none;padding-left:0}
+  .tl-step .dt{font-family:var(--mono);font-size:11px;color:var(--teal)}
+  .tl-step .ev{font-size:13px;margin-top:7px}
+  .tl-gap{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:9px}
+
+  footer{padding:34px 0 54px}
+  .lead{font-size:14px;color:var(--muted);max-width:62ch}
+  .src{font-family:var(--mono);font-size:10.5px;color:var(--dim);line-height:1.75;margin-top:14px}
+
+  @media(max-width:720px){
+    .hero-grid{grid-template-columns:1fr}
+    .profile{width:100%}
+    .strip{grid-template-columns:1fr 1fr}
+    .stat:nth-child(3){border-left:none}
+    .sec-note{display:none}
+    .bar-row{grid-template-columns:98px 1fr}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <div class="brand mono"><b>KAIKAKU</b> · business teardown</div>
+  <div class="tag">data-grounded · not advice</div>
+</div></div>
+
+<!-- HERO -->
+<header class="hero"><div class="wrap hero-grid">
+  <div>
+    <div class="eyebrow">Back-of-house automation · London · est. 2023</div>
+    <h1>Making restaurants<br>scalable as <span class="x">SaaS</span>.</h1>
+    <p class="sub">The product isn't a salad robot. It's a bet that automating the kitchen turns a <b>linear-cost business</b> into a <b>software-cost curve</b>. Here's whether the numbers back it.</p>
+  </div>
+  <div class="card profile">
+    <div class="pf-top">
+      <div class="avatar">JC</div>
+      <div>
+        <div class="pf-name">Josef Chen</div>
+        <div class="pf-role">Co-founder &amp; CEO, KAIKAKU</div>
+      </div>
+    </div>
+    <div class="links">
+      <a class="lnk" href="https://josef.cn/" target="_blank" rel="noopener"><span class="d"></span>Homepage</a>
+      <a class="lnk" href="https://scholar.google.com/citations?user=UKv11OQAAAAJ&hl=en" target="_blank" rel="noopener"><span class="d"></span>Scholar</a>
+      <a class="lnk" href="https://uk.linkedin.com/in/josef-chen" target="_blank" rel="noopener"><span class="d"></span>LinkedIn</a>
+      <a class="lnk" href="https://www.kaikaku.ai/" target="_blank" rel="noopener"><span class="d"></span>KAIKAKU</a>
+    </div>
+    <div class="pf-note">Peeled potatoes at the family restaurant from age 6 · built a bitcoin faucet at 13 · led software for the Austrian military. Photo &amp; full bio on his homepage →</div>
+  </div>
+</div></header>
+
+<!-- STATS -->
+<div class="strip">
+  <div class="stat"><div class="n t">~$1.8M</div><div class="l">raised · 1 round</div></div>
+  <div class="stat"><div class="n">~16–24</div><div class="l">headcount</div></div>
+  <div class="stat"><div class="n">5 mo</div><div class="l">incorp → open store</div></div>
+  <div class="stat"><div class="n">360/hr</div><div class="l">claimed throughput</div></div>
+</div>
+
+<div class="wrap">
+
+  <!-- 01 capital -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>The capital gap is the whole story</h2><span class="sec-note">total funding, USD · source-dependent ranges</span></div>
+    <div class="bars">
+      <div class="bar-row">
+        <div class="bar-label">Miso Robotics<span class="meta">2016 · ~58 ppl</span></div>
+        <div class="bar-track"><div class="bf-neutral bar-fill" style="width:100%"><span class="bar-val">$65M–$127M+</span></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Chef Robotics<span class="meta">2019 · ~144 ppl</span></div>
+        <div class="bar-track"><div class="bf-neutral bar-fill" style="width:34%"><span class="bar-val">~$43M</span></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label" style="color:var(--teal-deep)">KAIKAKU<span class="meta">2023 · ~16–24 ppl</span></div>
+        <div class="bar-track"><div class="bf-kk bar-fill" style="width:3.5%"><span class="bar-val">$1.8M</span></div></div>
+      </div>
+    </div>
+    <div class="ratio">
+      <div><div class="big">20–70×</div><div class="cap">less capital than its closest comparables</div></div>
+      <div><div class="big">$400M</div><div class="cap">raised by Zume — which still <b>shut down</b></div></div>
+      <div><div class="big">&gt;50%</div><div class="cap">burn cut by Miso ($100M+ raised) just to survive</div></div>
+    </div>
+    <div class="takeaway"><b>Read this first:</b> KAIKAKU can't win by out-spending — even the funded leaders are bleeding. Its only viable path is being <b>structurally more capital-efficient</b>. Everything below is downstream of this.</div>
+  </section>
+
+  <!-- 02 claim vs reality -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>Claim vs. observed reality</h2><span class="sec-note">company figure vs. TIME on-site report, May 2026</span></div>
+    <div class="two-col">
+      <div class="gauge">
+        <h3>Throughput — bowls per hour</h3>
+        <div class="tube"><div class="fill fill-claim" style="width:100%"></div></div>
+        <div class="gline"><span class="v claim">360</span><span class="u">claimed (marketing)</span></div>
+        <div class="tube" style="margin-top:18px"><div class="fill fill-real" style="width:16.6%"></div></div>
+        <div class="gline"><span class="v real">~60</span><span class="u">observed · human still finishes</span></div>
+      </div>
+      <div class="gauge">
+        <h3>Headline value claims</h3>
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div><span class="mono" style="font-family:var(--serif);font-size:30px;font-weight:600;color:var(--teal)">~70%</span><div class="muted" style="font-size:12px;margin-top:2px">labour-cost reduction <span class="dim">(company, best-case)</span></div></div>
+          <div><span style="font-family:var(--serif);font-size:30px;font-weight:600">~1 hr</span><div class="muted" style="font-size:12px;margin-top:2px">claimed deployment time</div></div>
+          <div><span style="font-family:var(--serif);font-size:30px;font-weight:600">semi</span><div class="muted" style="font-size:12px;margin-top:2px">automation today — not full, yet</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="takeaway"><b>The 6× gap</b> between 360 and ~60 is the crux of the bear case: the "full automation" story is still years out. Today it's a human-assisted prep station — promising, but priced like a platform.</div>
+  </section>
+
+  <!-- 03 TAM -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>The real TAM is smaller than the deck-friendly one</h2><span class="sec-note">estimates vary by category definition</span></div>
+    <div class="two-col">
+      <div class="gauge">
+        <h3>Restaurant robots — the honest market</h3>
+        <div style="display:flex;align-items:flex-end;gap:28px;height:150px;margin-top:6px">
+          <div style="text-align:center;flex:1">
+            <div style="height:50px;background:var(--neutral);border-radius:6px 6px 0 0"></div>
+            <div style="font-family:var(--serif);font-size:20px;font-weight:600;margin-top:8px">$2B</div>
+            <div class="dim mono" style="font-size:10px">2026</div>
+          </div>
+          <div style="text-align:center;flex:1">
+            <div style="height:150px;background:linear-gradient(180deg,var(--teal),var(--teal-deep));border-radius:6px 6px 0 0"></div>
+            <div style="font-family:var(--serif);font-size:20px;font-weight:600;margin-top:8px;color:var(--teal)">$6B</div>
+            <div class="dim mono" style="font-size:10px">2033 · ~18% CAGR</div>
+          </div>
+        </div>
+      </div>
+      <div class="gauge">
+        <h3>Why the broad number misleads</h3>
+        <p class="muted" style="font-size:13px;margin:4px 0 0">The widely-cited <b style="color:var(--ink)">"food robotics" market ($2.8–4.9B+)</b> is mostly industrial processing &amp; packaging — owned by <span class="mono" style="font-size:12px">ABB · KUKA · FANUC · Yaskawa</span>.</p>
+        <p class="muted" style="font-size:13px;margin:14px 0 0">KAIKAKU <b style="color:var(--clay)">does not compete there.</b> Its true slice is restaurant back-of-house prep — smaller, earlier, unproven.</p>
+      </div>
+    </div>
+    <div class="takeaway">Draw your TAM at <b>what you can actually serve</b>, then pre-empt the obvious objection — "isn't that really the industrial market, where you lose to ABB?"</div>
+  </section>
+
+  <!-- 04 revenue -->
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Three revenue paths that pull against each other</h2><span class="sec-note">which one they mean changes everything</span></div>
+    <div class="paths">
+      <div class="path"><div class="pn">PATH 01</div><h4>Own &amp; operate</h4><p>Run a chain of Common Room–type stores.</p><span class="mult lo">restaurant multiple ↓</span></div>
+      <div class="path"><div class="pn">PATH 02</div><h4>License / franchise</h4><p>Sell Fusion into others' kitchens.</p><span class="mult hi">software multiple ↑</span></div>
+      <div class="path"><div class="pn">PATH 03</div><h4>"SaaS-like" recurring</h4><p>Recurring revenue per deployed unit.</p><span class="mult hi">software multiple ↑</span></div>
+    </div>
+    <div class="takeaway"><b>The crux:</b> investors are underwriting Path 03 (software story), while the company today <b>looks like Path 01</b> (one restaurant). Closing that gap — Fusion paid for in a <b>third-party kitchen</b> — is the entire ballgame.</div>
+  </section>
+
+  <!-- 05 graveyard -->
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Map the graveyard, not the leaderboard</h2><span class="sec-note">restaurant-robotics outcomes to date</span></div>
+    <div class="grave">
+      <div class="tomb dead"><div class="st">shut down</div><div class="co">Zume</div><div class="amt">raised &gt;$400M</div><div class="fate">robot pizza → pivoted → dead</div></div>
+      <div class="tomb dead"><div class="st">sold off</div><div class="co">Spyce</div><div class="amt">acq. Sweetgreen ’21</div><div class="fate">didn't scale, divested</div></div>
+      <div class="tomb dead"><div class="st">gone</div><div class="co">Creator</div><div class="amt">robot burgers</div><div class="fate">closed</div></div>
+      <div class="tomb dead"><div class="st">gone</div><div class="co">Eatsa</div><div class="amt">quinoa bowls</div><div class="fate">closed</div></div>
+      <div class="tomb alive"><div class="st">alive · strained</div><div class="co">Miso</div><div class="amt">$100M+ · burn −50%</div><div class="fate">restructured to survive</div></div>
+      <div class="tomb alive"><div class="st">alive</div><div class="co">Chef Robotics</div><div class="amt">~$43M · RaaS</div><div class="fate">Series A, scaling</div></div>
+    </div>
+    <div class="takeaway">The dead — many <b>far better funded</b> — explain <b>why this is hard</b> more honestly than any live company's marketing. The base rate here is grim.</div>
+  </section>
+
+  <!-- 06 moat -->
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Head-start, or moat?</h2><span class="sec-note">only compounding advantages survive a funded rival</span></div>
+    <div>
+      <div class="moat-row">
+        <div class="moat-name">Proprietary data flywheel<span class="k">live restaurant → CV training data</span></div>
+        <div class="moat-end"><div class="dots"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span></div><span class="verdict">compounds · contested</span></div>
+      </div>
+      <div class="moat-row">
+        <div class="moat-name">Vertical integration<span class="k">hardware + software + venue</span></div>
+        <div class="moat-end"><div class="dots"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span></div><span class="verdict">edge early · costly later</span></div>
+      </div>
+      <div class="moat-row">
+        <div class="moat-name">Food-safe 3D printing + patents<span class="k">proprietary methods</span></div>
+        <div class="moat-end"><div class="dots"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span class="verdict">head-start</span></div>
+      </div>
+      <div class="moat-row">
+        <div class="moat-name">Research credibility<span class="k">arXiv papers · depth signal</span></div>
+        <div class="moat-end"><div class="dots"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span class="verdict">helps raise/hire</span></div>
+      </div>
+    </div>
+    <div class="takeaway"><b>Verdict:</b> only the data flywheel compounds — and Miso makes the identical claim with 20–70× the money. The rest are head-starts worth <b>months, not years</b>.</div>
+  </section>
+
+  <!-- 07 moves -->
+  <section>
+    <div class="sec-head"><span class="sec-num">07</span><h2>The capital-efficient founding moves worth copying</h2><span class="sec-note">none of these require money</span></div>
+    <div class="tl">
+      <div class="tl-step"><div class="dt">APR 2023</div><div class="ev">Incorporated</div></div>
+      <div class="tl-step"><div class="dt">SEP 2023</div><div class="ev">Common Room opens — a restaurant that <b>earns cash, makes data, and proves the concept at once</b></div><div class="tl-gap">↑ ~5 months, no slide-deck phase</div></div>
+      <div class="tl-step"><div class="dt">2024–26</div><div class="ev">Borrowed credibility: advisors ex-<b>Subway / Mars / Caffè Nero</b>; angels incl. Bitpanda co-founder</div></div>
+      <div class="tl-step"><div class="dt">ONGOING</div><div class="ev">Build-in-public — incl. firing staff over food-safety lapses, running ATP bacteria tests</div></div>
+    </div>
+    <div class="takeaway">The survival hack: <b>make your validation asset also generate cash and data</b>. Then borrow credibility (advisors, angels) and build in public — including the ugly parts. Rigor <b>shown</b> beats rigor claimed.</div>
+  </section>
+
+  <!-- 08 bull/bear -->
+  <section style="border-bottom:none">
+    <div class="sec-head"><span class="sec-num">08</span><h2>Decide for yourself</h2></div>
+    <div class="bb">
+      <div class="bb-col bull">
+        <h3>Bull</h3>
+        <ul>
+          <li>Real, worsening labour crisis × cheaper robotics = an open timing window</li>
+          <li>Revenue-generating lab → survives longer per dollar than peers</li>
+          <li>Data flywheel + vertical integration could compound — if it reaches 3rd-party deployment</li>
+          <li>Founder's rare edge: deep restaurant domain × real technical depth</li>
+        </ul>
+      </div>
+      <div class="bb-col bear">
+        <h3>Bear</h3>
+        <ul>
+          <li>Catastrophically under-capitalized — one failed raise from death</li>
+          <li>360-vs-60 gap: full automation still years out</li>
+          <li>The valuation-defining step (paid 3rd-party deployment) is unproven</li>
+          <li>Every better-funded predecessor that looked this good is dead or sold</li>
+        </ul>
+      </div>
+    </div>
+    <div class="takeaway" style="margin-top:24px"><b>Synthesis:</b> a high-variance, well-reasoned bet run unusually capital-efficiently, in a sector with a terrible base rate. The <b>founding tactics are excellent and copyable</b>; the <b>odds of success stay low</b>. Copy the tactics — don't assume the outcome.</div>
+  </section>
+
+</div>
+
+<footer><div class="wrap">
+  <p class="lead">Built from public sources. Database figures conflict (KAIKAKU $1.8M–$4.45M; Miso $65M–$127M+) — ranges reflect that. Verify independently before any decision.</p>
+  <p class="src">SOURCES — KAIKAKU site &amp; Crunchbase tagline · TIME on-site report (May 2026) · Bae HQ / Bounce Watch / Tracxn / PitchBook (funding, team, advisors) · Crunchbase News (sector graveyard &amp; competitor funding) · Coherent Market Insights / Precedence / Research &amp; Markets (market sizing) · founder LinkedIn, josef.cn &amp; arXiv papers · NOT INVESTMENT ADVICE.</p>
+</div></footer>
+
+</body>
+</html>
