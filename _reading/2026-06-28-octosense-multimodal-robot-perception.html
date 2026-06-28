@@ -1,0 +1,719 @@
+---
+layout: null
+title: "OctoSense — Multimodal Robot Perception"
+date: 2026-06-28
+tags: [robotics, multimodal, self-supervised, perception, study-notes]
+gist: "Notes on OctoSense — a late-fusion masked autoencoder with per-modality tokenizers that fuses RGB, event, LiDAR, thermal, IMU, GPS and proprioception at once; plus a deep dive into SSL, DINO / SigLIP / Hiera, and contrastive vs. masked methods."
+---
+{% raw %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading Notes — OctoSense: Multimodal Robot Perception</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+<style>
+  :root{
+    --paper:#FAF9F6;
+    --ink:#15211F;
+    --muted:#6A726E;
+    --hair:#E6E3DC;
+    --accent:#0E7C8C;        /* sensor teal — question rules, key terms */
+    --accent-soft:#E2F0F1;
+    --wash-2:#F3F1EB;
+    --code-bg:#F1EFE9;
+    --maxw:780px;
+    --display:'Bricolage Grotesque',system-ui,sans-serif;
+    --body:'Newsreader',Georgia,serif;
+    --mono:'JetBrains Mono','SFMono-Regular',monospace;
+    /* modality legend */
+    --m-rgb:#2E7DD1;
+    --m-event:#8B5CF6;
+    --m-lidar:#0E9F6E;
+    --m-thermal:#E1761E;
+    --m-imu:#D6336C;
+    --m-gps:#5B6BB5;
+    --m-proprio:#877A4B;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--body);font-size:18px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px 120px}
+
+  /* masthead */
+  header.masthead{max-width:var(--maxw);margin:0 auto;padding:60px 24px 26px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin:0 0 20px}
+  .motif{margin:0 0 24px}
+  h1.title{font-family:var(--display);font-weight:700;font-size:34px;line-height:1.1;letter-spacing:-0.02em;margin:0 0 12px}
+  .standfirst{font-style:italic;color:var(--muted);font-size:18px;margin:0 0 18px;max-width:60ch}
+  .meta{font-family:var(--mono);font-size:12.5px;letter-spacing:0.02em;color:var(--muted);line-height:1.9}
+  .meta b{color:var(--accent);font-weight:600}
+  .meta a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--hair)}
+  .rule{height:1px;background:var(--hair);max-width:var(--maxw);margin:0 auto}
+
+  /* paper card */
+  .paper-card{margin:40px 0 8px;border:1px solid var(--hair);border-radius:14px;padding:22px 24px;background:#fff}
+  .paper-card .kicker{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .paper-card h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0 0 6px;letter-spacing:-0.01em}
+  .paper-card .authors{font-size:15px;color:var(--muted);margin:0 0 14px}
+  .paper-card .links{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px}
+  .paper-card .links a{font-family:var(--mono);font-size:12.5px;text-decoration:none;color:var(--accent);border:1px solid var(--accent-soft);background:var(--accent-soft);padding:5px 11px;border-radius:20px}
+  .callout-page{margin-top:14px;padding:13px 16px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0;font-size:15px}
+  .callout-page b{font-weight:600}
+
+  /* entry */
+  article.entry{padding-top:44px}
+  .entry-index{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+  .entry-index::after{content:"";flex:1;height:1px;background:var(--hair)}
+
+  .q{border-left:3px solid var(--accent);background:linear-gradient(90deg,var(--wash-2),transparent 92%);padding:18px 22px;border-radius:0 8px 8px 0;margin:0 0 34px}
+  .q .label{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:10px}
+  .q ol{margin:0;padding-left:22px;font-size:16px}
+  .q li{margin-bottom:7px}
+  .q code{font-family:var(--mono);font-size:0.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+
+  h2{font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:-0.01em;margin:42px 0 14px}
+  h3{font-family:var(--display);font-weight:500;font-size:16.5px;margin:28px 0 10px}
+  p{margin:0 0 18px}
+  strong{font-weight:600}
+  em{font-style:italic}
+  code{font-family:var(--mono);font-size:0.85em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+  .lede{font-size:19px}
+  .lede strong{color:var(--accent)}
+  .keyterm{background:linear-gradient(transparent 62%, var(--accent-soft) 62%);font-weight:500}
+  .hl-y{background:#FCF36B;padding:0 2px;border-radius:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  .hl-g{background:#A8F0C6;padding:0 2px;border-radius:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+
+  /* tables */
+  .tbl-wrap{margin:22px 0;overflow-x:auto;border:1px solid var(--hair);border-radius:10px}
+  table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--hair);vertical-align:top}
+  thead th{font-family:var(--mono);font-size:11px;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);background:var(--wash-2);font-weight:600}
+  tbody th{font-family:var(--display);font-weight:600;font-size:13.5px;color:var(--ink);white-space:nowrap}
+  td .mono{font-family:var(--mono);font-size:12.5px}
+  tbody tr:last-child td,tbody tr:last-child th{border-bottom:none}
+  .swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;vertical-align:baseline}
+
+  /* figure */
+  figure.fig{margin:24px 0;border:1px solid var(--hair);border-radius:12px;padding:18px 16px 10px;background:#fff}
+  figure.fig figcaption{font-size:14px;color:var(--muted);margin-top:6px;padding:0 4px;line-height:1.5}
+
+  /* one-line frame */
+  blockquote.frame{margin:28px 0;padding:22px 24px;background:var(--ink);color:var(--paper);border-radius:12px;font-family:var(--display);font-size:18px;line-height:1.45;font-weight:500}
+  blockquote.frame .accent{color:#7FD4DE}
+
+  ul.caveats{list-style:none;padding:0;margin:18px 0}
+  ul.caveats li{position:relative;padding:11px 0 11px 28px;border-bottom:1px dashed var(--hair);font-size:16px}
+  ul.caveats li:last-child{border-bottom:none}
+  ul.caveats li::before{content:"▢";position:absolute;left:0;top:11px;color:var(--accent);font-size:13px}
+  ul.caveats li b{font-weight:600}
+
+  .note{font-size:15px;color:var(--muted);font-style:italic;border-left:2px solid var(--hair);padding-left:14px;margin:20px 0}
+
+  .sources{margin-top:38px;padding-top:18px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:12.5px;color:var(--muted);line-height:1.9}
+  .sources .s-label{display:block;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  .sources a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--hair)}
+
+  @media (max-width:560px){
+    body{font-size:16.5px}
+    h1.title{font-size:27px}
+    blockquote.frame{font-size:16px}
+  }
+</style>
+</head>
+<body>
+
+  
+<header class="masthead">
+  <a href="/papers/" style="display:inline-block;margin-bottom:16px;font-family:var(--mono);font-size:12px;color:var(--accent);text-decoration:none">← All paper notes</a>
+  <p class="eyebrow">Paper Reading Notes</p>
+  <!-- signature: asynchronous modality tracks sampling at different rates -->
+  <svg class="motif" width="360" height="108" viewBox="0 0 360 108" aria-hidden="true">
+    <g stroke-width="3" stroke-linecap="round" fill="none">
+      <line x1="6" y1="14"  x2="354" y2="14"  stroke="var(--m-rgb)"     stroke-dasharray="3 26"/>
+      <line x1="6" y1="36"  x2="354" y2="36"  stroke="var(--m-event)"   stroke-dasharray="3 11"/>
+      <line x1="6" y1="58"  x2="354" y2="58"  stroke="var(--m-lidar)"   stroke-dasharray="3 44"/>
+      <line x1="6" y1="80"  x2="354" y2="80"  stroke="var(--m-thermal)" stroke-dasharray="3 20"/>
+      <line x1="6" y1="102" x2="354" y2="102" stroke="var(--m-imu)"     stroke-dasharray="3 7"/>
+    </g>
+  </svg>
+  <h1 class="title">OctoSense — Multimodal Robot Perception</h1>
+  <p class="standfirst">Notes on a late-fusion masked autoencoder that learns from many real-world sensors at once, each with its own rate, latency and noise.</p>
+  <p class="meta">
+    Session <b>2026-06-28</b> &nbsp;·&nbsp; arXiv <a href="https://arxiv.org/abs/2606.27317">2606.27317</a> &nbsp;·&nbsp; cs.CV / cs.RO &nbsp;·&nbsp; project <a href="https://abisulco.com/octosense/">abisulco.com/octosense</a>
+  </p>
+</header>
+<div class="rule"></div>
+
+<div class="wrap">
+
+  <section class="paper-card">
+    <div class="kicker">The paper</div>
+    <h2>OctoSense: Self-Supervised Learning for Multimodal Robot Perception</h2>
+    <p class="authors">Anthony Bisulco, Jeremy Wang, Kostas Daniilidis (UPenn GRASP), Randall Balestriero (Brown), Pratik Chaudhari (UPenn) · submitted 25 Jun 2026 (v1)</p>
+    <div class="links">
+      <a href="https://arxiv.org/abs/2606.27317">arXiv:2606.27317</a>
+      <a href="https://arxiv.org/pdf/2606.27317">PDF</a>
+      <a href="https://abisulco.com/octosense/">Project page</a>
+    </div>
+    <div class="callout-page">
+      <b>Project page worth referencing for presentation:</b> <a href="https://abisulco.com/octosense/" style="color:var(--accent)">https://abisulco.com/octosense/</a> — hosts the dataset, code, and supplementary videos. A clean example of how to present a sensor-platform + dataset + method release on a single page.
+    </div>
+    <p style="margin:16px 0 0;font-size:15.5px">In one line: an open-source multi-sensor rig (stereo RGB + event cameras, LiDAR, thermal, IMU, RTK-GPS, proprioception) and a 59-hour synchronized driving dataset, used to train a <span class="keyterm">late-fusion masked autoencoder</span> with per-modality tokenizers. It is fast (6.68&nbsp;ms on RTX&nbsp;5090, 112&nbsp;ms on Orin&nbsp;NX), beats image-only foundation models on optical flow / depth / segmentation / ego-motion, and stays robust at night and under degraded sensors.</p>
+  </section>
+
+  <div class="rule" style="margin-top:40px"></div>
+
+  <article class="entry">
+    <div class="entry-index">Entry 01 — Reading the abstract</div>
+
+    <div class="q">
+      <span class="label">Questions</span>
+      <ol>
+        <li>Walk through the sensor suite, from the stereo RGB cameras down to the quadruped robot&rsquo;s proprioception.</li>
+        <li>What does &ldquo;sensors have different representations&rdquo; mean &mdash; a concrete example?</li>
+        <li>What is the difference between an <em>autoencoder</em> and an <em>encoder</em>? And for &ldquo;caching modality-specific tokens at inference time&rdquo;: is memory a consideration, and are those tokens produced by the modality-specific tokenizers?</li>
+        <li>What exactly is a &ldquo;new measurement&rdquo;? Does it fall within the scope of one modality&rsquo;s tokens, or does it imply out-of-distribution input?</li>
+        <li>Explain the task terms from &ldquo;optical flow&rdquo; through &ldquo;steering angle&rdquo;.</li>
+      </ol>
+    </div>
+
+    <p class="lede">The abstract packs three things into a few sentences &mdash; a <strong>sensor platform</strong>, a <strong>dataset</strong>, and a <strong>method</strong>. The five questions below walk through the platform&rsquo;s sensors, why their data is hard to combine, and what the method does with them.</p>
+
+    <h2>1 · The sensor suite</h2>
+    <p>The platform fuses seven kinds of signal. The first six are exteroceptive (they sense the world); the last is proprioceptive (it senses the robot&rsquo;s own state). The whole rig is mounted on two bodies &mdash; a car and a four-legged (quadruped) robot &mdash; which is why proprioception takes two forms.</p>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Modality</th><th>What it senses</th><th>What it gives you</th></tr></thead>
+      <tbody>
+        <tr><th><span class="swatch" style="background:var(--m-rgb)"></span>Stereo RGB</th><td>Color light through two cameras with a known baseline</td><td>Two color images; depth from left/right disparity</td></tr>
+        <tr><th><span class="swatch" style="background:var(--m-event)"></span>Event camera</th><td>Per-pixel brightness <em>changes</em>, asynchronously</td><td>Microsecond-latency event stream; high dynamic range, no motion blur</td></tr>
+        <tr><th><span class="swatch" style="background:var(--m-lidar)"></span>LiDAR</th><td>Laser time-of-flight distance</td><td>3D point cloud of the scene; works in darkness</td></tr>
+        <tr><th><span class="swatch" style="background:var(--m-thermal)"></span>Thermal camera</th><td>Long-wave infrared (heat)</td><td>Heat image; sees warm objects (people, engines) at night</td></tr>
+        <tr><th><span class="swatch" style="background:var(--m-imu)"></span>IMU</th><td>Linear acceleration + angular velocity</td><td>High-rate motion/orientation signal (accelerometer + gyroscope)</td></tr>
+        <tr><th><span class="swatch" style="background:var(--m-gps)"></span>RTK-GPS</th><td>Satellite positioning with real-time kinematic correction</td><td>Centimeter-level global position (vs. meters for plain GPS)</td></tr>
+        <tr><th><span class="swatch" style="background:var(--m-proprio)"></span>Proprioception</th><td>The robot&rsquo;s own internal state</td><td>Car: CAN-bus data (wheel speed, steering, throttle). Quadruped: joint angles</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p><strong>Proprioception</strong> is the term for a system&rsquo;s sense of its own configuration and motion &mdash; the machine analogue of knowing where your limbs are without looking. A <strong>quadruped robot</strong> is a four-legged robot (e.g. Spot- or Unitree-style); its joint angles are the natural proprioceptive readout, just as a car&rsquo;s CAN bus is for the vehicle.</p>
+
+    <h2>2 · Why &ldquo;different representations&rdquo;</h2>
+    <p>The phrase means each sensor&rsquo;s raw data has a fundamentally different <em>structure</em> &mdash; not just different numbers. A standard vision model assumes a dense pixel grid, but most of these sensors are not grids at all. Concretely:</p>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Modality</th><th>Representation (structure)</th><th>Typical rate</th></tr></thead>
+      <tbody>
+        <tr><th>Stereo RGB</th><td class="mono">dense grid [H&times;W&times;3]</td><td>~30 Hz, regular frames</td></tr>
+        <tr><th>Event camera</th><td class="mono">sparse async events (x, y, t, polarity)</td><td>&micro;s resolution, not framed</td></tr>
+        <tr><th>LiDAR</th><td class="mono">unordered 3D point set {(x,y,z,i)}</td><td>~10 Hz, variable point count</td></tr>
+        <tr><th>Thermal</th><td class="mono">single-channel grid (temperature)</td><td>~30 Hz, often lower res</td></tr>
+        <tr><th>IMU</th><td class="mono">low-dim time series (6 values)</td><td>~100&ndash;1000 Hz</td></tr>
+        <tr><th>RTK-GPS</th><td class="mono">few scalars (lat, lon, alt)</td><td>low rate</td></tr>
+        <tr><th>Proprioception</th><td class="mono">vector of joint angles / CAN signals</td><td>varies</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>A worked contrast: an RGB frame can be split into patches and embedded the way a ViT does. A LiDAR scan is an <em>unordered</em> set of points &mdash; there is no fixed grid to patch, and the model must be permutation-invariant. An event camera doesn&rsquo;t even produce frames. On top of structure, the abstract also lists differing <strong>frequencies</strong> (10 Hz vs. 1000 Hz), <strong>latencies</strong>, and <strong>noise</strong>. This heterogeneity is exactly why the model needs a separate <span class="keyterm">tokenizer per modality</span> rather than one shared input layer.</p>
+
+    <h2>3 · Autoencoder vs. encoder, and the token cache</h2>
+    <p>An <strong>encoder</strong> is just the &ldquo;compress&rdquo; half: it maps an input to a latent representation. An <strong>autoencoder</strong> adds a <strong>decoder</strong> and is trained to <em>reconstruct</em> its own input through a reconstruction loss. A <strong>masked autoencoder (MAE)</strong> hides part of the input, encodes only the visible part, and asks the decoder to predict the hidden part &mdash; which needs no labels, so it is self-supervised. That is OctoSense&rsquo;s training signal. After training, the <em>encoder</em> is the part kept to produce representations for downstream tasks.</p>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th></th><th>Has a decoder?</th><th>Trained by</th><th>Reused downstream</th></tr></thead>
+      <tbody>
+        <tr><th>Encoder</th><td>no (it is the encoder)</td><td>n/a (a component)</td><td>yes &mdash; its latent output</td></tr>
+        <tr><th>Autoencoder</th><td>yes</td><td>reconstructing the input</td><td>usually just the encoder half</td></tr>
+        <tr><th>Masked AE</th><td>yes</td><td>predicting masked-out input (self-supervised)</td><td>the encoder half</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Caching modality-specific tokens</h3>
+    <p>Because the sensors run at different rates and arrive asynchronously, at any instant only a few modalities have produced fresh data. The system therefore recomputes tokens <em>only</em> for the modality that just updated and <strong>reuses the previously computed tokens</strong> for the others.</p>
+    <blockquote class="frame">
+      Late fusion means each sensor is tokenized on its own &mdash; so a token is a <span class="accent">per-modality unit</span> that can be cached, and only the sensor that just fired needs to be recomputed.
+    </blockquote>
+    <p><strong>Is memory a consideration?</strong> The cache does cost memory &mdash; you are storing tokens between updates &mdash; so this is fundamentally a <em>memory-for-compute</em> trade. But what the abstract advertises is the <em>speed/latency</em> payoff (6.68 ms / 112 ms) and the ability to ingest asynchronous streams, not a memory saving. <strong>Are the cached tokens tokenizer-derived?</strong> Yes: the cached units are precisely the outputs of the modality-specific tokenizers. &ldquo;Late&rdquo; fusion means fusion happens <em>after</em> tokenization, which is what makes each modality&rsquo;s tokens a clean, independently cacheable and updatable unit.</p>
+
+    <figure class="fig">
+      <svg width="100%" viewBox="0 0 720 372" role="img" aria-label="Late-fusion tokenization with per-modality caching">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#6A726E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <g font-family="'JetBrains Mono',monospace">
+          <!-- column headers -->
+          <text x="72"  y="22" text-anchor="middle" font-size="11" fill="#6A726E">sensor</text>
+          <text x="242" y="22" text-anchor="middle" font-size="11" fill="#6A726E">tokenizer</text>
+          <text x="396" y="22" text-anchor="middle" font-size="11" fill="#6A726E">tokens (cache)</text>
+          <text x="537" y="22" text-anchor="middle" font-size="11" fill="#6A726E">fusion</text>
+          <text x="658" y="22" text-anchor="middle" font-size="11" fill="#6A726E">output</text>
+
+          <!-- ROW 1 : RGB (cached) -->
+          <rect x="14" y="40" width="116" height="40" rx="8" fill="#fff" stroke="#2E7DD1" stroke-width="0.8"/>
+          <text x="72" y="56" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f5fa0">Stereo RGB</text>
+          <text x="72" y="71" text-anchor="middle" font-size="10.5" fill="#2E7DD1">pixel grid</text>
+          <line x1="130" y1="60" x2="176" y2="60" stroke="#6A726E" stroke-width="1.1" marker-end="url(#arr)"/>
+          <rect x="176" y="40" width="132" height="40" rx="8" fill="#F4F8FD" stroke="#2E7DD1" stroke-width="0.6"/>
+          <text x="242" y="64" text-anchor="middle" font-size="12" fill="#1f5fa0">tokenizer</text>
+          <line x1="308" y1="60" x2="344" y2="60" stroke="#6A726E" stroke-width="1.1" marker-end="url(#arr)"/>
+          <rect x="344" y="40" width="104" height="40" rx="8" fill="#F1EFE9" stroke="#B9B4A6" stroke-width="0.6"/>
+          <text x="396" y="58" text-anchor="middle" font-size="12" fill="#5F5E5A">tokens</text>
+          <text x="396" y="72" text-anchor="middle" font-size="10" fill="#8a877f">cached</text>
+
+          <!-- ROW 2 : Event (cached) -->
+          <rect x="14" y="98" width="116" height="40" rx="8" fill="#fff" stroke="#8B5CF6" stroke-width="0.8"/>
+          <text x="72" y="114" text-anchor="middle" font-size="12.5" font-weight="600" fill="#6d44c9">Event cam</text>
+          <text x="72" y="129" text-anchor="middle" font-size="10.5" fill="#8B5CF6">event stream</text>
+          <line x1="130" y1="118" x2="176" y2="118" stroke="#6A726E" stroke-width="1.1" marker-end="url(#arr)"/>
+          <rect x="176" y="98" width="132" height="40" rx="8" fill="#F7F4FE" stroke="#8B5CF6" stroke-width="0.6"/>
+          <text x="242" y="122" text-anchor="middle" font-size="12" fill="#6d44c9">tokenizer</text>
+          <line x1="308" y1="118" x2="344" y2="118" stroke="#6A726E" stroke-width="1.1" marker-end="url(#arr)"/>
+          <rect x="344" y="98" width="104" height="40" rx="8" fill="#F1EFE9" stroke="#B9B4A6" stroke-width="0.6"/>
+          <text x="396" y="116" text-anchor="middle" font-size="12" fill="#5F5E5A">tokens</text>
+          <text x="396" y="130" text-anchor="middle" font-size="10" fill="#8a877f">cached</text>
+
+          <!-- ROW 3 : LiDAR (NEW measurement, highlighted) -->
+          <rect x="14" y="156" width="116" height="40" rx="8" fill="#E7F6F0" stroke="#0E9F6E" stroke-width="1.4"/>
+          <text x="72" y="172" text-anchor="middle" font-size="12.5" font-weight="600" fill="#0b7a54">LiDAR</text>
+          <text x="72" y="187" text-anchor="middle" font-size="10.5" fill="#0E9F6E">point cloud</text>
+          <rect x="96" y="148" width="40" height="15" rx="7" fill="#0E9F6E"/>
+          <text x="116" y="159" text-anchor="middle" font-size="9" font-weight="600" fill="#fff">NEW</text>
+          <line x1="130" y1="176" x2="176" y2="176" stroke="#0E9F6E" stroke-width="1.6" marker-end="url(#arr)"/>
+          <rect x="176" y="156" width="132" height="40" rx="8" fill="#E7F6F0" stroke="#0E9F6E" stroke-width="1.2"/>
+          <text x="242" y="180" text-anchor="middle" font-size="12" font-weight="600" fill="#0b7a54">tokenizer</text>
+          <line x1="308" y1="176" x2="344" y2="176" stroke="#0E9F6E" stroke-width="1.6" marker-end="url(#arr)"/>
+          <rect x="344" y="156" width="104" height="40" rx="8" fill="#E7F6F0" stroke="#0E9F6E" stroke-width="1.2"/>
+          <text x="396" y="174" text-anchor="middle" font-size="12" font-weight="600" fill="#0b7a54">tokens</text>
+          <text x="396" y="188" text-anchor="middle" font-size="10" fill="#0E9F6E">recompute</text>
+
+          <!-- ROW 4 : Thermal (cached) -->
+          <rect x="14" y="214" width="116" height="40" rx="8" fill="#fff" stroke="#E1761E" stroke-width="0.8"/>
+          <text x="72" y="230" text-anchor="middle" font-size="12.5" font-weight="600" fill="#b65d12">Thermal</text>
+          <text x="72" y="245" text-anchor="middle" font-size="10.5" fill="#E1761E">IR grid</text>
+          <line x1="130" y1="234" x2="176" y2="234" stroke="#6A726E" stroke-width="1.1" marker-end="url(#arr)"/>
+          <rect x="176" y="214" width="132" height="40" rx="8" fill="#FDF4EC" stroke="#E1761E" stroke-width="0.6"/>
+          <text x="242" y="238" text-anchor="middle" font-size="12" fill="#b65d12">tokenizer</text>
+          <line x1="308" y1="234" x2="344" y2="234" stroke="#6A726E" stroke-width="1.1" marker-end="url(#arr)"/>
+          <rect x="344" y="214" width="104" height="40" rx="8" fill="#F1EFE9" stroke="#B9B4A6" stroke-width="0.6"/>
+          <text x="396" y="232" text-anchor="middle" font-size="12" fill="#5F5E5A">tokens</text>
+          <text x="396" y="246" text-anchor="middle" font-size="10" fill="#8a877f">cached</text>
+
+          <!-- fusion -->
+          <rect x="494" y="40" width="86" height="214" rx="10" fill="#15211F"/>
+          <text x="537" y="142" text-anchor="middle" font-size="13" font-weight="600" fill="#FAF9F6">Late</text>
+          <text x="537" y="160" text-anchor="middle" font-size="13" font-weight="600" fill="#FAF9F6">fusion</text>
+          <!-- cache -> fusion -->
+          <line x1="448" y1="60"  x2="494" y2="74"  stroke="#6A726E" stroke-width="1.1" marker-end="url(#arr)"/>
+          <line x1="448" y1="118" x2="494" y2="110" stroke="#6A726E" stroke-width="1.1" marker-end="url(#arr)"/>
+          <line x1="448" y1="176" x2="494" y2="158" stroke="#0E9F6E" stroke-width="1.6" marker-end="url(#arr)"/>
+          <line x1="448" y1="234" x2="494" y2="200" stroke="#6A726E" stroke-width="1.1" marker-end="url(#arr)"/>
+
+          <!-- representation -->
+          <line x1="580" y1="147" x2="608" y2="147" stroke="#6A726E" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="608" y="118" width="100" height="60" rx="10" fill="#E2F0F1" stroke="#0E7C8C" stroke-width="0.8"/>
+          <text x="658" y="143" text-anchor="middle" font-size="12" font-weight="600" fill="#0a5e6b">fused</text>
+          <text x="658" y="159" text-anchor="middle" font-size="12" font-weight="600" fill="#0a5e6b">representation</text>
+
+          <!-- footnote -->
+          <text x="14" y="300" font-size="11" fill="#6A726E">When a new measurement arrives on one sensor (here LiDAR), only that tokenizer recomputes;</text>
+          <text x="14" y="316" font-size="11" fill="#6A726E">the other modalities reuse cached tokens. IMU, RTK-GPS and proprioception follow the same pattern.</text>
+        </g>
+      </svg>
+      <figcaption>Late-fusion tokenization. Per-modality tokenizers make each modality&rsquo;s tokens an independent, cacheable unit, so asynchronous sensor updates only trigger partial recomputation.</figcaption>
+    </figure>
+
+    <h2>4 · What &ldquo;a new measurement&rdquo; is &mdash; and why it is not OOD</h2>
+    <p>A &ldquo;new measurement&rdquo; is simply the <strong>next sample to arrive in time</strong> from some sensor. Since the sensors have different frequencies and latencies, they do not update together: a new camera frame (~30 Hz), a new LiDAR sweep (~10 Hz), and a new IMU sample (~200 Hz) all show up on their own schedule. Each new measurement is tokenized by <em>its own</em> modality&rsquo;s tokenizer and updates that modality&rsquo;s slot in the cache &mdash; so yes, it falls squarely within the scope of one modality&rsquo;s tokens.</p>
+    <p>It does <strong>not</strong> imply out-of-distribution input. Here &ldquo;new&rdquo; is <em>temporal</em> (streaming / online arrival), not <em>distributional</em> (novel or anomalous). The separate robustness claim in the abstract &mdash; working at night and under <em>degraded</em> sensors &mdash; is the closest thing to a distribution-shift story, but that is handled by cross-modal redundancy, and is a different idea from processing &ldquo;new measurements as they come.&rdquo;</p>
+
+    <h2>5 · The downstream task terms</h2>
+    <p>These are the perception tasks OctoSense&rsquo;s representation is evaluated on, where it reportedly beats image-only foundation models.</p>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Term</th><th>What it predicts</th></tr></thead>
+      <tbody>
+        <tr><th>Optical flow</th><td>Per-pixel 2D motion between consecutive frames (direction + speed of each pixel)</td></tr>
+        <tr><th>Depth</th><td>Per-pixel distance from the camera to the scene &mdash; a depth map (3D structure)</td></tr>
+        <tr><th>Semantic segmentation</th><td>A class label for every pixel (road, car, pedestrian, building, &hellip;)</td></tr>
+        <tr><th>Ego-motion</th><td>How the platform itself moves through space &mdash; the &ldquo;ego&rdquo; vehicle/robot&rsquo;s own motion</td></tr>
+        <tr><th>&mdash; Translation</th><td>The displacement of the platform (x, y, z)</td></tr>
+        <tr><th>&mdash; Rotation</th><td>The change in the platform&rsquo;s orientation (roll / pitch / yaw)</td></tr>
+        <tr><th>Steering angle</th><td>The car&rsquo;s steering/wheel angle &mdash; a control quantity predicted from perception</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>The first three (optical flow, depth, segmentation) describe the <em>scene</em>; ego-motion and steering angle describe the <em>platform&rsquo;s own movement</em> &mdash; the latter tying perception back to the proprioceptive signals from question&nbsp;1.</p>
+
+    <div class="sources">
+      <span class="s-label">Sources</span>
+      <a href="https://arxiv.org/abs/2606.27317">arXiv:2606.27317</a> &mdash; Bisulco, Wang, Daniilidis, Balestriero, Chaudhari. OctoSense.<br>
+      project page: <a href="https://abisulco.com/octosense/">abisulco.com/octosense</a><br>
+      context: masked autoencoders (MAE) &middot; event cameras &middot; LiDAR point clouds &middot; RTK-GNSS &middot; proprioception (CAN bus / joint angles)
+    </div>
+
+  </article>
+
+  <article class="entry">
+    <div class="entry-index">Entry 02 — Vision foundation models, the roadmap, and a phrase</div>
+
+    <div class="q">
+      <span class="label">Questions</span>
+      <ol>
+        <li>Introduce self-supervised learning (SSL), and DINO, SigLIP, Hiera, and vision-based foundation models.</li>
+        <li>What are the details of the Global Robotics Technology Roadmap?</li>
+        <li>What does &ldquo;on par&rdquo; mean?</li>
+      </ol>
+    </div>
+
+    <h2>1 · Self-supervised learning and the vision foundation-model family</h2>
+    <p><strong>Self-supervised learning (SSL)</strong> learns representations from <em>unlabelled</em> data by constructing the supervision signal from the data itself (a &ldquo;pretext&rdquo; task). Two broad families dominate vision: <span class="hl-y"><strong>joint-embedding / contrastive</strong> methods (SimCLR, MoCo, BYOL, DINO) that pull together different views of the same image</span>, and <span class="hl-g"><strong>generative / masked-prediction</strong> methods (MAE, BEiT) that reconstruct hidden parts of the input</span>. <em>(Refined in Entry&nbsp;03: DINO and BYOL are joint-embedding but <strong>non-contrastive</strong> &mdash; no negatives.)</em> The payoff is a strong general-purpose encoder trained without human labels &mdash; the same regime OctoSense&rsquo;s masked autoencoder belongs to.</p>
+
+    <h3>DINO / DINOv2</h3>
+    <p><strong>DINO</strong> (&ldquo;self-<strong>di</strong>stillation with <strong>no</strong> labels&rdquo;, Caron et al., Meta, 2021) trains a self-supervised ViT with a student&ndash;teacher setup where the teacher is an exponential moving average of the student, using multi-crop views plus centering &amp; sharpening to avoid representational collapse. Its emergent properties are famous: attention maps segment objects, and k-NN on its features works well. <strong>DINOv2</strong> (2023) scales this up on curated data to yield off-the-shelf visual features &mdash; a canonical image-only foundation model.</p>
+
+    <h3>SigLIP</h3>
+    <p><strong>SigLIP</strong> (&ldquo;Sigmoid Loss for Language-Image Pre-training&rdquo;, Zhai et al., Google, 2023) is a CLIP-style image&ndash;text model, but it swaps the softmax/InfoNCE contrastive loss for a <strong>pairwise sigmoid loss</strong> that needs no global normalization over the batch. That makes training more efficient, viable at smaller batch sizes, and stronger overall. It is weakly supervised (via image&ndash;text pairs) and produces a powerful image encoder.</p>
+
+    <h3>Hiera</h3>
+    <p><strong>Hiera</strong> (Ryali et al., Meta, ICML 2023) is a <strong>hierarchical (multiscale) ViT</strong> that removes the specialized modules of Swin/MViT and instead lets spatial structure be learned through <strong>MAE pretraining</strong>. The result is simpler, faster, and more accurate, for both images and video &mdash; the same masked-autoencoder lineage as OctoSense.</p>
+
+    <h3>Vision-based foundation models</h3>
+    <p>An umbrella term for large models pretrained (self- or weakly-supervised) on massive data to give general visual representations transferable to many downstream tasks. &ldquo;Image-only&rdquo; ones (DINOv2, MAE, Hiera) use images alone; image&ndash;text ones (CLIP, SigLIP) add language; others target specific outputs (SAM for segmentation). OctoSense positions itself as a <em>multimodal</em> foundation model that outperforms these image-only models on robotics tasks.</p>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Model</th><th>Supervision</th><th>Core mechanism</th><th>Notable for</th></tr></thead>
+      <tbody>
+        <tr><th>DINO / DINOv2</th><td>self-supervised</td><td>student&ndash;teacher self-distillation (EMA teacher)</td><td>general visual features, emergent segmentation</td></tr>
+        <tr><th>SigLIP</th><td>image&ndash;text (weak)</td><td>contrastive with pairwise sigmoid loss</td><td>efficient, strong zero-shot encoder</td></tr>
+        <tr><th>Hiera</th><td>self-supervised (MAE)</td><td>hierarchical ViT, no specialized modules</td><td>simple/fast, images &amp; video</td></tr>
+        <tr><th>MAE (family)</th><td>self-supervised</td><td>mask input, reconstruct hidden part</td><td>the lineage OctoSense builds on</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>2 · The Global Robotics Technology Roadmap (2025&ndash;2035)</h2>
+    <p>A position/perspective document by <strong>Henrik I. Christensen (UC San Diego)</strong>, version 1.02, April 2026, covering Europe, Asia, and the United States over the 2025&ndash;2035 decade. It synthesizes state-of-the-art research (drawing on ICRA, IROS, RSS, CoRL, and ML venues like NeurIPS and ICML) with industry data and regional government strategies, aimed at policymakers, strategists, research agencies, and industrial R&amp;D leaders.</p>
+    <p>Its structure runs from a global market baseline (industrial, service, and R&amp;D investment) through the academic state of the art &mdash; embodied AI and foundation models for robotics, VLA systems, RL and sim-to-real, navigation, dexterous manipulation and tactile sensing, legged/bio-inspired locomotion, multi-robot systems, soft robotics &mdash; then enabling technologies (computing, perception &amp; sensing, materials), regional strategies, a 2025&ndash;2035 roadmap across algorithms/hardware/materials/systems, sector analyses (manufacturing, logistics, healthcare, agriculture, mining, construction), and cross-cutting themes (the humanoid convergence race, sustainability, workforce impact, geopolitical risk).</p>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Region</th><th>Strategic focus (per the roadmap)</th></tr></thead>
+      <tbody>
+        <tr><th>Europe</th><td>Safety, compliance, collaborative robots (cobots); shaped by the EU AI Act</td></tr>
+        <tr><th>Asia</th><td>Dominant industrial deployment (~74% of 2024 installations; China ~54%); humanoid scale-up</td></tr>
+        <tr><th>United States</th><td>AI-powered autonomy, defense robotics, foundation models / VLA</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <ul class="caveats">
+      <li><b>VLA models</b> are framed as the most consequential algorithmic advance of the period &mdash; the first to enable cross-embodiment generalization.</li>
+      <li><b>Humanoids</b> are projected to grow from roughly $370M (2025) to about $6.5B (2030), with Chinese OEMs and US tech firms racing to scale.</li>
+      <li><b>Soft robotics</b> (liquid-crystal elastomers, electroactive polymers, self-healing hydrogels) is bridging rigid industrial systems and bio-compatible medical devices.</li>
+      <li><b>Regulatory asymmetry</b> (e.g. the EU AI Act) is flagged as a key geopolitical variable.</li>
+    </ul>
+    <p class="note">Where OctoSense fits: a multimodal self-supervised foundation model for perception sits on the roadmap&rsquo;s &ldquo;foundation models for robotics&rdquo; and &ldquo;perception &amp; sensing&rdquo; lines &mdash; the data/representation layer beneath the VLA and autonomy trends the roadmap highlights.</p>
+
+    <h2>3 · &ldquo;on par&rdquo;</h2>
+    <p>&ldquo;On par (with)&rdquo; means <strong>at the same level / equal in quality / comparable</strong> (from golf&rsquo;s &ldquo;par&rdquo;). In a paper it typically appears as &ldquo;our method is <em>on par with</em> X on task Y, while being faster&rdquo; &mdash; i.e. it <em>matches</em> X, not beats it. The key nuance: &ldquo;on par&rdquo; signals parity; claiming superiority uses &ldquo;better than&rdquo; or &ldquo;outperforms.&rdquo;</p>
+
+    <div class="sources">
+      <span class="s-label">Sources</span>
+      Global Robotics Technology Roadmap 2025&ndash;2035 &mdash; H. I. Christensen, UCSD (v1.02, Apr 2026): <a href="https://hichristensen.com/pdf/global_robotics_roadmap_2025.pdf">hichristensen.com</a>; summary at <a href="https://robohub.org/global-robotics-technology-roadmap/">Robohub</a>; roadmap landscape at <a href="https://www.ieee-ras.org/robotics-roadmaps-from-around-the-world/">IEEE RAS</a>.<br>
+      models: DINO / DINOv2 (Caron 2021; Oquab 2023) &middot; SigLIP (Zhai 2023) &middot; Hiera (Ryali 2023) &middot; MAE (He 2022) &middot; CLIP / SAM<br>
+      paper context: <a href="https://arxiv.org/abs/2606.27317">arXiv:2606.27317</a> (OctoSense)
+    </div>
+
+  </article>
+
+  <article class="entry">
+    <div class="entry-index">Entry 03 — Inside self-supervised learning</div>
+
+    <div class="q">
+      <span class="label">Questions</span>
+      <ol>
+        <li>Explain &ldquo;joint-embedding / contrastive&rdquo; &mdash; isn&rsquo;t that the opposite of contrastive learning? Is &ldquo;generative&rdquo; the same as diffusion?</li>
+        <li>More detail on the representative models; tables comparing the families, then models within a family.</li>
+        <li>Why does representation collapse happen, and what else prevents it? Draw the DINO pipeline. What are multi-crop views?</li>
+        <li>The &ldquo;emergent properties&rdquo; sentence (attention segments objects, k-NN works); what does &ldquo;off-the-shelf features&rdquo; mean &mdash; entirely new features unlike the training set?</li>
+        <li>Explain CLIP-style; the form of InfoNCE; the form of the pairwise sigmoid loss; can the &ldquo;no global normalization&rdquo; idea be reused elsewhere &mdash; have others used it?</li>
+        <li>Does &ldquo;hierarchical (multiscale)&rdquo; mean cascaded? What does &ldquo;removes the specialized modules of Swin/MViT&rdquo; mean &mdash; does ViT itself contain them? Is MAE self-supervised?</li>
+        <li>What are sim-to-real, dexterous manipulation &amp; tactile sensing, and locomotion? Does &ldquo;on par&rdquo; mean &ldquo;on average&rdquo;?</li>
+      </ol>
+    </div>
+
+    <h2>1 · The SSL taxonomy (a correction)</h2>
+    <p><strong>Joint-embedding</strong> is the <em>architecture</em>: encode two views of the same image and make their embeddings agree in feature space. <strong>Contrastive</strong> is one <em>objective</em> within it &mdash; the one that uses negatives. There is also a <strong>non-contrastive</strong> branch (no negatives). So pairing &ldquo;joint-embedding / contrastive&rdquo; was loose: <span class="keyterm">DINO and BYOL are joint-embedding but non-contrastive</span> &mdash; the suspicion was right.</p>
+    <p>And &ldquo;<strong>generative</strong>&rdquo; here means <em>masked reconstruction in input space</em> (MAE, BEiT), <strong>not diffusion</strong>. Diffusion is a separate generative paradigm (iterative denoising); it can be used for representation learning, but it is not what this family refers to.</p>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Family</th><th>Compares in</th><th>Negatives?</th><th>Avoids collapse via</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><th>Contrastive (joint-embedding)</th><td>embedding space</td><td>yes</td><td>repulsion from negatives</td><td>SimCLR, MoCo</td></tr>
+        <tr><th>Non-contrastive (joint-embedding)</th><td>embedding space</td><td>no</td><td>asymmetry / EMA / stop-grad, or decorrelation</td><td>BYOL, DINO, SimSiam, Barlow Twins, VICReg</td></tr>
+        <tr><th>Generative / masked</th><td>input space (reconstruct)</td><td>no</td><td>target is the data itself</td><td>MAE, BEiT</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>2 · Representative models</h2>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Model</th><th>Group / yr</th><th>Key trick</th><th>Negatives</th><th>Anti-collapse</th></tr></thead>
+      <tbody>
+        <tr><th>SimCLR</th><td>Google &rsquo;20</td><td>strong aug + projection head + NT-Xent (InfoNCE)</td><td>in-batch</td><td>negatives</td></tr>
+        <tr><th>MoCo</th><td>FAIR &rsquo;20</td><td>momentum encoder + negative queue</td><td>queue</td><td>negatives + momentum</td></tr>
+        <tr><th>BYOL</th><td>DeepMind &rsquo;20</td><td>online net predicts EMA target via a predictor</td><td>none</td><td>predictor asymmetry + EMA + stop-grad</td></tr>
+        <tr><th>SimSiam</th><td>FAIR &rsquo;21</td><td>like BYOL without EMA; stop-grad is the key</td><td>none</td><td>stop-grad + predictor</td></tr>
+        <tr><th>DINO</th><td>Meta &rsquo;21</td><td>self-distillation, EMA teacher, multi-crop</td><td>none</td><td>centering + sharpening (+ EMA)</td></tr>
+        <tr><th>Barlow Twins / VICReg</th><td>&rsquo;21</td><td>cross-correlation &rarr; identity / variance-invariance-covariance</td><td>none</td><td>decorrelation / variance regularization</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Masked / generative</th><th>Idea</th><th>Reconstruction target</th></tr></thead>
+      <tbody>
+        <tr><th>MAE</th><td>mask ~75% of patches; ViT encodes the visible part; light decoder rebuilds</td><td>raw pixels</td></tr>
+        <tr><th>BEiT</th><td>mask patches; predict discrete visual tokens</td><td>codebook token ids</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>3 · Collapse, and the DINO pipeline</h2>
+    <p><strong>Why collapse happens:</strong> if the only goal is &ldquo;make two views agree,&rdquo; a trivial solution is to output the <em>same constant</em> for every input &mdash; the views agree perfectly and the loss is zero, but the features are useless. With no negatives or other safeguard, that degenerate solution is the easy one to fall into.</p>
+    <p><strong>DINO&rsquo;s safeguards:</strong> an EMA teacher with stop-gradient (asymmetry) makes the student chase a slow-moving target; <strong>centering</strong> (subtract a running mean of teacher outputs) blocks one dimension from dominating; <strong>sharpening</strong> (a low teacher temperature) blocks collapse to a uniform distribution. Centering and sharpening counter two <em>opposite</em> collapse modes and are used together. <strong>Other anti-collapse tools:</strong> contrastive negatives (SimCLR, MoCo), stop-grad + predictor (BYOL, SimSiam), decorrelation/variance terms (Barlow Twins, VICReg), feature whitening.</p>
+    <p><strong>Multi-crop:</strong> from one image, make a few <em>global</em> crops (large, high-res, &gt;50% of the image) and many <em>local</em> crops (small, low-res). The <em>student sees all crops; the teacher sees only global crops</em>, so the loss enforces a local&rarr;global correspondence &mdash; a cheap way to add views.</p>
+
+    <figure class="fig">
+      <svg width="100%" viewBox="0 0 720 430" role="img" aria-label="DINO self-distillation pipeline">
+        <defs>
+          <marker id="da" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#6A726E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="da-t" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#0E7C8C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <g font-family="'JetBrains Mono',monospace">
+          <!-- image -->
+          <rect x="16" y="190" width="104" height="52" rx="8" fill="#fff" stroke="#888780" stroke-width="0.7"/>
+          <text x="68" y="214" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1A1A2E">Input</text>
+          <text x="68" y="230" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1A1A2E">image</text>
+          <line x1="120" y1="216" x2="150" y2="216" stroke="#6A726E" stroke-width="1.1" marker-end="url(#da)"/>
+          <!-- augment -->
+          <rect x="150" y="180" width="138" height="74" rx="8" fill="#F3F1EB" stroke="#888780" stroke-width="0.7"/>
+          <text x="219" y="203" text-anchor="middle" font-size="12.5" font-weight="600" fill="#444441">Multi-crop augment</text>
+          <text x="219" y="221" text-anchor="middle" font-size="11" fill="#5F5E5A">2 global views (large)</text>
+          <text x="219" y="236" text-anchor="middle" font-size="11" fill="#5F5E5A">+ N local views (small)</text>
+
+          <!-- teacher row -->
+          <line x1="270" y1="180" x2="326" y2="108" stroke="#6A726E" stroke-width="1.1" marker-end="url(#da)"/>
+          <text x="300" y="150" font-size="10.5" fill="#6A726E">global</text>
+          <rect x="326" y="80" width="130" height="52" rx="8" fill="#E2F0F1" stroke="#0E7C8C" stroke-width="0.8"/>
+          <text x="391" y="102" text-anchor="middle" font-size="12.5" font-weight="600" fill="#0a5e6b">Teacher</text>
+          <text x="391" y="119" text-anchor="middle" font-size="10.5" fill="#0E7C8C">ViT &middot; EMA, stop-grad</text>
+          <line x1="456" y1="106" x2="486" y2="106" stroke="#6A726E" stroke-width="1.1" marker-end="url(#da)"/>
+          <rect x="486" y="80" width="150" height="52" rx="8" fill="#fff" stroke="#0E7C8C" stroke-width="0.7"/>
+          <text x="561" y="102" text-anchor="middle" font-size="12" font-weight="600" fill="#0a5e6b">center + sharpen</text>
+          <text x="561" y="119" text-anchor="middle" font-size="10.5" fill="#0E7C8C">softmax (low &tau;&#8348;) &rarr; p&#8348;</text>
+
+          <!-- student row -->
+          <line x1="270" y1="254" x2="326" y2="326" stroke="#6A726E" stroke-width="1.1" marker-end="url(#da)"/>
+          <text x="296" y="300" font-size="10.5" fill="#6A726E">all crops</text>
+          <rect x="326" y="320" width="130" height="52" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.8"/>
+          <text x="391" y="342" text-anchor="middle" font-size="12.5" font-weight="600" fill="#993C1D">Student</text>
+          <text x="391" y="359" text-anchor="middle" font-size="10.5" fill="#993C1D">ViT &middot; trained by SGD</text>
+          <line x1="456" y1="346" x2="486" y2="346" stroke="#6A726E" stroke-width="1.1" marker-end="url(#da)"/>
+          <rect x="486" y="320" width="150" height="52" rx="8" fill="#fff" stroke="#D85A30" stroke-width="0.7"/>
+          <text x="561" y="349" text-anchor="middle" font-size="11" font-weight="600" fill="#993C1D">softmax (&tau;&#8347;) &rarr; p&#8347;</text>
+
+          <!-- loss -->
+          <rect x="486" y="196" width="150" height="60" rx="8" fill="#15211F"/>
+          <text x="561" y="219" text-anchor="middle" font-size="12.5" font-weight="600" fill="#FAF9F6">Cross-entropy</text>
+          <text x="561" y="238" text-anchor="middle" font-size="11" fill="#7FD4DE">L = &minus;&Sigma; p&#8348;&middot;log p&#8347;</text>
+          <line x1="561" y1="132" x2="561" y2="196" stroke="#6A726E" stroke-width="1.1" marker-end="url(#da)"/>
+          <line x1="561" y1="320" x2="561" y2="256" stroke="#6A726E" stroke-width="1.1" marker-end="url(#da)"/>
+
+          <!-- EMA update arrow student -> teacher -->
+          <line x1="360" y1="320" x2="360" y2="132" stroke="#0E7C8C" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#da-t)"/>
+          <text x="366" y="228" font-size="10.5" fill="#0a5e6b">EMA update</text>
+          <text x="366" y="242" font-size="10.5" fill="#0a5e6b">(no gradient)</text>
+
+          <text x="16" y="404" font-size="11" fill="#6A726E">The teacher is never trained by gradients &mdash; it is an exponential moving average of the student.</text>
+          <text x="16" y="420" font-size="11" fill="#6A726E">Centering + sharpening on the teacher prevent the two collapse modes (uniform vs. one-dimension-dominant).</text>
+        </g>
+      </svg>
+      <figcaption>DINO self-distillation. Student and teacher share architecture; the teacher is an EMA copy with stop-gradient, and its outputs are centered then sharpened before the cross-entropy target.</figcaption>
+    </figure>
+
+    <h2>4 · Emergent properties &amp; &ldquo;off-the-shelf&rdquo;</h2>
+    <p><strong>Attention segments objects:</strong> in a DINO-trained ViT, the [CLS] token&rsquo;s self-attention lands on coherent object regions, so thresholding it yields <em>unsupervised</em> segmentation masks &mdash; though the model never saw segmentation labels. &ldquo;Emergent&rdquo; = not trained for, yet it appears. <strong>k-NN works:</strong> nearest-neighbour classification in feature space is accurate with no fine-tuning, which means the features are already semantically organized.</p>
+    <p><strong>Off-the-shelf features</strong> means features you can use <em>as-is</em>: freeze the trained backbone and read out embeddings for a new task (k-NN, linear probe, or as input to a downstream model) without retraining the backbone. It does <strong>not</strong> mean the features are unrelated to the training data &mdash; they are learned from the training distribution but <em>generalize</em> to new images/tasks. The point is reusability without fine-tuning, not alien features.</p>
+
+    <h2>5 · CLIP-style, InfoNCE, and the sigmoid loss</h2>
+    <p><strong>CLIP-style</strong> trains an image encoder and a text encoder jointly on image&ndash;text pairs. For a batch of N pairs it builds an N&times;N similarity matrix and pushes matched pairs (the diagonal) up and mismatched pairs down via softmax cross-entropy (InfoNCE), giving an aligned image&ndash;text space usable for zero-shot classification and retrieval. SigLIP is CLIP-style with a different loss.</p>
+    <h3>InfoNCE</h3>
+    <p>For anchor <code>i</code> with positive <code>i⁺</code> (cosine similarity, temperature $\tau$):</p>
+    <p>$$\mathcal{L}_i = -\log \frac{\exp\!\big(\operatorname{sim}(z_i, z_i^{+})/\tau\big)}{\displaystyle\sum_{j}\exp\!\big(\operatorname{sim}(z_i, z_j)/\tau\big)}$$</p>
+    <p>The denominator sums over the whole batch &mdash; the &ldquo;global normalization&rdquo;.</p>
+    <h3>Pairwise sigmoid loss (SigLIP)</h3>
+    <p>Label <code>y_ij = +1</code> if matched (i=j) else <code>&minus;1</code>; logit with learnable temperature <code>t</code> and bias <code>b</code>:</p>
+    <p>$$s_{ij} = t\,\langle v_i, t_j\rangle + b,\qquad y_{ij}=\begin{cases}+1 & i=j\\[2pt] -1 & i\neq j\end{cases}$$</p>
+    <p>$$\mathcal{L} = \frac{1}{|B|}\sum_{i}\sum_{j}\log\!\Big(1+\exp\big(-\,y_{ij}\,s_{ij}\big)\Big)$$</p>
+    <p>Each pair is an independent match/no-match binary decision, so there is no softmax across the batch &mdash; no all-gather of every embedding, no |B|&times;|B| matrix. That makes it memory-efficient and scalable to very large or very small batches; the bias <code>b</code> handles the heavy negative-to-positive imbalance.</p>
+    <p><strong>Reusable elsewhere?</strong> Yes. The &ldquo;pairwise sigmoid, no global normalization&rdquo; idea has been picked up beyond SigLIP: <strong>SigCLR</strong> applies a sigmoid loss to pure visual representation learning (reusing SigLIP&rsquo;s chunked implementation to avoid costly all-gathers and the |B|&times;|B| matrix); <strong>SCS-SupCon</strong> brings a sigmoid pairwise loss with learnable temperature/bias into supervised contrastive learning to reduce negative-sample dilution; and cross-modal retrieval work swaps softmax for a SigLIP-style sigmoid to drop batch-global normalization. Broadly, any contrastive / retrieval / metric-learning task where batch-global softmax is the bottleneck can consider it.</p>
+
+    <h2>6 · Hiera, Swin/MViT, and MAE</h2>
+    <p><strong>Hierarchical (multiscale) &ne; cascaded.</strong> Multiscale means one backbone split into stages that progressively downsample &mdash; high spatial resolution / few channels early, low resolution / many channels late (a feature pyramid). &ldquo;Cascaded&rdquo; usually means separate models/stages chained together (e.g. Cascade R-CNN). Plain ViT is <em>isotropic</em>: one resolution throughout, no pyramid.</p>
+    <p><strong>&ldquo;Removes the specialized modules of Swin/MViT&rdquo;:</strong> plain ViT does <em>not</em> contain Swin/MViT modules. Swin and MViT are ViT <em>variants</em> that <em>add</em> modules to get hierarchy/efficiency (Swin: shifted-window local attention + patch merging; MViT: pooling attention). Hiera&rsquo;s claim is that those hand-designed modules are unnecessary: take a simple multiscale skeleton, strip the extras (relative position embeddings, convs, shifted windows), and let strong <strong>MAE pretraining</strong> teach the spatial inductive biases &mdash; simpler, faster, more accurate.</p>
+    <p><strong>MAE is self-supervised:</strong> yes &mdash; mask ~75% of patches and reconstruct missing pixels, with no labels.</p>
+
+    <h2>7 · Robotics terms, and &ldquo;on par&rdquo;</h2>
+    <ul class="caveats">
+      <li><b>Sim-to-real:</b> train in simulation (cheap, safe, abundant data), then deploy on a real robot; the &ldquo;reality gap&rdquo; is bridged with domain randomization, domain adaptation, system identification, and real-data fine-tuning.</li>
+      <li><b>Dexterous manipulation:</b> fine, contact-rich skill with multi-fingered hands (in-hand reorientation, varied grasping, tool use), beyond simple grippers. <b>Tactile sensing</b> gives the robot touch (force, slip, texture, local geometry) to complement vision, which is occluded during contact.</li>
+      <li><b>Locomotion:</b> moving the robot&rsquo;s own body through the world (walking, running, climbing) &mdash; legged/bio-inspired locomotion is the four-legged or humanoid case; distinct from manipulation, which moves objects.</li>
+      <li><b>&ldquo;On par&rdquo; &ne; &ldquo;on average&rdquo;:</b> it means <em>comparable / equal in level</em>. &ldquo;On average&rdquo; is a statistical mean. Parity uses &ldquo;on par&rdquo;; superiority uses &ldquo;better than / outperforms.&rdquo;</li>
+    </ul>
+
+    <div class="sources">
+      <span class="s-label">Sources</span>
+      SSL methods: SimCLR (Chen 2020) &middot; MoCo (He 2020) &middot; BYOL (Grill 2020) &middot; SimSiam (Chen 2021) &middot; DINO / DINOv2 (Caron 2021; Oquab 2023) &middot; Barlow Twins / VICReg &middot; MAE (He 2022) &middot; BEiT (Bao 2021)<br>
+      losses: CLIP (Radford 2021) &middot; InfoNCE (Oord 2018) &middot; <a href="https://arxiv.org/abs/2303.15343">SigLIP (Zhai 2023)</a>; sigmoid-loss reuse: SigCLR (2410.17427) &middot; SCS-SupCon (2512.17954)<br>
+      backbones: ViT &middot; Swin &middot; MViT &middot; <a href="https://arxiv.org/abs/2306.00989">Hiera (Ryali 2023)</a>
+    </div>
+
+  </article>
+
+  <article class="entry">
+    <div class="entry-index">Entry 04 — Joint-embedding internals & masked modeling</div>
+
+    <div class="q">
+      <span class="label">Questions</span>
+      <ol>
+        <li>What are the &ldquo;two views&rdquo; and what decides them? Is the embedding space a shared representation space, and how is alignment achieved?</li>
+        <li>Is representation collapse about failing to distinguish important features / weighting them equally? How does a core&ndash;periphery idea (pull high-similarity together, push low-similarity apart) relate to contrastive learning?</li>
+        <li>Explain NT-Xent (InfoNCE), the momentum encoder and its update, the memory bank / negative queue, the online network (vs. test-time adaptation), EMA, and the predictor/EMA/stop-grad &ldquo;asymmetry&rdquo;.</li>
+        <li>How are DINO&rsquo;s centering + sharpening, Barlow Twins&rsquo; cross-correlation, and VICReg&rsquo;s three terms actually implemented?</li>
+        <li>Confirm MAE; for BEiT, is the whole image masked, and why predict discrete (not continuous) visual tokens?</li>
+      </ol>
+    </div>
+
+    <h2>1 · Two views, a shared space, and alignment</h2>
+    <p>The <strong>two views</strong> are two random <em>augmentations of the same image</em> &mdash; random resized crop, flip, color jitter, grayscale, blur, solarization. The criterion: augmentations must <strong>preserve semantics</strong> (still the same object/scene) while changing only low-level appearance, so the model learns invariance to those nuisances. Two views of one image form a <em>positive pair</em>. In DINO they also come in two sizes (global / local &mdash; multi-crop).</p>
+    <p>The <strong>embedding space is shared</strong>: both views pass through the same (or EMA-coupled) encoder, usually followed by a projection head, into a $d$-dimensional space whose vectors are L2-normalized (so similarity = cosine = dot product). For CLIP/SigLIP the two modalities use two encoders that map into one <em>common</em> space. <strong>Alignment</strong> is produced by the loss: raise the similarity of matched views/pairs (and, for contrastive methods, lower it for mismatched ones).</p>
+
+    <figure class="fig">
+      <svg width="100%" viewBox="0 0 700 300" role="img" aria-label="Joint-embedding: two views into a shared space">
+        <defs>
+          <marker id="je" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#6A726E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <g font-family="'JetBrains Mono',monospace">
+          <rect x="18" y="124" width="92" height="52" rx="8" fill="#fff" stroke="#888780" stroke-width="0.7"/>
+          <text x="64" y="154" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1A1A2E">image</text>
+          <line x1="110" y1="140" x2="150" y2="92" stroke="#6A726E" stroke-width="1.1" marker-end="url(#je)"/>
+          <line x1="110" y1="160" x2="150" y2="208" stroke="#6A726E" stroke-width="1.1" marker-end="url(#je)"/>
+          <rect x="150" y="64" width="116" height="44" rx="8" fill="#F3F1EB" stroke="#888780" stroke-width="0.7"/>
+          <text x="208" y="82" text-anchor="middle" font-size="12" font-weight="600" fill="#444441">view A</text>
+          <text x="208" y="98" text-anchor="middle" font-size="10.5" fill="#5F5E5A">augmentation</text>
+          <rect x="150" y="192" width="116" height="44" rx="8" fill="#F3F1EB" stroke="#888780" stroke-width="0.7"/>
+          <text x="208" y="210" text-anchor="middle" font-size="12" font-weight="600" fill="#444441">view B</text>
+          <text x="208" y="226" text-anchor="middle" font-size="10.5" fill="#5F5E5A">augmentation</text>
+          <line x1="266" y1="86" x2="300" y2="134" stroke="#6A726E" stroke-width="1.1" marker-end="url(#je)"/>
+          <line x1="266" y1="214" x2="300" y2="166" stroke="#6A726E" stroke-width="1.1" marker-end="url(#je)"/>
+          <rect x="300" y="124" width="116" height="52" rx="8" fill="#E2F0F1" stroke="#0E7C8C" stroke-width="0.8"/>
+          <text x="358" y="146" text-anchor="middle" font-size="12.5" font-weight="600" fill="#0a5e6b">encoder f</text>
+          <text x="358" y="163" text-anchor="middle" font-size="10.5" fill="#0E7C8C">shared / EMA</text>
+          <line x1="416" y1="150" x2="452" y2="150" stroke="#6A726E" stroke-width="1.1" marker-end="url(#je)"/>
+          <!-- embedding space -->
+          <rect x="452" y="40" width="236" height="220" rx="18" fill="#FBFBFD" stroke="#888780" stroke-width="0.7"/>
+          <text x="570" y="62" text-anchor="middle" font-size="11.5" fill="#6A726E">shared embedding space</text>
+          <circle cx="548" cy="120" r="7" fill="#0E7C8C"/>
+          <text x="548" y="104" text-anchor="middle" font-size="11" fill="#0a5e6b">z_A</text>
+          <circle cx="586" cy="142" r="7" fill="#0E7C8C"/>
+          <text x="602" y="140" text-anchor="middle" font-size="11" fill="#0a5e6b">z_B</text>
+          <line x1="556" y1="125" x2="579" y2="138" stroke="#0E7C8C" stroke-width="1.4" marker-start="url(#je)" marker-end="url(#je)"/>
+          <text x="590" y="112" font-size="10" fill="#0a5e6b">attract (positive)</text>
+          <circle cx="512" cy="216" r="7" fill="#D85A30"/>
+          <text x="512" y="236" text-anchor="middle" font-size="11" fill="#993C1D">z_neg</text>
+          <line x1="560" y1="150" x2="520" y2="208" stroke="#D85A30" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#je)"/>
+          <text x="556" y="190" font-size="10" fill="#993C1D">repel (contrastive only)</text>
+        </g>
+      </svg>
+      <figcaption>Two augmented views of one image map through a shared encoder into one space. The loss pulls the positive pair together; contrastive methods additionally push negatives apart.</figcaption>
+    </figure>
+
+    <h2>2 · What collapse really is (and the core&ndash;periphery link)</h2>
+    <p>Collapse is not about weighting features equally &mdash; it is the representation becoming <strong>degenerate / uninformative</strong>. Two modes: <strong>complete collapse</strong> (every input maps to the same constant vector, so nothing is distinguishable) and <strong>dimensional collapse</strong> (embeddings squeeze into a low-rank subspace, with many dead, zero-variance dimensions). The harm is lost discriminative variation, not equal importance.</p>
+    <p>A <strong>core&ndash;periphery objective</strong> &mdash; pull high-similarity items together, push low-similarity items apart &mdash; is the same attract/repel geometry as contrastive learning. The difference is how positives/negatives are defined: vanilla contrastive uses <em>instance discrimination</em> (positives = augmentations of the same image) with InfoNCE; a similarity-graded rule is closer to <em>metric learning</em>, <em>graph/neighborhood contrastive</em>, or <em>soft/weighted contrastive</em> learning (e.g. SupCon). Notably, SigLIP&rsquo;s per-pair sigmoid is itself a &ldquo;decide closer-or-farther for each pair&rdquo; rule, structurally close to a similarity-graded core&ndash;periphery loss.</p>
+
+    <h2>3 · Contrastive internals</h2>
+    <h3>NT-Xent (InfoNCE)</h3>
+    <p>SimCLR&rsquo;s name for InfoNCE: <em>Normalized Temperature-scaled Cross-Entropy</em>. With $N$ images and 2 augmentations each ($2N$ samples), for a positive pair $(i,j)$ the rest are negatives:</p>
+    <p>$$\ell_{i,j} = -\log \frac{\exp\!\big(\operatorname{sim}(z_i,z_j)/\tau\big)}{\displaystyle\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}\,\exp\!\big(\operatorname{sim}(z_i,z_k)/\tau\big)},\qquad \operatorname{sim}(u,v)=\frac{u^\top v}{\lVert u\rVert\,\lVert v\rVert}$$</p>
+    <p>It is a $(2N\!-\!1)$-way softmax that must pick the positive out of all candidates; the total averages over all positive pairs. &ldquo;Normalized&rdquo; = L2-normalized embeddings; &ldquo;temperature-scaled&rdquo; = the $/\tau$.</p>
+    <h3>Momentum encoder &amp; its update (MoCo)</h3>
+    <p>Two encoders: a query encoder $f_q$ (updated by gradients) and a key/<strong>momentum</strong> encoder $f_k$ (no gradients), whose weights track $f_q$ by EMA:</p>
+    <p>$$\theta_k \leftarrow m\,\theta_k + (1-m)\,\theta_q,\qquad m \approx 0.999$$</p>
+    <p>That slow &ldquo;dynamics&rdquo; keeps the keys in the large negative <em>queue</em> consistent over time (a fast-changing $f_k$ would make older queued keys stale).</p>
+    <h3>Memory bank vs. queue</h3>
+    <p>&ldquo;Memory bank&rdquo; is an established term from Wu et al. 2018 (instance discrimination): a store holding one feature vector per dataset image, sampled for negatives. MoCo replaced it with a FIFO <strong>queue</strong> of recent keys plus the momentum encoder &mdash; many, consistent negatives without storing the whole dataset. So the term is standard, and MoCo&rsquo;s queue is technically distinct from the older bank (often conflated informally).</p>
+    <h3>Online network, EMA, and asymmetry</h3>
+    <p>In BYOL the trained branch is the <strong>online</strong> network; the <strong>target</strong> provides the regression target and is an EMA of the online net. &ldquo;Online&rdquo; just means &ldquo;the actively learning branch&rdquo; &mdash; <em>not</em> test-time adaptation (which adapts a model at inference). <strong>EMA</strong> updates the target&rsquo;s parameters as a running average:</p>
+    <p>$$\theta_{\text{target}} \leftarrow \lambda\,\theta_{\text{target}} + (1-\lambda)\,\theta_{\text{online}},\qquad \lambda \to 1$$</p>
+    <p>The target is never trained by gradients: it appears in the <em>forward</em> pass (to make targets) but has <em>no backward</em> pass (stop-gradient); EMA is a post-step parameter rule. It supplies a stable, slowly-moving target (a temporal ensemble), echoing Mean Teacher / Polyak averaging.</p>
+    <p><strong>&ldquo;Asymmetry&rdquo;</strong> means the two branches are not interchangeable: the online branch has an extra <em>predictor</em> MLP the target lacks (structural asymmetry); the target is an EMA / carries a stop-gradient (update asymmetry). This breaks the symmetry that would make the constant solution a stable fixed point &mdash; the online net chases a target it cannot trivially equal by collapsing. SimSiam&rsquo;s ablation showed the <em>stop-gradient</em> is the essential ingredient.</p>
+
+    <h2>4 · Non-contrastive details (with formulas)</h2>
+    <h3>DINO &mdash; centering + sharpening</h3>
+    <p>Teacher and student both produce softmax distributions; the teacher&rsquo;s is centered (subtract a running mean $c$) and sharpened (low temperature $\tau_t$):</p>
+    <p>$$P_t(x)=\operatorname{softmax}\!\Big(\tfrac{g_t(x)-c}{\tau_t}\Big),\quad P_s(x)=\operatorname{softmax}\!\Big(\tfrac{g_s(x)}{\tau_s}\Big),\quad c \leftarrow m\,c+(1-m)\tfrac{1}{B}\textstyle\sum_i g_t(x_i)$$</p>
+    <p>$$\mathcal{L}=-\sum P_t(x)\,\log P_s(x)$$</p>
+    <p>Centering blocks one dimension dominating (anti-domination, pushes toward uniform); sharpening blocks the uniform solution (pushes toward peaked). The two opposing forces balance, avoiding collapse without negatives.</p>
+    <h3>Barlow Twins &mdash; cross-correlation &rarr; identity</h3>
+    <p>From two views&rsquo; batch-normalized embeddings $Z^A,Z^B$, form the $d\times d$ cross-correlation $C$ and push it toward the identity:</p>
+    <p>$$C_{ij}=\frac{\sum_b Z^A_{b,i}\,Z^B_{b,j}}{\sqrt{\sum_b (Z^A_{b,i})^2}\;\sqrt{\sum_b (Z^B_{b,j})^2}},\qquad \mathcal{L}_{\text{BT}}=\sum_i (1-C_{ii})^2+\lambda\sum_i\sum_{j\neq i} C_{ij}^2$$</p>
+    <p>Diagonal&rarr;1 is invariance (the two views agree); off-diagonal&rarr;0 is redundancy reduction (dimensions decorrelated). No negatives, no large batch.</p>
+    <h3>VICReg &mdash; variance, invariance, covariance</h3>
+    <p>$$v(Z)=\tfrac{1}{d}\sum_{j}\max\!\big(0,\ \gamma-\sqrt{\operatorname{Var}(Z_{\cdot j})+\epsilon}\big),\quad s(Z,Z')=\tfrac{1}{N}\sum_i \lVert z_i-z'_i\rVert^2,\quad c(Z)=\tfrac{1}{d}\sum_{i\neq j}\big[\operatorname{Cov}(Z)\big]_{ij}^2$$</p>
+    <p>$$\mathcal{L}=\lambda\,s(Z,Z')+\mu\big(v(Z)+v(Z')\big)+\nu\big(c(Z)+c(Z')\big)$$</p>
+    <p>Variance keeps each dimension above a std floor $\gamma$ (anti-collapse); invariance is the view-matching MSE; covariance decorrelates dimensions. Variance + covariance explicitly replace negatives/EMA.</p>
+
+    <h2>5 · Masked modeling: MAE vs. BEiT</h2>
+    <p><strong>MAE</strong> confirmed: mask ~75% of patches, encode only the visible ones, and a light decoder reconstructs the masked <em>pixels</em>; loss is MSE on masked patches only:</p>
+    <p>$$\mathcal{L}_{\text{MAE}}=\frac{1}{|\mathcal{M}|}\sum_{p\in\mathcal{M}} \lVert \hat{x}_p - x_p\rVert^2$$</p>
+    <p><strong>BEiT</strong> masks a <em>subset</em> (~40%), not all (it needs visible context). It predicts <strong>discrete visual tokens</strong>: a pre-trained image tokenizer (a discrete VAE) maps each patch to a codebook id $z_p$, and BEiT classifies the masked patches over that codebook:</p>
+    <p>$$\mathcal{L}_{\text{BEiT}}=-\sum_{p\in\mathcal{M}} \log p\big(z_p \mid \tilde{x}\big)$$</p>
+    <p>Why discrete? It is &ldquo;BERT for images,&rdquo; so it needs a visual vocabulary; classifying codebook ids is a cleaner, higher-level target than regressing raw pixels and avoids spending capacity on imperceptible detail. But discreteness is a design choice, not a requirement &mdash; MAE regresses continuous pixels and works well; BEiT&rsquo;s route just adds a tokenizer dependency.</p>
+
+    <div class="sources">
+      <span class="s-label">Sources</span>
+      contrastive: SimCLR / NT-Xent (Chen 2020) &middot; MoCo + momentum encoder (He 2020) &middot; memory bank (Wu 2018) &middot; InfoNCE (Oord 2018)<br>
+      non-contrastive: BYOL (Grill 2020) &middot; SimSiam (Chen 2021) &middot; DINO (Caron 2021) &middot; Barlow Twins (Zbontar 2021) &middot; VICReg (Bardes 2022) &middot; Mean Teacher (Tarvainen 2017)<br>
+      masked: MAE (He 2022) &middot; BEiT (Bao 2021); related: SupCon &middot; graph/neighborhood contrastive
+    </div>
+
+  </article>
+
+</div>
+</body>
+</html>
+{% endraw %}
