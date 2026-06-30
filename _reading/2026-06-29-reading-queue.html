@@ -1,0 +1,234 @@
+---
+layout: null
+title: "Reading Queue — Want to Read"
+date: 2026-06-29
+tags: [reading-queue, embodied-ai, world-models, agents, inference-efficiency, study-notes]
+gist: "A triaged backlog of good papers I want to read but haven't yet: embodied AI / world models / sim-to-real (PhysisForcing, SimFoundry, Learning to Fold, Object-Centric Residual RL), agentic systems and tool use (GBC, PAT, ProMSA, Tool-Suppression), and inference efficiency / generative (ConvFill, Qwen-Image-2.0-RL), plus a condensed industry pulse."
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Queue — Want to Read (2026-06-29)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --accent:#B26B00; --accent-2:#C77D11; --ink:#1c1a17; --muted:#7a7268;
+    --hair:#e7e0d6; --wash:#FBF7F0; --wash-2:#F3ECE1; --card:#fff;
+    --g-embodied:#B26B00; --g-agents:#3E6B8C; --g-infer:#7A5AA6;
+    --display:"Space Grotesk",sans-serif; --serif:"Spectral",Georgia,serif; --mono:"JetBrains Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--serif);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto;padding:46px 24px 80px}
+
+  /* masthead */
+  .mast{border-bottom:2.5px solid var(--ink);padding-bottom:18px;margin-bottom:8px}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+  h1.title{font-family:var(--display);font-weight:700;font-size:40px;line-height:1.02;letter-spacing:-0.02em;margin:0 0 10px}
+  .meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:0}
+  .meta b{color:var(--ink)}
+  .lede{font-size:16px;color:#43403a;margin:18px 0 0}
+
+  /* priority picks */
+  .picks{margin:26px 0 6px;border:1.5px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#FCF3E4,#fff 60%);padding:18px 20px}
+  .picks .blabel{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin:0 0 10px;font-weight:600}
+  .picks ul{margin:0;padding-left:0;list-style:none}
+  .picks li{font-size:14.5px;margin:0 0 8px;padding-left:20px;position:relative}
+  .picks li:last-child{margin-bottom:0}
+  .picks li::before{content:"\2605";position:absolute;left:0;color:var(--accent);font-size:13px;top:1px}
+  .picks a{color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--accent-2)}
+  .picks a:hover{background:#FCF3E4}
+
+  /* groups */
+  .group{margin:38px 0 0}
+  .group-head{display:flex;align-items:center;gap:12px;margin:0 0 4px}
+  .group-head .bar{width:26px;height:10px;border-radius:3px;display:inline-block}
+  .group-head h2{font-family:var(--display);font-weight:700;font-size:21px;margin:0;letter-spacing:-0.01em}
+  .group-head .count{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:auto}
+  .group-note{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:2px 0 18px}
+
+  /* cards */
+  .card{background:var(--card);border:1px solid var(--hair);border-left:4px solid var(--hair);border-radius:11px;padding:18px 20px;margin:0 0 16px;box-shadow:0 1px 0 rgba(0,0,0,0.02)}
+  .card.pri{border-left-color:var(--accent);box-shadow:0 3px 14px rgba(178,107,0,0.10)}
+  .card-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+  .num{font-family:var(--mono);font-weight:600;font-size:12px;color:#fff;background:var(--ink);border-radius:5px;padding:3px 8px}
+  .card.pri .num{background:var(--accent)}
+  .badge{font-family:var(--mono);font-size:10.5px;letter-spacing:0.03em;padding:2px 7px;border-radius:20px;border:1px solid var(--hair);color:var(--muted)}
+  .badge.rel{background:var(--wash-2)}
+  .badge.buzz{background:#FDEFE0;border-color:#F0D5B6;color:#9a5a00}
+  .badge.hot{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+  .badge.nosum{background:#fbeaea;border-color:#f0caca;color:#a23b3b}
+  .todo{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.04em}
+  h3.ct{font-family:var(--display);font-weight:600;font-size:17.5px;line-height:1.25;margin:0 0 4px;letter-spacing:-0.01em}
+  h3.ct a{color:var(--ink);text-decoration:none;border-bottom:1.5px solid transparent}
+  h3.ct a:hover{border-bottom-color:var(--accent-2)}
+  .auth{font-family:var(--mono);font-size:12px;color:var(--muted);margin:0 0 12px}
+  .auth a{color:var(--accent);text-decoration:none}
+  .card p.l{font-size:14.5px;margin:0 0 7px}
+  .card p.l b{font-family:var(--display);font-weight:600;font-size:12.5px;letter-spacing:0.01em;color:var(--accent);text-transform:uppercase;margin-right:4px}
+  .card.agents p.l b{color:var(--g-agents)}
+  .card.infer p.l b{color:var(--g-infer)}
+  .tagrow{margin-top:11px;display:flex;gap:6px;flex-wrap:wrap}
+  .tag{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:var(--wash);border:1px solid var(--hair);border-radius:5px;padding:2px 7px}
+
+  /* pulse */
+  .pulse{margin:44px 0 0;border-top:1.5px solid var(--hair);padding-top:24px}
+  .pulse h2{font-family:var(--display);font-weight:700;font-size:19px;margin:0 0 4px}
+  .pulse .sub{font-family:var(--mono);font-size:12px;color:var(--muted);margin:0 0 14px}
+  .pulse ul{margin:0;padding-left:18px}
+  .pulse li{font-size:14.5px;margin:0 0 9px}
+  .pulse li b{font-weight:600}
+
+  footer{margin-top:46px;border-top:1px solid var(--hair);padding-top:16px;font-family:var(--mono);font-size:11.5px;color:var(--muted);text-align:center}
+  @media(max-width:560px){h1.title{font-size:30px}.wrap{padding:32px 16px 60px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <p class="kicker">Reading Queue &middot; Triaged Backlog</p>
+    <h1 class="title">Want to Read</h1>
+    <p class="meta">Compiled <b>2026-06-29</b> &nbsp;&middot;&nbsp; 10 papers &nbsp;&middot;&nbsp; 3 groups &nbsp;&middot;&nbsp; from hf_daily / arXiv pulse</p>
+    <p class="lede">Good papers I want to read but haven&rsquo;t had time for yet &mdash; sorted by theme, with relevance and buzz signals. Stars mark the ones closest to the world-model / robotic-control thread I&rsquo;m already reading.</p>
+  </header>
+
+  <section class="picks">
+    <p class="blabel">Priority picks (closest to my current thread)</p>
+    <ul>
+      <li><a href="#p7">PhysisForcing</a> &mdash; physics-reinforced video world simulator; the diffusion counterpart to PhysiFormer&rsquo;s explicit-physics approach. <b>Buzz 30 &mdash; hottest in the batch.</b></li>
+      <li><a href="#p5">SimFoundry</a> &mdash; automated real&rarr;sim digital twins + &ldquo;digital cousins&rdquo;; the sim-to-real bridge I flagged in the PhysiFormer notes.</li>
+      <li><a href="#p3">Learning to Fold</a> &mdash; LeHome 2026 winner; a unified VLA head that doubles as its own value/failure detector.</li>
+    </ul>
+  </section>
+
+  <!-- GROUP 1 -->
+  <section class="group">
+    <div class="group-head"><span class="bar" style="background:var(--g-embodied)"></span><h2>Embodied AI, world models &amp; sim-to-real</h2><span class="count">4</span></div>
+    <p class="group-note">Directly adjacent to the PhysiFormer / Fast-LeWM / ICWM thread.</p>
+
+    <article class="card pri" id="p7">
+      <div class="card-top"><span class="num">07</span><span class="badge rel">rel 0.90</span><span class="badge hot">&#128293; buzz 30</span><span class="badge">arxiv+hf</span><span class="todo">&#9744; to read</span></div>
+      <h3 class="ct"><a href="https://arxiv.org/abs/2606.28128">PhysisForcing: Physics Reinforced World Simulator for Robotic Manipulation</a></h3>
+      <p class="auth">Peiwen Zhang, Yufan Deng, Shangkun Sun, Juncheng Ma et al. &middot; <a href="https://arxiv.org/abs/2606.28128">arXiv:2606.28128</a></p>
+      <p class="l"><b>Why read</b>The video-diffusion route to physical consistency, complementing PhysiFormer&rsquo;s explicit 3D approach &mdash; same problem (physically implausible rollouts), different substrate.</p>
+      <p class="l"><b>Key idea</b>Supervise DiT diffusion features at pixel-level (point-trajectory alignment) and semantic-level (relational alignment via a frozen video encoder) to focus training on physics-informative contact regions.</p>
+      <p class="l"><b>Result</b>+22.3% / +9.2% on R-Bench; closed-loop WorldArena success 16.0% &rarr; 24.0%; improves downstream policy success.</p>
+      <div class="tagrow"><span class="tag">world model</span><span class="tag">video diffusion</span><span class="tag">contact physics</span><span class="tag">manipulation</span></div>
+    </article>
+
+    <article class="card pri" id="p5">
+      <div class="card-top"><span class="num">05</span><span class="badge rel">rel 0.97</span><span class="badge buzz">&#128293; 6</span><span class="badge">hf_daily</span><span class="todo">&#9744; to read</span></div>
+      <h3 class="ct"><a href="https://arxiv.org/abs/2606.28276">SimFoundry: Modular and Automated Scene Generation for Policy Learning and Evaluation</a></h3>
+      <p class="auth">Nadun Ranawaka, Josiah Wong, Wei-Lin Pai, Wei-Teng Chu et al. &middot; <a href="https://arxiv.org/abs/2606.28276">arXiv:2606.28276</a></p>
+      <p class="l"><b>Why read</b>The concrete sim-to-real bridge I sketched in the PhysiFormer notes: reconstruct sim-ready twins from video, then vary them to generalize.</p>
+      <p class="l"><b>Key idea</b>Zero-shot real&rarr;sim digital-twin reconstruction from video + procedural &ldquo;digital cousins&rdquo; (affordance-preserving object/scene/task variations) for policy generalization.</p>
+      <p class="l"><b>Result</b>Sim&ndash;real correlation Pearson r=0.911 across 7 tasks &times; 5 architectures; +17% / +21% / +40% real success from object/scene/task cousins.</p>
+      <div class="tagrow"><span class="tag">sim-to-real</span><span class="tag">digital twins</span><span class="tag">data generation</span><span class="tag">policy learning</span></div>
+    </article>
+
+    <article class="card pri" id="p3">
+      <div class="card-top"><span class="num">03</span><span class="badge rel">rel 1.00</span><span class="badge buzz">&#128293; 4</span><span class="badge">hf_daily</span><span class="todo">&#9744; to read</span></div>
+      <h3 class="ct"><a href="https://arxiv.org/abs/2606.27163">Learning to Fold: prizewinning solution at LeHome Challenge 2026</a></h3>
+      <p class="auth">Ilia Larchenko &middot; 1st online / 2nd offline of 62 teams &middot; <a href="https://arxiv.org/abs/2606.27163">arXiv:2606.27163</a></p>
+      <p class="l"><b>Why read</b>A clean RL+VLA recipe where the policy head is its own value/failure detector &mdash; resonates with the auxiliary-prediction and on-the-fly-adaptation ideas in my notes.</p>
+      <p class="l"><b>Key idea</b>Repurpose the VLA head as a multi-task predictor (actions + success/progress/future states) for self-supervised advantage estimation and live failure detection; AWR + RECAP flow-matching, Thompson-sampling inference-time tuning.</p>
+      <div class="tagrow"><span class="tag">VLA</span><span class="tag">RL</span><span class="tag">bimanual</span><span class="tag">failure detection</span><span class="tag">sim-to-real</span></div>
+    </article>
+
+    <article class="card" id="p4">
+      <div class="card-top"><span class="num">04</span><span class="badge rel">rel 1.00</span><span class="badge buzz">&#128293; 3</span><span class="badge nosum">no abstract summary</span><span class="todo">&#9744; to read</span></div>
+      <h3 class="ct"><a href="https://arxiv.org/abs/2606.18953">Object-Centric Residual RL for Zero-Shot Sim-to-Real VLA Enhancement</a></h3>
+      <p class="auth">Kinam Kim, Namiko Saito, Heecheol Kim, Katsushi Ikeuchi et al. &middot; <a href="https://arxiv.org/abs/2606.18953">arXiv:2606.18953</a></p>
+      <p class="l"><b>Why read</b>Object-centric + residual RL for VLA sim-to-real robustness &mdash; pairs with the core-periphery / object-structure idea I&rsquo;m chasing. (Digest had no generated summary; read the abstract first.)</p>
+      <div class="tagrow"><span class="tag">residual RL</span><span class="tag">object-centric</span><span class="tag">VLA</span><span class="tag">zero-shot</span></div>
+    </article>
+  </section>
+
+  <!-- GROUP 2 -->
+  <section class="group">
+    <div class="group-head"><span class="bar" style="background:var(--g-agents)"></span><h2>Agentic systems, tool use &amp; reasoning</h2><span class="count">4</span></div>
+    <p class="group-note">Production reliability, multi-agent optimization, and adaptive tool orchestration.</p>
+
+    <article class="card agents" id="p9">
+      <div class="card-top"><span class="num">09</span><span class="badge rel">rel 0.90</span><span class="badge buzz">&#128293; 2</span><span class="badge">hf_daily</span><span class="todo">&#9744; to read</span></div>
+      <h3 class="ct"><a href="https://arxiv.org/abs/2606.25605">Constraint Tax in Open-Weight LLMs: Tool-Calling Suppression Under Structured Output Constraints</a></h3>
+      <p class="auth">Fangzheng Li, Aimin Zhang, Chen Lv &middot; <a href="https://arxiv.org/abs/2606.25605">arXiv:2606.25605</a></p>
+      <p class="l"><b>Why read</b>A crisp, fixable production failure mode &mdash; the kind of implementation-level gotcha worth knowing before it bites.</p>
+      <p class="l"><b>Key idea</b>Grammar-based JSON-schema masking removes tool-call tokens from the reachable set (a priority inversion); fix = Transparent Two-Pass Execution (tool selection unconstrained, then schema-compliant generation), no retraining.</p>
+      <div class="tagrow"><span class="tag">tool use</span><span class="tag">constrained decoding</span><span class="tag">agents</span><span class="tag">reliability</span></div>
+    </article>
+
+    <article class="card agents" id="p2">
+      <div class="card-top"><span class="num">02</span><span class="badge rel">rel 1.00</span><span class="badge buzz">&#128293; 4</span><span class="badge nosum">no abstract summary</span><span class="todo">&#9744; to read</span></div>
+      <h3 class="ct"><a href="https://arxiv.org/abs/2606.28187">GBC: Gradient-Based Connections for Optimizing Multi-Agent Systems</a></h3>
+      <p class="auth">Xiaocheng Yang, Abdulrahman Alrabah, Dilek Hakkani-T&uuml;r, Gokhan Tur &middot; <a href="https://arxiv.org/abs/2606.28187">arXiv:2606.28187</a></p>
+      <p class="l"><b>Why read</b>Gradient-based credit assignment for multi-agent LLM coordination &mdash; fine-grained optimization across agents. (Digest had no generated summary.)</p>
+      <div class="tagrow"><span class="tag">multi-agent</span><span class="tag">credit assignment</span><span class="tag">optimization</span></div>
+    </article>
+
+    <article class="card agents" id="p6">
+      <div class="card-top"><span class="num">06</span><span class="badge rel">rel 0.93</span><span class="badge buzz">&#128293; 3</span><span class="badge">arxiv+hf</span><span class="todo">&#9744; to read</span></div>
+      <h3 class="ct"><a href="https://arxiv.org/abs/2606.28277">Towards Automating Scientific Review with Google&rsquo;s Paper Assistant Tool (PAT)</a></h3>
+      <p class="auth">Rajesh Jayaram, Drew Tyler, David Woodruff, Corinna Cortes et al. &middot; <a href="https://arxiv.org/abs/2606.28277">arXiv:2606.28277</a></p>
+      <p class="l"><b>Why read</b>Agentic review + inference scaling (test-time compute) for a high-stakes verification task; piloted at STOC and ICML.</p>
+      <p class="l"><b>Key idea</b>Multi-step agent ingests full manuscripts, checks theorems / experiments / methodology; inference scaling yields +34% over zero-shot recall on the SPOT benchmark.</p>
+      <div class="tagrow"><span class="tag">agentic</span><span class="tag">test-time compute</span><span class="tag">peer review</span><span class="tag">verification</span></div>
+    </article>
+
+    <article class="card agents" id="p8">
+      <div class="card-top"><span class="num">08</span><span class="badge rel">rel 0.90</span><span class="badge buzz">&#128293; 7</span><span class="badge">hf_daily</span><span class="todo">&#9744; to read</span></div>
+      <h3 class="ct"><a href="https://arxiv.org/abs/2606.27974">ProMSA: Progressive Multimodal Search Agents for Knowledge-Based VQA</a></h3>
+      <p class="auth">ZhengXian Wu, Hangrui Xu, Kai Shi, Zhuohong Chen et al. &middot; <a href="https://arxiv.org/abs/2606.27974">arXiv:2606.27974</a></p>
+      <p class="l"><b>Why read</b>Adaptive multi-tool retrieval with budget awareness, trained by a tool-aware RL objective &mdash; a tidy agentic-RAG design.</p>
+      <p class="l"><b>Key idea</b>Agent iteratively chooses image-search / text-search / stop under tool-call budgets; two-stage training (rejection-sampling SFT, then sequence-level RL via TN-GSPO normalizing by generation length and tool depth).</p>
+      <div class="tagrow"><span class="tag">multimodal</span><span class="tag">retrieval</span><span class="tag">tool budgets</span><span class="tag">RL</span></div>
+    </article>
+  </section>
+
+  <!-- GROUP 3 -->
+  <section class="group">
+    <div class="group-head"><span class="bar" style="background:var(--g-infer)"></span><h2>Inference efficiency &amp; generative</h2><span class="count">2</span></div>
+    <p class="group-note">Latency&harr;capability tradeoffs and RL for generative models.</p>
+
+    <article class="card infer" id="p1">
+      <div class="card-top"><span class="num">01</span><span class="badge rel">rel 1.00</span><span class="badge buzz">&#128293; 4</span><span class="badge">hf_daily</span><span class="todo">&#9744; to read</span></div>
+      <h3 class="ct"><a href="https://arxiv.org/abs/2511.07397">Thinking While Speaking: Inference-Time Knowledge Transfer for Conversational Voice Agents (ConvFill)</a></h3>
+      <p class="auth">Vidya Srinivas, Zachary Englhardt, Shwetak Patel, Vikram Iyer et al. &middot; <a href="https://arxiv.org/abs/2511.07397">arXiv:2511.07397</a></p>
+      <p class="l"><b>Why read</b>A new latency&harr;capability Pareto point &mdash; directly resonant with the FLOPs-vs-latency and sequential-vs-parallel threads from the Fast-LeWM notes.</p>
+      <p class="l"><b>Key idea</b>Conversational infill: a small &ldquo;talker&rdquo; (135M&ndash;1.7B) emits an immediate response while a larger &ldquo;reasoner&rdquo;&rsquo;s tokens are streamed and fluently infilled, hiding reasoner latency.</p>
+      <p class="l"><b>Result</b>Millisecond time-to-first-response within 6.3% of frontier reasoner accuracy; n=18 study on Apple M2 rates it on par overall, preferred for retrieval-heavy tasks.</p>
+      <div class="tagrow"><span class="tag">on-device</span><span class="tag">streaming</span><span class="tag">latency</span><span class="tag">knowledge transfer</span></div>
+    </article>
+
+    <article class="card infer" id="p10">
+      <div class="card-top"><span class="num">10</span><span class="badge rel">rel 0.87</span><span class="badge buzz">&#128293; 21</span><span class="badge nosum">no abstract summary</span><span class="todo">&#9744; to read</span></div>
+      <h3 class="ct"><a href="https://arxiv.org/abs/2606.27608">Qwen-Image-2.0-RL Technical Report</a></h3>
+      <p class="auth">Yixian Xu, Kaiyuan Gao, Yuxiang Chen, Yilei Chen et al. &middot; <a href="https://arxiv.org/abs/2606.27608">arXiv:2606.27608</a></p>
+      <p class="l"><b>Why read</b>RLHF + on-policy distillation (OPD) applied to diffusion image models at industrial scale &mdash; on-policy distillation is worth tracking. (Digest had no generated summary.)</p>
+      <div class="tagrow"><span class="tag">diffusion</span><span class="tag">RLHF</span><span class="tag">on-policy distillation</span><span class="tag">tech report</span></div>
+    </article>
+  </section>
+
+  <!-- INDUSTRY PULSE -->
+  <section class="pulse">
+    <h2>Industry pulse</h2>
+    <p class="sub">Condensed from the same digest &middot; 2026-06-29</p>
+    <ul>
+      <li><b>Inference optimization is consolidating.</b> Speculative decoding is the lever of the moment (DeepSpec going viral, multiple labs cutting latency); new model releases from Baidu (Unlimited-OCR) and Zhipu (GLM 5.2).</li>
+      <li><b>Agents are moving research&rarr;production.</b> OpenAI workforce-mapping, Google&rsquo;s computer use in Gemini 3.5 Flash, and open-source routers like OpenTag (dispatching across Claude and Codex) point to autonomous-agent infrastructure maturing.</li>
+      <li><b>Enterprise AI is going domain-specific.</b> HP&times;OpenAI, HackerRank open-sourcing its ATS, and Microsoft&rsquo;s Talos rare-disease diagnosis signal a shift from chatbot novelty to operational tools.</li>
+      <li><b>The replacement narrative is tempering.</b> Ford rehired engineers after AI underperformed on manufacturing tasks &mdash; a useful counterweight.</li>
+      <li><b>Evaluation rigor is becoming the differentiator.</b> Benchmarking resources (e.g. awesome-evals) are gaining traction as teams realize assessment, not just scale, drives production value.</li>
+    </ul>
+  </section>
+
+  <footer>Reading queue &middot; compiled 2026-06-29 &middot; links go to arXiv abstracts</footer>
+
+</div>
+</body>
+</html>
