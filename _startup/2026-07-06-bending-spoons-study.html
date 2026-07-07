@@ -1,0 +1,558 @@
+---
+layout: null
+title: "Bending Spoons: Reading a Real IPO"
+date: 2026-07-06
+module: finance
+source: study-session
+tags: [bending-spoons, ipo, prospectus, cash-flow, financial-statements, saas, leverage, roll-up, valuation]
+gist: "A question-by-question study session on reading Bending Spoons' Nasdaq IPO — the 'operating machine' model behind its AOL/Vimeo acquisitions, the LBO/leverage mechanics, GAAP-vs-adjusted profit, dual-class control, tax benefits, and how to read a prospectus and cash-flow statement like an analyst."
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bending Spoons — An IPO Study Session</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Spline+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F2EC;
+    --paper-2:#EDEAE1;
+    --ink:#1B2A38;
+    --ink-soft:#4C5A67;
+    --rule:#D7D2C6;
+    --highlight:#FBE38E;
+    --flag:#B23A2E;
+    --flag-bg:#F6E7E4;
+    --accent:#2E6E5A;
+    --accent-bg:#E4EEE9;
+    --amber:#B7791F;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Spline Sans",system-ui,sans-serif;
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 28px 120px;}
+
+  /* ---- Masthead ---- */
+  header.mast{
+    padding:76px 0 40px;
+    border-bottom:2px solid var(--ink);
+    margin-bottom:8px;
+  }
+  .kicker{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--amber);margin-bottom:22px;
+  }
+  h1{
+    font-family:"Newsreader",serif;
+    font-weight:500;
+    font-size:clamp(40px,7vw,66px);
+    line-height:1.02;
+    letter-spacing:-.015em;
+    margin:0 0 20px;
+  }
+  h1 em{font-style:italic;color:var(--ink-soft);}
+  .dek{
+    font-family:"Newsreader",serif;
+    font-size:20px;line-height:1.45;color:var(--ink-soft);
+    max-width:56ch;margin:0 0 26px;
+  }
+  .meta{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12.5px;color:var(--ink-soft);
+    display:flex;flex-wrap:wrap;gap:8px 22px;
+    border-top:1px solid var(--rule);padding-top:18px;
+  }
+  .meta span b{color:var(--ink);font-weight:600;}
+
+  /* ---- Legend ---- */
+  .legend{
+    background:var(--paper-2);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:20px 22px;
+    margin:36px 0 8px;
+    font-size:14.5px;
+  }
+  .legend h4{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--ink-soft);margin:0 0 14px;font-weight:600;
+  }
+  .legend ul{margin:0;padding:0;list-style:none;display:grid;gap:9px;}
+  .legend li{display:flex;gap:11px;align-items:baseline;}
+  .swatch{
+    flex:0 0 auto;font-family:"IBM Plex Mono",monospace;font-size:10px;
+    padding:2px 7px;border-radius:2px;letter-spacing:.12em;
+    text-transform:uppercase;font-weight:600;line-height:1.4;
+  }
+  .sw-hl{background:var(--highlight);color:#5c4a0f;}
+  .sw-flag{background:var(--flag);color:#fff;}
+  .sw-def{background:var(--accent);color:#fff;}
+
+  /* ---- Sections ---- */
+  section.qa{padding:52px 0 8px;border-top:1px solid var(--rule);}
+  section.qa:first-of-type{border-top:none;}
+  .snum{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;letter-spacing:.18em;color:var(--amber);
+    display:block;margin-bottom:14px;
+  }
+  h2{
+    font-family:"Newsreader",serif;font-weight:500;
+    font-size:clamp(27px,4.4vw,36px);line-height:1.1;
+    letter-spacing:-.01em;margin:0 0 26px;
+  }
+  .question{
+    display:flex;gap:14px;
+    background:var(--paper-2);
+    border-left:3px solid var(--ink);
+    padding:16px 20px;border-radius:0 2px 2px 0;
+    margin:0 0 26px;
+  }
+  .question .qmark{
+    font-family:"IBM Plex Mono",monospace;font-weight:600;
+    color:var(--amber);flex:0 0 auto;font-size:15px;padding-top:1px;
+  }
+  .question p{margin:0;font-size:16px;font-style:italic;
+    font-family:"Newsreader",serif;color:var(--ink);line-height:1.5;}
+
+  p{margin:0 0 18px;}
+  .answer > p:last-child{margin-bottom:0;}
+  strong{font-weight:600;color:var(--ink);}
+  em{font-style:italic;}
+  h3{
+    font-family:"Spline Sans",sans-serif;font-weight:600;
+    font-size:16px;margin:30px 0 12px;
+    display:flex;align-items:center;gap:10px;
+  }
+  h3::before{
+    content:"";width:16px;height:2px;background:var(--amber);flex:0 0 auto;
+  }
+  mark{
+    background:linear-gradient(transparent 8%, var(--highlight) 8% 92%, transparent 92%);
+    color:var(--ink);padding:0 1px;
+  }
+  ul.body,ol.body{margin:0 0 18px;padding-left:22px;}
+  ul.body li,ol.body li{margin-bottom:8px;}
+
+  /* callouts */
+  .callout{
+    border-radius:2px;padding:18px 20px;margin:24px 0;font-size:15.5px;
+  }
+  .callout .tag{
+    font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+    letter-spacing:.18em;text-transform:uppercase;font-weight:600;
+    display:block;margin-bottom:10px;
+  }
+  .callout p:last-child{margin-bottom:0;}
+  .def{background:var(--accent-bg);border-left:3px solid var(--accent);}
+  .def .tag{color:var(--accent);}
+  .flag{background:var(--flag-bg);border-left:3px solid var(--flag);}
+  .flag .tag{color:var(--flag);}
+
+  /* tables */
+  .tablewrap{overflow-x:auto;margin:24px 0;}
+  table{
+    border-collapse:collapse;width:100%;font-size:14px;
+    font-family:"IBM Plex Mono",monospace;
+  }
+  caption{
+    text-align:left;font-family:"IBM Plex Mono",monospace;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:12px;font-weight:600;
+  }
+  th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--rule);}
+  th:first-child,td:first-child{text-align:left;}
+  thead th{
+    border-bottom:1.5px solid var(--ink);color:var(--ink);
+    font-weight:600;font-size:12.5px;
+  }
+  tbody tr:hover{background:var(--paper-2);}
+  td.neg{color:var(--flag);}
+  .rowlabel{font-family:"Spline Sans",sans-serif;font-weight:500;}
+
+  code{
+    font-family:"IBM Plex Mono",monospace;font-size:13.5px;
+    background:var(--paper-2);padding:1px 6px;border-radius:2px;
+  }
+  pre{
+    font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.7;
+    background:var(--ink);color:#E8ECEF;padding:18px 20px;border-radius:3px;
+    overflow-x:auto;margin:22px 0;
+  }
+
+  /* annotated formula */
+  .formula{
+    background:var(--ink);border-radius:3px;padding:20px 22px;margin:22px 0;
+    font-family:"IBM Plex Mono",monospace;font-size:13.5px;overflow-x:auto;
+  }
+  .formula .frow{
+    display:grid;grid-template-columns:minmax(210px,auto) 1fr;
+    gap:6px 20px;align-items:baseline;padding:3px 0;
+  }
+  .formula .term{color:#F3F1EA;white-space:nowrap;}
+  .formula .term b{color:var(--highlight);font-weight:600;}
+  .formula .note{color:#9DB0BC;font-size:12px;}
+  .formula .note::before{content:"← ";color:var(--amber);}
+  .formula .divider{
+    grid-column:1/2;border-top:1px dashed #46586A;margin:6px 0;height:0;
+  }
+  @media (max-width:560px){
+    .formula .frow{grid-template-columns:1fr;gap:1px 0;}
+    .formula .note{margin:0 0 8px 14px;}
+  }
+
+  footer{
+    margin-top:70px;padding-top:26px;border-top:2px solid var(--ink);
+    font-size:13px;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;
+    line-height:1.7;
+  }
+
+  @media (prefers-reduced-motion:no-preference){
+    section.qa,header.mast,.legend{animation:rise .6s ease both;}
+    @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  }
+  @media (max-width:560px){
+    body{font-size:16px;}
+    .wrap{padding:0 20px 90px;}
+    header.mast{padding:52px 0 32px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="kicker">Field notes · Reading a real IPO</div>
+    <h1>Bending Spoons,<br><em>read like an analyst</em></h1>
+    <p class="dek">One study session, worked through question by question: what the company actually is, how its acquisition machine runs, and how to read the numbers in its Nasdaq prospectus without being sold a story.</p>
+    <div class="meta">
+      <span><b>Subject</b> Bending Spoons S.p.A. (Nasdaq: BSP)</span>
+      <span><b>Listed</b> 1 Jul 2026</span>
+      <span><b>Source</b> Company F-1 / prospectus &amp; press</span>
+    </div>
+  </header>
+
+  <div class="legend">
+    <h4>How to read this page</h4>
+    <ul>
+      <li><span class="swatch sw-def">Definition</span> a term explained plainly the first time it matters.</li>
+      <li><span class="swatch sw-flag">Red flag</span> a place where a smart reader slows down and gets suspicious.</li>
+      <li><span class="swatch sw-hl">Highlight</span> a sentence worth memorising — the kind that changes how you read every other number.</li>
+    </ul>
+  </div>
+
+  <!-- 01 -->
+  <section class="qa">
+    <span class="snum">01 / OVERVIEW</span>
+    <h2>What is Bending Spoons' economic engine?</h2>
+    <div class="question"><span class="qmark">Q</span><p>I want to understand how this company — the one that bought AOL and Vimeo — actually runs financially.</p></div>
+    <div class="answer">
+      <p>Bending Spoons is a Milan-based conglomerate that went public on the Nasdaq with a pop, briefly topping a <strong>$25B</strong> market cap — roughly double its last private valuation of $11B. It reported <strong>$1.31B revenue in 2025</strong>, and its portfolio served over <strong>500M monthly active users</strong> and more than <strong>9M paying customers</strong> as of March 2026.</p>
+      <p>The model resembles private equity with one twist: <strong>it holds forever and has never sold an acquired business.</strong> It buys established digital brands — Meetup, Eventbrite, WeTransfer, Evernote, Vimeo, AOL, Issuu and others — and makes them more profitable through technology and AI, but also through price hikes and layoffs.</p>
+      <p>The standout is efficiency: revenue per core employee ("Spooner") rose from <strong>$1.12M (2023) to $2.57M (2025)</strong>. The core team is only ~620 people; in 2025 it hired 286 out of ~800,000 applicants.</p>
+      <div class="callout flag"><span class="tag">Red flag</span><p>Most of these figures come from the company's own IPO filing. The article gave revenue but not net profit or debt — and those are exactly what you need to judge whether the engine is healthy.</p></div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="qa">
+    <span class="snum">02 / THE "SYSTEM"</span>
+    <h2>Is it building a platform to rival TikTok?</h2>
+    <div class="question"><span class="qmark">Q</span><p>"Hold forever" — so the goal is a complete system? Is the platform meant to compete with TikTok? What do the acquired companies actually do?</p></div>
+    <div class="answer">
+      <p><strong>Almost certainly not TikTok.</strong> TikTok is one unified consumer platform bound by a recommendation algorithm. Bending Spoons' products — notes, ticketing, file transfer, video hosting, a portal — are unrelated, and it has no intention of fusing them into one consumer app.</p>
+      <p>The "complete system" it wants is an internal <strong>operating machine</strong>. Its own filing says the founders decided "to treat the operating machine itself as our most important product." It's a centralised back office — engineering, billing, marketing, support, pricing, analytics — onto which each acquired product is migrated.</p>
+      <p>The right comparison is <strong>Constellation Software</strong> or a "Berkshire Hathaway of bits," not TikTok. One critic notes it does <em>not</em> build a super-platform; it holds unrelated assets that share only the operating machine.</p>
+      <h3>What each acquired company does</h3>
+      <ul class="body">
+        <li><strong>Meetup</strong> — organising interest-group events (in person / online)</li>
+        <li><strong>Eventbrite</strong> — event ticketing &amp; registration</li>
+        <li><strong>WeTransfer</strong> — large-file transfer</li>
+        <li><strong>Evernote</strong> — note-taking / knowledge management</li>
+        <li><strong>Vimeo</strong> — video hosting (creator/pro-focused, ad-free)</li>
+        <li><strong>AOL</strong> — legacy internet portal: email, news/media</li>
+        <li><strong>Issuu</strong> — digital publishing (turns PDFs into online magazines)</li>
+      </ul>
+      <p>Plus Remini (AI photo), Brightcove (enterprise video), komoot (route planning), Harvest (time tracking), StreamYard (live streaming) and more — around 50 deals in total.</p>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="qa">
+    <span class="snum">03 / VC OR PE?</span>
+    <h2>Isn't sourcing deals a VC's job? How do they get data?</h2>
+    <div class="question"><span class="qmark">Q</span><p>Screening 2,500 targets, analysing 200, closing 6, tracking 1,000 more — isn't that venture capital's work? Do they build their own analysis platform? How do they get first-hand data and do market research?</p></div>
+    <div class="answer">
+      <p>Your instinct is half right: sourcing and diligence <em>look</em> like an investment firm. But the model is a <strong>PE-style serial acquirer</strong>, not VC.</p>
+      <p><strong>VC</strong> buys minority stakes, bets on early growth, and exits for returns. <strong>Bending Spoons</strong> buys outright, operates forever, never sells. Early on, VCs literally didn't get it — the founders say they got a lot of "you're crazy" reactions.</p>
+      <h3>How they price and research</h3>
+      <ul class="body">
+        <li><strong>Cash-flow modelling.</strong> Because they buy-and-hold, they model future cash flows to decide what they can pay — and they've been the highest bidder on every deal they won. Purchase prices run ~1–3× revenue.</li>
+        <li><strong>First-party data comes <em>after</em> the deal.</strong> They target products with real customer behaviour; once owned, they enter a weeks-to-months "learning phase" using actual usage data to decide what to change and how to price.</li>
+        <li><strong>Experimentation, not surveys.</strong> They use "sophisticated data tracking, analytics infrastructure and an experimentation toolkit" — essentially large-scale A/B testing — for pricing and feature calls.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="qa">
+    <span class="snum">04 / EFFICIENCY</span>
+    <h2>What powers the efficiency — whose algorithms?</h2>
+    <div class="question"><span class="qmark">Q</span><p>The core is running companies efficiently. Which mature sub-platform algorithms or models do they rely on?</p></div>
+    <div class="answer">
+      <p><strong>Honest answer: the specific algorithms aren't disclosed</strong> — the operating machine is their prized secret. But per the F-1, execution rests on three pillars: <strong>people, proprietary technology, and proprietary data.</strong></p>
+      <ul class="body">
+        <li><strong>Talent density</strong> — ~620 Spooners, hired at hedge-fund-competitive pay from a brutal funnel.</li>
+        <li><strong>A centralised "universal OS"</strong> — every acquisition migrates onto one Milan back office, cutting large amounts of legacy overhead.</li>
+        <li><strong>Deep rewrites + AI</strong> — e.g. Evernote's backend was moved from a monolith to microservices; Remini was rewritten line by line.</li>
+      </ul>
+      <div class="callout def"><span class="tag">Correction — logged later</span><p>The filing confirms they build <em>on top of</em> third-party models from <strong>Anthropic, Google and OpenAI</strong> (via API or self-hosted), plus open-source models, and add their own <em>narrow-purpose</em> models. So "fine-tuning on others' AI" was partly right — they don't train a large model from scratch.</p></div>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="qa">
+    <span class="snum">05 / BERKSHIRE OF BITS</span>
+    <h2>The "Berkshire of bits," static companies, and the data question</h2>
+    <div class="question"><span class="qmark">Q</span><p>Explain "Berkshire of bits." Are these all static, non-growing companies? Aren't they really buying data to analyse user behaviour? And do Google/Microsoft's data not overlap with these small firms'?</p></div>
+    <div class="answer">
+      <h3>Berkshire of bits</h3>
+      <p>Berkshire Hathaway is Buffett's holding company: it uses cash flow (historically insurance "float") to buy good businesses and hold them almost forever. (Buffett stepped down end-2025; <strong>Greg Abel became CEO on 1 Jan 2026</strong>, with Buffett as chairman.) The analogy captures the <em>buy-and-hold-and-compound</em> structure — but Berkshire lets subsidiaries run themselves, whereas Bending Spoons intervenes deeply.</p>
+      <h3>Static or declining?</h3>
+      <p>More precisely: <strong>past-peak, stalled or underperforming</strong> — not zero-growth. Ferrari deliberately avoids AI companies ("already winning") and wants businesses "not already winning," because stalled-but-solid assets leave room for his cost-cut-and-reprice playbook.</p>
+      <h3>Is it "buying data"?</h3>
+      <p>This overstates it. Its edge is <strong>operational turnaround + financial engineering</strong>, not harvesting data for AI. Crucially, the datasets are <em>unrelated</em> — a notes app and a ticketing app don't pool into one behavioural model. The moat is operating discipline, not data.</p>
+      <h3>Google/Microsoft overlap</h3>
+      <p>Big tech's data dwarfs theirs — which is exactly why data <em>isn't</em> Bending Spoons' moat. In-product behaviour (how you take notes, how you send files) is first-party and product-specific, but Bending Spoons isn't competing with Google on data or ads. It makes money by operating single stalled products more profitably.</p>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section class="qa">
+    <span class="snum">06 / LEVERAGE</span>
+    <h2>A/B testing, leverage, and the revenue reality</h2>
+    <div class="question"><span class="qmark">Q</span><p>Explain large-scale A/B testing and how the leverage (~2.7× EBITDA) actually works. How much revenue did the transformed companies create versus before — did they revive, or keep declining? Did they try to grow market share?</p></div>
+    <div class="answer">
+      <div class="callout def"><span class="tag">Definition — A/B testing</span><p>Users are randomly split into groups that see different versions (price, paywall, onboarding). The business measures a metric (conversion, retention, revenue per user) and rolls out the winner. "Large-scale" means hundreds of experiments across millions of users at once — turning "what price?" from a guess into an engineering problem.</p></div>
+      <div class="callout def"><span class="tag">Definition — leverage (LBO mechanics)</span><p>"~2.7× EBITDA" means net debt is ~2.7× annual EBITDA. Per the prospectus, each deal is financed with debt equal to the <em>lower</em> of (a) 85% of the acquisition's enterprise value, or (b) the max debt the target's projected free cash flow can fully repay within 5 years. In plain terms: <strong>the acquired company's own cash flow pays off the loan used to buy it</strong> — a classic leveraged buyout, then the freed cash funds the next deal.</p></div>
+      <h3>Revived or declining? The data says: neither — it's "extraction"</h3>
+      <ul class="body">
+        <li>Revenue $387M (2023) → $1.31B (2025), +95% in 2025 — but <strong>almost entirely from bolting on new acquisitions</strong> (about half of revenue now comes from AOL).</li>
+        <li><strong>Organic growth was only 13%</strong> in 2025 (outside estimates put it as low as 3–5%).</li>
+        <li><strong>Net revenue retention (NRR) is 91–95%</strong> — below 100%, meaning the existing customer base's revenue is <em>net shrinking</em>. Without new deals, the portfolio would flatline or slip.</li>
+      </ul>
+      <p>Growth comes from <strong>price hikes and shifting one-off purchases to subscriptions</strong> (komoot, Mosaic raised prices 2–4×), <em>not</em> from winning market share — the filing explicitly says it favours returns over organic growth. Individual results are mixed: Evernote revived (profitable in ~18 months); Remini grew 5× users / 9× revenue; but <strong>Brightcove revenue is still declining</strong> on subscriber losses.</p>
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section class="qa">
+    <span class="snum">07 / PATTERNS</span>
+    <h2>Can't you extract the "playbook" by analysing many products?</h2>
+    <div class="question"><span class="qmark">Q</span><p>With first-party data across many similar products, couldn't anyone extract the same behavioural patterns?</p></div>
+    <div class="answer">
+      <p>Yes — and this is the key insight. Pricing elasticity, paywall placement, onboarding funnels, churn triggers <em>are</em> generalisable and extractable. <strong>But precisely because the pattern is extractable, the pattern is not the moat.</strong></p>
+      <ul class="body">
+        <li>Knowing "a 2× price rise lifts revenue" is the easy half; executing it on millions of live users without collapse is the hard half.</li>
+        <li>Generic patterns leak and get copied.</li>
+        <li>What's hard to copy is the <strong>combination</strong>: buying stalled assets cheaply + elite talent + the willingness to make unpopular moves (mass layoffs, steep price hikes) backed by a low-cost capital structure.</li>
+      </ul>
+      <p>Your reasoning self-consistently defeats the "data is the moat" thesis: extractable ⇒ not a moat ⇒ the moat is execution and capital discipline.</p>
+    </div>
+  </section>
+
+  <!-- 08 -->
+  <section class="qa">
+    <span class="snum">08 / THE IPO TRADE</span>
+    <h2>Are the founders cashing out and offloading risk?</h2>
+    <div class="question"><span class="qmark">Q</span><p>Is the testing real, and how are users chosen — could two people see different prices? And are the founders rushing to IPO to offload risk and pay debt, then take the money and leave? Predict the ending.</p></div>
+    <div class="answer">
+      <p><strong>Testing is real</strong>; users usually don't know they're in an experiment; assignment is by ID hash / cohort / geography. <strong>Two people can see different prices</strong> (price testing), but new users typically bear experiments while existing users are "grandfathered." Group-level price testing is legal; pricing by protected characteristics is not.</p>
+      <h3>The "cash out" thesis — half true, half wrong</h3>
+      <p><strong>Supports it:</strong> real high leverage (~$4.4–6B debt; interest of $143M in 2025 ≈ half of operating income); ~23.6M secondary shares were sold; going public shifts risk to public shareholders and lenders and paves the way for more leverage.</p>
+      <p><strong>Against it:</strong> founders <em>kept control</em> via dual-class shares (80%+ voting power) — they're staying, not leaving. Most of the raise was <strong>primary</strong> (~$1B into the company for acquisitions), and use-of-proceeds is new deals, not debt repayment. Their ~$8.9B is paper wealth, likely under a ~6-month lock-up.</p>
+      <p><strong>More accurate framing:</strong> not "founders exit" but "founders fuel an already-aggressive, highly-levered machine with public capital while keeping the wheel."</p>
+      <h3>Three scenarios (not a single prediction)</h3>
+      <ul class="body">
+        <li><strong>A — Flywheel keeps turning:</strong> cheap targets + cost cuts + reprice → compounding; the bull case.</li>
+        <li><strong>B — Engine stalls (your worry):</strong> NRR &lt;100% + pricing tapped out + rising rates on the debt → a slow decline in valuation, not a dramatic blow-up. Constellation Software (the comparable) is already down 44% over a year.</li>
+        <li><strong>C — Debt blow-up + founder exit:</strong> possible but high-barrier; lock-ups and self-inflicted stock damage make a clean escape costly. Scenario B is more realistic than C.</li>
+      </ul>
+      <div class="callout flag"><span class="tag">Metrics to track</span><p>Watch two numbers over time: does <strong>NRR fall below 90%</strong>, and does <strong>interest expense / operating income</strong> keep worsening? They'll tell you the flywheel is stalling before any headline does.</p></div>
+    </div>
+  </section>
+
+  <!-- 09 -->
+  <section class="qa">
+    <span class="snum">09 / SAAS</span>
+    <h2>What is SaaS, as a business model?</h2>
+    <div class="question"><span class="qmark">Q</span><p>Define SaaS and its operational business.</p></div>
+    <div class="answer">
+      <div class="callout def"><span class="tag">Definition — SaaS</span><p><strong>Software as a Service.</strong> Instead of buying software once and installing it, you subscribe (monthly/annually) to software the vendor hosts in the cloud.</p></div>
+      <ul class="body">
+        <li><strong>Recurring revenue</strong> — subscriptions renew, so revenue is predictable.</li>
+        <li><strong>Low marginal cost</strong> — one more user costs the vendor almost nothing, so margins scale.</li>
+        <li><strong>Key metrics</strong> — MRR/ARR, churn, NRR, CAC, LTV.</li>
+      </ul>
+      <p>Bending Spoons is a classic SaaS base: <strong>84% of Q1 2026 revenue was subscription</strong>, 12% advertising, 4% other. Predictable, repricable revenue is exactly what makes its playbook work.</p>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="qa">
+    <span class="snum">10 / READING AN F-1</span>
+    <h2>How to read the prospectus like an analyst</h2>
+    <div class="question"><span class="qmark">Q</span><p>Walk me through the company's IPO document — I want to learn.</p></div>
+    <div class="answer">
+      <p>An <strong>F-1</strong> is the registration filing a foreign company uses to list in the US (domestic firms use an S-1); the "prospectus" is the investor-facing body. It's a seller-written but legally-liable self-introduction — the skill is separating <em>narrative</em> from <em>hard fact</em>, and knowing where the truth hides.</p>
+      <h3>The anatomy (and how a pro reads each part)</h3>
+      <ul class="body">
+        <li><strong>Cover</strong> — ticker, dual-class structure, and "<strong>foreign private issuer</strong>" status (⇒ lighter disclosure: no 10-Q, no 8-K). Read this and you already know how <em>little</em> you'll get to see.</li>
+        <li><strong>Letter / Summary</strong> — read as marketing; extract the hard metrics hidden inside (e.g. return hurdles of 65% levered / 25% unlevered; AI now writes &gt;90% of code).</li>
+        <li><strong>Use of proceeds</strong> — does the money go to the company or to selling shareholders? (Here: mostly to the company, for acquisitions.)</li>
+        <li><strong>Summary financial data</strong> — highest signal density; the truth lives here.</li>
+        <li><strong>Risk factors</strong> — skip the boilerplate, hunt the company-specific red flags.</li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <caption>Bending Spoons — income statement, key lines (US$ thousands)</caption>
+          <thead><tr><th>Line</th><th>2023</th><th>2024</th><th>2025</th><th>Q1 2026</th></tr></thead>
+          <tbody>
+            <tr><td class="rowlabel">Revenue</td><td>387,067</td><td>671,053</td><td>1,306,404</td><td>601,321</td></tr>
+            <tr><td class="rowlabel">Operating income</td><td>84,267</td><td>127,352</td><td>277,851</td><td>120,171</td></tr>
+            <tr><td class="rowlabel">Interest expense</td><td>17,173</td><td>32,605</td><td>142,601</td><td>93,184</td></tr>
+            <tr><td class="rowlabel">Net income (GAAP)</td><td>160,643</td><td>88,997</td><td class="neg">(204)</td><td>27,465</td></tr>
+            <tr><td class="rowlabel">Adjusted net income</td><td>95,856</td><td>229,364</td><td>375,592</td><td>205,977</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>The three "tells" in these numbers</h3>
+      <ul class="body">
+        <li><strong>GAAP net income ≈ 0 in 2025, but "adjusted" is $376M.</strong> The gap is add-backs — amortisation of acquired intangibles, deal costs, restructuring (layoffs). For a company that <em>always</em> acquires and restructures, those "one-offs" recur, so "adjusted" flatters reality. The "$500M profit" in the press is the adjusted figure.</li>
+        <li><strong>Interest expense exploded</strong> — $17M → $143M → $93M in a single quarter. That's the leverage bill, worsening fast.</li>
+        <li><strong>2023's pretty $161M net income was propped up by a ~$103M tax benefit</strong> (see §12). Strip it out and the underlying year was weaker.</li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <caption>Cash-flow "fingerprint" of a roll-up (US$ thousands)</caption>
+          <thead><tr><th>Cash flow</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
+          <tbody>
+            <tr><td class="rowlabel">Operating</td><td>59,154</td><td>204,895</td><td>290,600</td></tr>
+            <tr><td class="rowlabel">Investing</td><td class="neg">(170,294)</td><td class="neg">(889,654)</td><td class="neg">(1,851,874)</td></tr>
+            <tr><td class="rowlabel">Financing</td><td>110,664</td><td>664,044</td><td>1,935,932</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Small-positive operating, big-negative investing, big-positive financing = the signature of an acquisition machine that can't self-fund its buying and plugs the gap with debt and equity.</p>
+      <h3>A pro's reading order</h3>
+      <ol class="body">
+        <li>Cover — share structure, foreign-issuer status.</li>
+        <li>Income statement — size the GAAP-vs-adjusted gap and what's added back.</li>
+        <li>Cash-flow trio — self-funding or transfusion-dependent?</li>
+        <li>Use of proceeds — company or insiders?</li>
+        <li>Risk factors — hunt "material weakness / going concern / litigation / customer concentration."</li>
+        <li>One piercing operating metric — here, <strong>NRR 91–95%</strong>.</li>
+      </ol>
+      <div class="callout flag"><span class="tag">Real red flag in the filing</span><p>Bending Spoons disclosed a <strong>material weakness in financial-reporting internal controls</strong> — a hard signal for a newly public company that its reporting process isn't yet mature.</p></div>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section class="qa">
+    <span class="snum">11 / DUAL-CLASS</span>
+    <h2>Dual-class shares: 1 vote vs 5 votes</h2>
+    <div class="question"><span class="qmark">Q</span><p>How do I read the dual-class structure? What's the difference between the two share classes?</p></div>
+    <div class="answer">
+      <div class="callout def"><span class="tag">Definition — dual-class shares</span><p>Two share classes with <strong>the same economic rights but different voting rights.</strong> Each share is worth the same in dividends and liquidation; but ordinary shares get <strong>1 vote</strong> while founders' super-voting shares get <strong>5 votes</strong>.</p></div>
+      <p>The purpose: founders can sell most of the <em>economics</em> to raise money while keeping the <em>control</em>. Illustrative math: if founders own 30 of 100 economic shares but those carry 5 votes, they command 150 of 220 votes — <strong>~68% control on 30% ownership.</strong> Bending Spoons' founders hold <strong>80%+ of voting power</strong> this way.</p>
+      <ul class="body">
+        <li><strong>You buy a passenger ticket, not the wheel</strong> — you can't vote them out, block a deal, or force a strategy change.</li>
+        <li><strong>Upside:</strong> management can pursue a long-term plan free of short-term pressure.</li>
+        <li><strong>Downside:</strong> if they err or self-deal, you have little recourse — hence a "governance discount."</li>
+        <li><strong>Peers:</strong> Alphabet, Meta, Snap, Berkshire.</li>
+      </ul>
+      <p>When you see dual-class, ask yourself one thing: <strong>do I trust these people at the wheel?</strong></p>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="qa">
+    <span class="snum">12 / TAX BENEFIT</span>
+    <h2>What is a tax benefit? Does every company have one?</h2>
+    <div class="question"><span class="qmark">Q</span><p>What is a tax benefit — and does every company have this "one-time right"?</p></div>
+    <div class="answer">
+      <div class="callout def"><span class="tag">Definition — tax benefit</span><p>Normally income tax is an <em>expense</em> that reduces net income. A <strong>tax benefit is a "negative tax"</strong> — it <em>adds</em> to net income. On the income statement the tax line goes negative and props profit up.</p></div>
+      <p>The most common source is recognising a <strong>deferred tax asset</strong> from past losses:</p>
+      <p><strong>A company (or one it acquired) lost money in the past and piled up net operating losses (NOLs). Tax law lets those historical losses offset taxes on future profits — essentially a "right to pay less tax later."</strong></p>
+      <p>When the company judges it will "more likely than not" earn enough future profit to use those deductions, it can recognise that right as an asset — and doing so creates a tax benefit on the income statement, <em>even with no cash coming in</em>.</p>
+      <h3>So — does every company have it? No.</h3>
+      <ul class="body">
+        <li><strong>You need a history of losses.</strong> A firm profitable from day one has few NOLs.</li>
+        <li><strong>Recognition is conditional.</strong> If future profits aren't likely, a "valuation allowance" wipes the asset out.</li>
+        <li><strong>It's used up, not annual.</strong> As profits consume the NOLs, the benefit shrinks — so it's inherently one-off / non-recurring.</li>
+        <li><strong>Bending Spoons' twist:</strong> it buys once-loss-making companies, inheriting their NOLs, then turns them profitable and uses the deductions (subject to anti-abuse limits like US §382). That's why tax benefits surface in its numbers.</li>
+      </ul>
+      <p>So when a year's net income looks unusually pretty, drop down to the pretax-income and tax lines and check whether the beauty was earned by the business or floated by a tax item. In 2023, stripping out the ~$103M benefit, the underlying business was far less impressive than the $161M net income suggests.</p>
+      <div class="callout def"><span class="tag">Highlight — remember this</span><p><mark>The "income tax" line on the income statement is computed on an accrual basis (including deferred, non-cash portions); it is <strong>not</strong> the same as the cash the company actually paid in tax that year.</mark></p></div>
+    </div>
+  </section>
+
+  <!-- 13 -->
+  <section class="qa">
+    <span class="snum">13 / CASH FLOW</span>
+    <h2>Reading the cash-flow statement</h2>
+    <div class="question"><span class="qmark">Q</span><p>Let's start reading the cash-flow statement.</p></div>
+    <div class="answer">
+      <p>Its core question: the income statement says you earned a profit — but <strong>did the cash actually arrive?</strong> Net income is an accounting concept full of non-cash items; the cash-flow statement tracks real money. Hence: <em>profit is an opinion, cash is a fact.</em></p>
+      <h3>Three drawers</h3>
+      <ul class="body">
+        <li><strong>Operating (CFO)</strong> — cash from the core business: does it self-generate cash?</li>
+        <li><strong>Investing (CFI)</strong> — buying/selling assets, companies, equipment: is money going into expansion?</li>
+        <li><strong>Financing (CFF)</strong> — debt, repayments, share issuance, dividends: how much outside transfusion?</li>
+      </ul>
+      <h3>Lesson 1 — the indirect method</h3>
+      <p>Operating cash flow isn't built from scratch; it starts from net income and works back:</p>
+      <div class="formula" role="img" aria-label="Indirect method: net income plus non-cash expenses plus or minus working capital changes equals operating cash flow">
+        <div class="frow"><span class="term">Net income</span><span class="note">accounting profit — can be near zero</span></div>
+        <div class="frow"><span class="term">&nbsp;&nbsp;+ non-cash expenses</span><span class="note">D&amp;A, stock comp, deferred taxes: reduced profit but no cash left, so add back</span></div>
+        <div class="frow"><span class="term">&nbsp;&nbsp;± working-capital change</span><span class="note">timing of receivables &amp; payables</span></div>
+        <div class="divider"></div>
+        <div class="frow"><span class="term"><b>= Operating cash flow (CFO)</b></span><span class="note">the real cash the business threw off</span></div>
+      </div>
+      <p>We add non-cash items back because they reduced net income without any cash leaving. <strong>This is where last section's lesson pays off: deferred taxes are non-cash, so they're one of the reconciling items between profit and cash.</strong></p>
+      <h3>Lesson 2 — the profit-vs-cash gap at Bending Spoons</h3>
+      <p>GAAP net income in 2025 was ≈ 0, yet <strong>operating cash flow was +$290.6M</strong>. That ~$291M gap is mostly non-cash add-backs — for a serial acquirer, dominated by <strong>amortisation of acquired intangibles</strong> (brands, customer relationships, tech booked at purchase), which depress accounting profit but cost no cash. So Bending Spoons looks barely profitable on paper yet generates real cash. The pro's job: decide whether that's <em>healthy</em> (profit suppressed by non-cash amortisation) or <em>dangerous</em> (cash squeezed from stretching suppliers). Here it's the former.</p>
+      <h3>Lesson 3 — the combination speaks</h3>
+      <p><mark>Small-positive CFO (+$291M), big-negative CFI (−$1.85B), big-positive CFF (+$1.94B) = the fingerprint of a serial-acquisition machine</mark> — it can't self-fund its buying, so it plugs the gap with debt and equity. A mature company usually shows the opposite: big-positive CFO, small-negative CFI, negative CFF (repaying debt / paying dividends).</p>
+      <div class="callout flag"><span class="tag">Red flag — why CFO alone flatters a roll-up</span><p>The amortisation added back into CFO corresponds to <strong>real cash that <em>was</em> spent — buying the companies — but it sits in investing (CFI), not operating.</strong> So CFO looks clean while the true cost hides in that −$1.85B. Never judge a serial acquirer on CFO alone; read all three drawers together, and look at cash left <em>after</em> acquisitions.</p></div>
+      <div class="callout def"><span class="tag">Definition — free cash flow</span><p>It's the cash left after keeping the business running — available to repay debt, pay dividends, or reinvest.</p></div>
+      <div class="formula" role="img" aria-label="Free cash flow equals operating cash flow minus capital expenditure">
+        <div class="frow"><span class="term"><b>Free cash flow (FCF)</b></span><span class="note">what's truly left over for owners &amp; lenders</span></div>
+        <div class="frow"><span class="term">&nbsp;&nbsp;= CFO</span><span class="note">cash from operations</span></div>
+        <div class="frow"><span class="term">&nbsp;&nbsp;− CapEx</span><span class="note">spend to keep the business running</span></div>
+      </div>
+      <p>For a levered company, watch whether FCF keeps covering the ballooning interest bill (the key ratio: <strong>CFO ÷ interest expense</strong>) — that's the flywheel's margin of safety.</p>
+      <div class="callout flag"><span class="tag">Key principle — is CFO "the" metric?</span><p><strong>CFO is one of the most important truth-tellers, but not sufficient on its own.</strong> "Worth investing" = quality of cash generation × durability × price paid × balance-sheet risk. Verify CFO isn't propped up by stretching working capital; for a roll-up, weigh it against the acquisition spend in CFI; for a levered firm, weigh it against interest; and no matter how strong the cash flow, a price that's too high is still a bad investment.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    Compiled from a study conversation, July 2026. Figures are drawn from Bending Spoons' F-1 / prospectus and contemporaneous press, and are stated on a "company-reported" basis unless noted. Educational material on how to read financial disclosures — not investment advice, and not a recommendation to buy or sell any security.
+  </footer>
+
+</div>
+</body>
+</html>
