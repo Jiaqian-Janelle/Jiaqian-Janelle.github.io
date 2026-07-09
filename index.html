@@ -46,6 +46,39 @@ layout: default
       </div>
     </section>
 
+    <!-- OPERATING PRINCIPLES — daily reminder -->
+    <section class="section" id="principles">
+      <div class="op-creed">
+        <div class="op-head">
+          <h2>Operating Principles</h2>
+          <a class="all-link" href="{{ '/startup/2026-07-09-founder-thesis-memo/' | relative_url }}">FULL MEMO →</a>
+        </div>
+        <p class="op-lede">What actually gets bet on at the frontier. Technical skill is the ticket in, not the edge — what gets funded sits above it.</p>
+
+        <ol class="op-list">
+          <li><b>Clarity</b> — say it in one sentence: what, why now, why me. If I can't compress it, I don't understand it yet.</li>
+          <li><b>Obsession</b> — work the problem unbidden and late. If nothing pulls like that, the job is to find the thing that does.</li>
+          <li><b>Slope over intercept</b> — current level is noise; six-month velocity is signal. Don't be trapped by where I start.</li>
+          <li><b>Agency</b> — "hard" usually means "I don't own the tool yet." Build the tool. Turn <i>can't</i> into <i>haven't yet</i>.</li>
+          <li><b>Patience</b> — hold what compounds; sit through the boring middle. Judge on the year, not the week.</li>
+          <li><b>Mission over money</b> — subtract the upside: would I still do it? If only rewards move me, I'll trade the long game for the short one.</li>
+        </ol>
+
+        <div class="op-cofound">
+          <h4>Choosing a co-founder — the heaviest, least-reversible bet</h4>
+          <ul>
+            <li>Mission alignment is a <b>veto</b>, not a bonus.</li>
+            <li>See them fail first — carry weight together before building together.</li>
+            <li>Complement, not comfort — same instincts means a shared blind spot.</li>
+            <li>Slope, not résumé.</li>
+            <li>The real move: don't hunt for someone who fits this — <b>become that person first.</b></li>
+          </ul>
+        </div>
+
+        <p class="op-kicker">Every principle above is inert until the work meets a real user, a real market, a real chance of rejection. <b>Ship it. Show up.</b></p>
+      </div>
+    </section>
+
     <!-- PAPER READING — papers actually read -->
     <section class="section" id="papers">
       <div class="section-head">
@@ -176,3 +209,39 @@ layout: default
 
   </main>
 </div>
+
+<style>
+  /* Operating Principles — scoped, reuses your palette variables where present */
+  #principles .op-creed{
+    border:1px solid var(--rule, #e2ddd2);
+    border-top:3px solid var(--accent-strong, #0F2033);
+    background:var(--card, #fbfaf6);
+    padding:26px 30px 24px;
+    border-radius:2px;
+  }
+  #principles .op-head{
+    display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:.35rem;
+  }
+  #principles .op-head h2{margin:0}
+  #principles .op-lede{
+    margin:.4rem 0 1.1rem;color:var(--ink-soft, #3C4855);font-size:.92rem;line-height:1.6;
+  }
+  #principles .op-list{margin:0;padding-left:1.35rem}
+  #principles .op-list li{margin:.5rem 0;line-height:1.55;font-size:.93rem}
+  #principles .op-list b,#principles .op-cofound b{color:var(--accent-strong, #0F2033)}
+  #principles .op-cofound{
+    margin-top:1.25rem;padding-top:1.05rem;border-top:1px solid var(--rule, #e8e3d8);
+  }
+  #principles .op-cofound h4{
+    margin:0 0 .55rem;font-size:.76rem;text-transform:uppercase;letter-spacing:.09em;
+    color:var(--accent, #9A7A44);font-weight:700;
+  }
+  #principles .op-cofound ul{margin:0;padding-left:1.35rem;list-style:disc}
+  #principles .op-cofound li{margin:.35rem 0;line-height:1.5;font-size:.9rem}
+  #principles .op-kicker{
+    margin:1.25rem 0 0;padding:13px 18px;border-radius:2px;
+    background:var(--accent-strong, #0F2033);color:#fbfaf6;font-size:.9rem;line-height:1.55;
+  }
+  #principles .op-kicker b{color:var(--accent-lt, #B9995E)}
+  @media (max-width:600px){ #principles .op-creed{padding:22px 20px} }
+</style>
