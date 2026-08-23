@@ -1,5 +1,11 @@
 # Each entry becomes one publication card on the homepage.
 # Bold your own name in `authors` with **double asterisks**.
+- title: "Lexical Perturbations Disrupt LLM Reasoning: An Empirical Study of Attention Diversion"
+  authors: "**J. Zhu**, Y. Zhang, J. Ding, X. Yu"
+  venue: "EMNLP 2026 Main Conference (acceptance rate 15.4%)"
+  links:
+    - { name: Code, url: "https://github.com/Jiaqian-Janelle/Attention-Diversion" }
+
 - title: "Accelerating design of glass substrates by machine learning using small-to-medium datasets"
   authors: "**J. Zhu**, L. Ding, G. Sun, L. Wang"
   venue: "Ceramics International, 50(2), 3018–3025, 2024"
