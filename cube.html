@@ -7,47 +7,17 @@ title: Cube
     <a class="back" href="{{ '/' | relative_url }}">← Home</a>
     <header class="article-head">
       <div class="date">A little WebGL toy</div>
-      <h1>Cube</h1>
+      <h1>Heat Grid</h1>
       <p style="color:var(--ink-soft);margin:.6rem 0 0">
-        Drag to rotate. Inspired by
+        A live heat-diffusion simulation — drag on it to add heat. Inspired by
         <a href="https://www.paradigm.xyz/writing/gpu-world" target="_blank" rel="noopener"><em>GPU World</em> (Paradigm)</a>.
       </p>
     </header>
-    <div id="cubebig" style="width:100%;height:460px;background:#0e0e14;border-radius:14px;overflow:hidden;cursor:grab;"></div>
+    <div style="aspect-ratio:1/1;max-width:100%;border-radius:4px;overflow:hidden;background:#E8445A;">
+      <canvas data-heatgrid data-rows="4" data-speed="1" data-alpha="0.22" data-cool="1" data-warp="0.8"
+              style="display:block;width:100%;height:100%;cursor:crosshair;touch-action:pan-y;"
+              aria-label="Live heat-diffusion simulation; drag to add heat" role="img"></canvas>
+    </div>
   </article>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-(function(){
-  var box=document.getElementById('cubebig'); if(!box||!window.THREE)return;
-  var W=box.clientWidth,H=460;
-  var scene=new THREE.Scene();
-  var camera=new THREE.PerspectiveCamera(42,W/H,0.1,100);
-  camera.position.set(2.4,2.0,2.8); camera.lookAt(0,0,0);
-  var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  renderer.setSize(W,H); box.appendChild(renderer.domElement);
-  var frag=["precision highp float; varying vec2 vUv; uniform float t;",
-    "void main(){ vec2 g=vUv*5.0; vec2 c=floor(g); vec2 f=fract(g)-0.5;",
-    "float ph=c.x*1.7+c.y*2.3; float w=sin(f.x*3.1416+t+ph)*cos(f.y*3.1416-t*0.8+ph);",
-    "float d=max(abs(f.x),abs(f.y)); float edge=smoothstep(0.36,0.5,d); float v=0.5+0.5*w;",
-    "vec3 base=mix(vec3(0.10,0.07,0.20),vec3(0.40,0.28,0.80),pow(v,1.4));",
-    "vec3 glow=mix(vec3(0.12,0.75,0.68),vec3(0.98,0.72,0.25),0.5+0.5*sin(ph+t*0.7));",
-    "vec3 col=mix(base,glow,edge*(0.55+0.45*v)); gl_FragColor=vec4(col,1.0);}"].join("\n");
-  var vert="varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}";
-  var uni={t:{value:0}};
-  var mat=new THREE.ShaderMaterial({uniforms:uni,vertexShader:vert,fragmentShader:frag});
-  var cube=new THREE.Mesh(new THREE.BoxGeometry(1.6,1.6,1.6),mat); scene.add(cube);
-  var drag=false,px=0,py=0,ry=0.4,rx=0.2,auto=true;
-  box.addEventListener('pointerdown',function(e){drag=true;auto=false;px=e.clientX;py=e.clientY;box.style.cursor='grabbing';});
-  window.addEventListener('pointerup',function(){drag=false;box.style.cursor='grab';});
-  window.addEventListener('pointermove',function(e){ if(!drag)return;
-    ry+=(e.clientX-px)*0.01; rx+=(e.clientY-py)*0.01; px=e.clientX; py=e.clientY; });
-  var clock=new THREE.Clock();
-  (function loop(){requestAnimationFrame(loop); var e=clock.getElapsedTime(); uni.t.value=e;
-    if(auto){ry=e*0.4; rx=Math.sin(e*0.2)*0.3+0.2;}
-    cube.rotation.y=ry; cube.rotation.x=rx; renderer.render(scene,camera);})();
-  window.addEventListener('resize',function(){ var nw=box.clientWidth; renderer.setSize(nw,H); camera.aspect=nw/H; camera.updateProjectionMatrix();});
-})();
-</script>
+<script src="{{ '/assets/js/heatgrid.js' | relative_url }}" defer></script>
