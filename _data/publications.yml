@@ -1,19 +1,23 @@
 # Each entry becomes one publication card on the homepage.
 # Bold your own name in `authors` with **double asterisks**.
+- title: "Beyond Unit-Circle Eigenvalues: Invariant Bases for Stable State Space Dynamics"
+  authors: "**J. Zhu** et al."
+  venue: "NeurIPS 2026"
+
 - title: "Lexical Perturbations Disrupt LLM Reasoning: An Empirical Study of Attention Diversion"
-  authors: "**J. Zhu**, Y. Zhang, J. Ding, X. Yu"
-  venue: "EMNLP 2026 Main Conference (acceptance rate 15.4%)"
+  authors: "**J. Zhu** et al."
+  venue: "EMNLP 2026"
   links:
-    - { name: Code, url: "https://github.com/Jiaqian-Janelle/Attention-Diversion" }
+    - { name: arXiv, url: "https://arxiv.org/abs/2608.22140" }
 
 - title: "Accelerating design of glass substrates by machine learning using small-to-medium datasets"
-  authors: "**J. Zhu**, L. Ding, G. Sun, L. Wang"
+  authors: "**J. Zhu** et al."
   venue: "Ceramics International, 50(2), 3018–3025, 2024"
   links:
     - { name: Paper, url: "https://doi.org/10.1016/j.ceramint.2023.11.048" }
 
 - title: "Advancing the prediction of crystalline phases in glass-ceramics via machine learning"
-  authors: "**J. Zhu**, G. Sun, L. Ding, L. Wang"
+  authors: "**J. Zhu** et al."
   venue: "Journal of Non-Crystalline Solids, 646, 123251, 2024"
   links:
     - { name: Paper, url: "https://doi.org/10.1016/j.jnoncrysol.2024.123251" }
