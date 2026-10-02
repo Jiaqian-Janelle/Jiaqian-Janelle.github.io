@@ -8,16 +8,15 @@ email: jiaqianzhu915@gmail.com
 # Short bio shown under your name on the homepage (Markdown allowed)
 
 description: >-
-  My name is Jiaqian Zhu (Janelle), and I'm a PhD student in Computer Science
-  at Missouri University of Science and Technology. My research interests
-  include Agentic AI, World Models, NLP, and AI for science. I'm also looking
-  for startup opportunities, and I love exploring new things across all kinds
-  of disciplines. Always happy to connect, exchange ideas, and learn together —
-  feel free to reach out!
+  My name is Jiaqian Zhu (Janelle), and I'm a PhD student in Computer Science.
+  My research interests include Agentic AI, World Models, NLP, and AI for
+  science. I'm also looking for startup opportunities, and I love exploring new
+  things across all kinds of disciplines. Always happy to connect, exchange
+  ideas, and learn together — feel free to reach out!
 
 # Your affiliation / location (shown in the sidebar)
-affiliation: Missouri University of Science and Technology
-location: Rolla, MO
+affiliation: ""
+location: ""
 
 # Profile photo: drop a square image in assets/images/ and put its name here
 avatar: profile.jpg
