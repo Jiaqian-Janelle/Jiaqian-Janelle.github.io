@@ -33,4 +33,37 @@
   </ul>
 
   <a href="{{ '/cube/' | relative_url }}" style="display:block;margin-top:1.4rem;text-decoration:none;border:none;width:120px;">
-    <div id="sidecube" style="width:120px;height:120px;overflow:hid
+    <div id="sidecube" style="width:120px;height:120px;overflow:hidden;"></div>
+    <div style="font-family:var(--mono,monospace);font-size:.68rem;line-height:1.4;color:#9a988f;margin-top:.5rem;">
+      &#10022; inspired by <em>GPU World</em> (Paradigm)
+    </div>
+  </a>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+  (function(){
+    var box=document.getElementById('sidecube'); if(!box||!window.THREE)return;
+    var scene=new THREE.Scene();
+    var camera=new THREE.PerspectiveCamera(42,1,0.1,100);
+    camera.position.set(2.4,2.0,2.8); camera.lookAt(0,0,0);
+    var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+    renderer.setClearColor(0x000000,0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    renderer.setSize(120,120); box.appendChild(renderer.domElement);
+    var frag=["precision highp float; varying vec2 vUv; uniform float t;",
+      "vec3 hsl(float h){ vec3 p=abs(fract(h+vec3(0.0,0.6667,0.3333))*6.0-3.0); return clamp(p-1.0,0.0,1.0);}",
+      "void main(){ vec2 g=vUv*5.0; vec2 c=floor(g); vec2 f=fract(g)-0.5;",
+      "float ph=c.x*1.3+c.y*1.9; float w=sin(f.x*3.1416+ph)*cos(f.y*3.1416+ph);",
+      "float d=max(abs(f.x),abs(f.y)); float edge=smoothstep(0.34,0.5,d); float v=0.5+0.5*w;",
+      "float hue=fract(t*0.08 + 0.12*v + ph*0.03);",
+      "vec3 face=hsl(hue); vec3 edgeCol=hsl(fract(hue+0.5));",
+      "vec3 col=mix(face,edgeCol,edge); gl_FragColor=vec4(col,1.0);}"].join("\n");
+    var vert="varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}";
+    var uni={t:{value:0}};
+    var mat=new THREE.ShaderMaterial({uniforms:uni,vertexShader:vert,fragmentShader:frag});
+    var cube=new THREE.Mesh(new THREE.BoxGeometry(1.6,1.6,1.6),mat); scene.add(cube);
+    var clock=new THREE.Clock();
+    (function loop(){requestAnimationFrame(loop); var e=clock.getElapsedTime(); uni.t.value=e;
+      cube.rotation.y=e*0.4; cube.rotation.x=Math.sin(e*0.2)*0.3+0.2; renderer.render(scene,camera);})();
+  })();
+  </script>
+</aside>
