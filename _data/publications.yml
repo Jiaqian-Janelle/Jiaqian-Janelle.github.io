@@ -1,21 +1,20 @@
-# Each entry becomes one publication card on the homepage.
 # type: conference | journal   ·   note: authorship label
 - title: "Beyond Unit-Circle Eigenvalues: Invariant Bases for Stable State Space Dynamics"
-  authors: "**J. Zhu**"
-  note: "Sole author · Project lead"
+  authors: "**Jiaqian Zhu** et al."
+  note: "First author · Project lead"
   type: conference
   venue: "NeurIPS 2026"
 
 - title: "Lexical Perturbations Disrupt LLM Reasoning: An Empirical Study of Attention Diversion"
-  authors: "**J. Zhu**"
-  note: "Sole author · Project lead"
+  authors: "**Jiaqian Zhu** et al."
+  note: "First author · Project lead"
   type: conference
   venue: "EMNLP 2026"
   links:
     - { name: arXiv, url: "https://arxiv.org/abs/2608.22140" }
 
 - title: "Accelerating design of glass substrates by machine learning using small-to-medium datasets"
-  authors: "**J. Zhu**, L. Ding, G. Sun, L. Wang"
+  authors: "**Jiaqian Zhu** et al."
   note: "First author"
   type: journal
   venue: "Ceramics International, 50(2), 3018–3025, 2024"
@@ -23,7 +22,7 @@
     - { name: Paper, url: "https://doi.org/10.1016/j.ceramint.2023.11.048" }
 
 - title: "Advancing the prediction of crystalline phases in glass-ceramics via machine learning"
-  authors: "**J. Zhu**, G. Sun, L. Ding, L. Wang"
+  authors: "**Jiaqian Zhu** et al."
   note: "First author"
   type: journal
   venue: "Journal of Non-Crystalline Solids, 646, 123251, 2024"
