@@ -2,11 +2,10 @@
 #  Site settings — edit these to make the site yours
 # ─────────────────────────────────────────────────────────────
 title: Jiaqian Zhu (Janelle)
-tagline: PhD Student in Computer Science 
+tagline: PhD Student in Computer Science
 email: jiaqianzhu915@gmail.com
 
 # Short bio shown under your name on the homepage (Markdown allowed)
-
 description: >-
   I'm Jiaqian (Janelle) Zhu, a Computer Science PhD student passionate about
   physics, mathematics, and first-principles thinking. My research spans World
@@ -17,7 +16,6 @@ description: >-
   challenge existing assumptions and turn theoretical insights into real-world
   technologies.
 
-
   As of October 2026, I have two first-author papers accepted at EMNLP 2026 and
   NeurIPS 2026, both independently led from initial ideas through experiments and
   final writing, with several more under submission. I'm highly self-motivated and
@@ -27,8 +25,6 @@ description: >-
   investors, and researchers who share my curiosity, ambition, and passion for
   building what doesn't yet exist. Feel free to reach out to exchange ideas or
   explore opportunities together.
-  
-As of October 2026, I have two first-author papers accepted at EMNLP 2026 and NeurIPS 2026, both independently led from initial ideas through experiments and final writing, with several more under submission. I'm highly self-motivated and goal-oriented, typically working from 9 AM to 10 PM, seven days a week. Beyond academia, my ambition is to build transformative AI technologies and pursue entrepreneurship. I'm actively looking to connect with visionary co-founders, investors, and researchers who share my curiosity, ambition, and passion for building what doesn't yet exist. Feel free to reach out to exchange ideas or explore opportunities together.
 
 # Your affiliation / location (shown in the sidebar)
 affiliation: ""
