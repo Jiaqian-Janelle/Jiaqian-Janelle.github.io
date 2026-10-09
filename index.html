@@ -46,6 +46,41 @@ layout: default
       </div>
     </section>
 
+    <!-- PUBLICATIONS -->
+    <section class="section" id="publications">
+      <div class="section-head"><h2>Publications</h2></div>
+
+      {% assign confs = site.data.publications | where: "type", "conference" %}
+      {% if confs.size > 0 %}
+      <h4 class="pub-group">Conferences</h4>
+      {% for pub in confs %}
+      <div class="pub">
+        <div class="venue">{{ pub.venue }}</div>
+        <h3>{{ pub.title }}</h3>
+        <p class="authors">{{ pub.authors | markdownify | remove: '<p>' | remove: '</p>' }}{% if pub.note %} <span class="pub-note">{{ pub.note }}</span>{% endif %}</p>
+        <div class="pub-links">
+          {% for l in pub.links %}<a href="{{ l.url }}" target="_blank" rel="noopener">{{ l.name }}</a>{% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      {% assign journals = site.data.publications | where: "type", "journal" %}
+      {% if journals.size > 0 %}
+      <h4 class="pub-group">Journals</h4>
+      {% for pub in journals %}
+      <div class="pub">
+        <div class="venue">{{ pub.venue }}</div>
+        <h3>{{ pub.title }}</h3>
+        <p class="authors">{{ pub.authors | markdownify | remove: '<p>' | remove: '</p>' }}{% if pub.note %} <span class="pub-note">{{ pub.note }}</span>{% endif %}</p>
+        <div class="pub-links">
+          {% for l in pub.links %}<a href="{{ l.url }}" target="_blank" rel="noopener">{{ l.name }}</a>{% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </section>
+
     <!-- OPERATING PRINCIPLES — daily reminder -->
     <section class="section" id="principles">
       <div class="op-creed">
@@ -146,21 +181,6 @@ layout: default
       </ul>
     </section>
 
-    <!-- PUBLICATIONS -->
-    <section class="section" id="publications">
-      <div class="section-head"><h2>Publications</h2></div>
-      {% for pub in site.data.publications %}
-      <div class="pub">
-        <div class="venue">{{ pub.venue }}</div>
-        <h3>{{ pub.title }}</h3>
-        <p class="authors">{{ pub.authors | markdownify | remove: '<p>' | remove: '</p>' }}</p>
-        <div class="pub-links">
-          {% for l in pub.links %}<a href="{{ l.url }}" target="_blank" rel="noopener">{{ l.name }}</a>{% endfor %}
-        </div>
-      </div>
-      {% endfor %}
-    </section>
-
     <!-- BLOG -->
     <section class="section" id="blog">
       <div class="section-head">
@@ -244,4 +264,19 @@ layout: default
   }
   #principles .op-kicker b{color:var(--accent-lt, #B9995E)}
   @media (max-width:600px){ #principles .op-creed{padding:22px 20px} }
+
+  /* Publications — conference / journal groups + authorship label */
+  #publications .pub-group{
+    margin:1.6rem 0 .6rem;font-size:.76rem;text-transform:uppercase;letter-spacing:.09em;
+    color:var(--accent, #9A7A44);font-weight:700;
+  }
+  #publications .pub-group:first-of-type{margin-top:.4rem}
+  #publications .pub-note{
+    display:inline-block;font-size:.72rem;color:var(--accent-strong, #0F2033);
+    border:1px solid var(--rule, #e2ddd2);border-radius:2px;padding:1px 6px;margin-left:4px;
+  }
+  #publications .venue{
+    font-family: var(--sans, "Inter", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif);
+    font-weight: 700;
+  }
 </style>
