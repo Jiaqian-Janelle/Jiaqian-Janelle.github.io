@@ -1,0 +1,1544 @@
+{
+ "schema_version": 1,
+ "demo": true,
+ "as_of": "2026-10-28T16:30:00-04:00",
+ "stage": "A",
+ "stages": [
+  {
+   "id": "A",
+   "label": "Web page + history",
+   "status": "in_progress"
+  },
+  {
+   "id": "B",
+   "label": "Universe approved",
+   "status": "pending"
+  },
+  {
+   "id": "C",
+   "label": "Historical results",
+   "status": "pending"
+  },
+  {
+   "id": "D",
+   "label": "Live paper accounts",
+   "status": "pending"
+  },
+  {
+   "id": "E",
+   "label": "Live evaluation",
+   "status": "pending"
+  }
+ ],
+ "health": [
+  {
+   "feed": "Alpaca IEX (equities)",
+   "status": "ok",
+   "last_msg_s": 2,
+   "gaps_today": 0
+  },
+  {
+   "feed": "Coinbase (crypto)",
+   "status": "ok",
+   "last_msg_s": 1,
+   "gaps_today": 1
+  },
+  {
+   "feed": "Kraken (cross-check)",
+   "status": "ok",
+   "last_msg_s": 1,
+   "gaps_today": 0
+  },
+  {
+   "feed": "SEC EDGAR",
+   "status": "ok",
+   "last_msg_s": 41,
+   "gaps_today": 0
+  }
+ ],
+ "risk": {
+  "verdict": "go",
+  "period": "2024-11-01 to 2026-10-27",
+  "n_days": 497,
+  "rule": "spd_har beats ewma and ledoit_wolf on QLIKE (DM p < 0.05) on the large-cap core or crypto",
+  "qlike": [
+   {
+    "estimator": "sample_60d",
+    "core": 1.0,
+    "crypto": 1.0,
+    "dm_p_core": null,
+    "dm_p_crypto": null
+   },
+   {
+    "estimator": "ewma",
+    "core": 0.912,
+    "crypto": 0.887,
+    "dm_p_core": null,
+    "dm_p_crypto": null
+   },
+   {
+    "estimator": "ledoit_wolf",
+    "core": 0.931,
+    "crypto": 0.915,
+    "dm_p_core": null,
+    "dm_p_crypto": null
+   },
+   {
+    "estimator": "rcov_har",
+    "core": 0.874,
+    "crypto": 0.861,
+    "dm_p_core": 0.08,
+    "dm_p_crypto": 0.11
+   },
+   {
+    "estimator": "spd_har",
+    "core": 0.842,
+    "crypto": 0.853,
+    "dm_p_core": 0.01,
+    "dm_p_crypto": 0.04
+   },
+   {
+    "estimator": "spd_har_ai",
+    "core": 0.848,
+    "crypto": 0.849,
+    "dm_p_core": 0.02,
+    "dm_p_crypto": 0.03
+   }
+  ],
+  "vol_target": 0.15,
+  "vol": [
+   {
+    "estimator": "sample_60d",
+    "core": 0.182,
+    "crypto": 0.236
+   },
+   {
+    "estimator": "ewma",
+    "core": 0.166,
+    "crypto": 0.201
+   },
+   {
+    "estimator": "ledoit_wolf",
+    "core": 0.171,
+    "crypto": 0.214
+   },
+   {
+    "estimator": "rcov_har",
+    "core": 0.158,
+    "crypto": 0.188
+   },
+   {
+    "estimator": "spd_har",
+    "core": 0.153,
+    "crypto": 0.179
+   }
+  ]
+ },
+ "closure": {
+  "verdict": "no-go",
+  "period": "2021-11-01 to 2026-10-27",
+  "rule": "closure_signal T1 forecast t > 3 (date-clustered) and beats gap_follow and no_trade after costs",
+  "windows": {
+   "weeknight": 1004,
+   "weekend": 252
+  },
+  "regression": [
+   {
+    "window": "Weeknight",
+    "target": "T1 open\u2192close",
+    "coef": 0.041,
+    "t": 1.62,
+    "n": 6024
+   },
+   {
+    "window": "Weeknight",
+    "target": "T2 first 30 min",
+    "coef": 0.058,
+    "t": 2.41,
+    "n": 6024
+   },
+   {
+    "window": "Weekend",
+    "target": "T1 open\u2192close",
+    "coef": 0.072,
+    "t": 1.88,
+    "n": 1512
+   },
+   {
+    "window": "Weekend",
+    "target": "T2 first 30 min",
+    "coef": 0.095,
+    "t": 2.07,
+    "n": 1512
+   }
+  ],
+  "strategies": [
+   {
+    "name": "closure_signal",
+    "cum_return": 0.061,
+    "sharpe": 0.48,
+    "hit_rate": 0.512,
+    "n": 504
+   },
+   {
+    "name": "gap_follow",
+    "cum_return": 0.034,
+    "sharpe": 0.27,
+    "hit_rate": 0.503,
+    "n": 504
+   },
+   {
+    "name": "gap_fade",
+    "cum_return": -0.071,
+    "sharpe": -0.55,
+    "hit_rate": 0.488,
+    "n": 504
+   },
+   {
+    "name": "no_trade",
+    "cum_return": 0.0,
+    "sharpe": null,
+    "hit_rate": null,
+    "n": 504
+   }
+  ]
+ },
+ "live": {
+  "start": "2026-08-03",
+  "dates": [
+   "2026-08-03",
+   "2026-08-04",
+   "2026-08-05",
+   "2026-08-06",
+   "2026-08-07",
+   "2026-08-10",
+   "2026-08-11",
+   "2026-08-12",
+   "2026-08-13",
+   "2026-08-14",
+   "2026-08-17",
+   "2026-08-18",
+   "2026-08-19",
+   "2026-08-20",
+   "2026-08-21",
+   "2026-08-24",
+   "2026-08-25",
+   "2026-08-26",
+   "2026-08-27",
+   "2026-08-28",
+   "2026-08-31",
+   "2026-09-01",
+   "2026-09-02",
+   "2026-09-03",
+   "2026-09-04",
+   "2026-09-07",
+   "2026-09-08",
+   "2026-09-09",
+   "2026-09-10",
+   "2026-09-11",
+   "2026-09-14",
+   "2026-09-15",
+   "2026-09-16",
+   "2026-09-17",
+   "2026-09-18",
+   "2026-09-21",
+   "2026-09-22",
+   "2026-09-23",
+   "2026-09-24",
+   "2026-09-25",
+   "2026-09-28",
+   "2026-09-29",
+   "2026-09-30",
+   "2026-10-01",
+   "2026-10-02",
+   "2026-10-05",
+   "2026-10-06",
+   "2026-10-07",
+   "2026-10-08",
+   "2026-10-09",
+   "2026-10-12",
+   "2026-10-13",
+   "2026-10-14",
+   "2026-10-15",
+   "2026-10-16",
+   "2026-10-19",
+   "2026-10-20",
+   "2026-10-21",
+   "2026-10-22",
+   "2026-10-23",
+   "2026-10-26",
+   "2026-10-27",
+   "2026-10-28"
+  ],
+  "series": [
+   {
+    "name": "minvar_spd_har",
+    "group": "ours",
+    "values": [
+     100000.0,
+     100259.46,
+     100117.29,
+     99544.85,
+     99278.16,
+     98640.71,
+     98731.6,
+     99712.06,
+     99418.79,
+     99037.43,
+     99427.3,
+     99725.85,
+     99849.38,
+     99250.76,
+     99280.06,
+     99814.34,
+     98929.0,
+     98661.92,
+     97406.27,
+     96579.24,
+     95389.8,
+     95280.58,
+     94486.21,
+     94713.14,
+     94864.54,
+     94787.87,
+     93179.16,
+     92874.89,
+     92889.79,
+     93009.99,
+     92065.1,
+     91803.62,
+     91222.55,
+     90752.88,
+     91475.07,
+     91004.94,
+     91029.73,
+     91640.82,
+     91312.86,
+     91287.12,
+     91403.43,
+     91489.98,
+     90754.14,
+     90847.93,
+     91762.05,
+     90819.03,
+     91412.7,
+     91534.87,
+     91170.34,
+     92502.21,
+     93043.62,
+     92311.93,
+     92406.28,
+     92826.47,
+     92750.24,
+     93241.3,
+     93244.5,
+     93727.89,
+     94723.82,
+     94324.02,
+     94505.48,
+     94246.59,
+     94377.77
+    ]
+   },
+   {
+    "name": "voltarget_spd_har",
+    "group": "ours",
+    "values": [
+     100000.0,
+     99577.45,
+     99461.06,
+     100218.85,
+     101181.72,
+     100156.09,
+     99561.22,
+     100117.85,
+     98574.1,
+     98248.82,
+     98211.66,
+     99243.96,
+     99832.75,
+     99611.6,
+     99358.05,
+     99199.05,
+     100455.68,
+     100152.34,
+     99949.3,
+     100271.72,
+     100214.97,
+     100096.96,
+     99248.49,
+     99279.05,
+     98966.95,
+     99934.5,
+     100498.18,
+     100518.97,
+     101098.32,
+     100864.15,
+     101757.41,
+     101793.72,
+     102310.82,
+     101300.19,
+     101622.17,
+     100299.04,
+     98718.61,
+     98517.84,
+     97850.25,
+     98017.96,
+     99833.99,
+     99211.6,
+     98757.11,
+     98959.1,
+     99389.92,
+     99289.47,
+     99165.69,
+     99764.44,
+     100220.33,
+     99434.75,
+     99411.54,
+     99479.39,
+     98683.19,
+     98928.1,
+     98290.72,
+     99097.69,
+     99290.33,
+     99401.04,
+     98971.74,
+     98917.43,
+     97388.05,
+     96549.16,
+     96868.56
+    ]
+   },
+   {
+    "name": "minvar_ewma",
+    "group": "baseline",
+    "values": [
+     100000.0,
+     100709.79,
+     99342.58,
+     99975.8,
+     99331.65,
+     99982.6,
+     100117.43,
+     98923.72,
+     99947.22,
+     101136.99,
+     101114.09,
+     100923.03,
+     100824.28,
+     100070.81,
+     100984.46,
+     100577.0,
+     100565.98,
+     99959.76,
+     99490.19,
+     98507.95,
+     99533.46,
+     99440.66,
+     100242.12,
+     100282.89,
+     99757.26,
+     99526.74,
+     99111.41,
+     99147.46,
+     98879.91,
+     98672.54,
+     97619.58,
+     97020.6,
+     98342.45,
+     97845.13,
+     97052.61,
+     97344.07,
+     98475.72,
+     97366.07,
+     97232.95,
+     96771.56,
+     95446.42,
+     96038.05,
+     96048.85,
+     96132.59,
+     95584.43,
+     95961.61,
+     95577.15,
+     95496.6,
+     94682.06,
+     93793.51,
+     94829.44,
+     94473.85,
+     94722.97,
+     94725.78,
+     94420.39,
+     94065.69,
+     94569.41,
+     94369.61,
+     94283.63,
+     94328.68,
+     95249.27,
+     95797.97,
+     96120.47
+    ]
+   },
+   {
+    "name": "equal_weight",
+    "group": "benchmark",
+    "values": [
+     100000.0,
+     98667.0,
+     99648.18,
+     100656.15,
+     100554.83,
+     101141.65,
+     101975.89,
+     102868.17,
+     103861.9,
+     103431.13,
+     105052.02,
+     103792.09,
+     104732.24,
+     105292.93,
+     106259.32,
+     108318.13,
+     109982.04,
+     108773.23,
+     106994.62,
+     107915.38,
+     106868.31,
+     106897.8,
+     107842.36,
+     106126.58,
+     103952.36,
+     104263.96,
+     104351.98,
+     104137.44,
+     104219.26,
+     103367.62,
+     101855.67,
+     101726.75,
+     100783.35,
+     99180.2,
+     99722.88,
+     99701.55,
+     100147.74,
+     99201.54,
+     98590.31,
+     97649.3,
+     96826.05,
+     97054.26,
+     96335.84,
+     96718.15,
+     97086.14,
+     99111.97,
+     97780.23,
+     98691.75,
+     98642.93,
+     98668.55,
+     97287.22,
+     96879.28,
+     97641.01,
+     97599.55,
+     97717.77,
+     97473.08,
+     98644.44,
+     98662.72,
+     96554.06,
+     95926.5,
+     94094.01,
+     91120.24,
+     90674.74
+    ]
+   },
+   {
+    "name": "buy_and_hold_spy",
+    "group": "benchmark",
+    "values": [
+     100000.0,
+     100082.44,
+     99071.45,
+     98275.53,
+     99320.36,
+     99501.15,
+     99583.97,
+     99575.89,
+     99650.16,
+     100415.27,
+     100956.27,
+     101192.92,
+     100287.69,
+     100790.38,
+     100211.67,
+     101243.58,
+     100132.05,
+     100048.12,
+     100081.52,
+     98935.02,
+     100520.43,
+     101891.1,
+     101507.47,
+     102255.84,
+     102645.98,
+     100299.82,
+     100566.33,
+     100551.03,
+     100666.63,
+     99735.58,
+     99533.91,
+     99414.11,
+     100523.03,
+     100866.39,
+     100901.69,
+     102340.7,
+     101871.3,
+     101555.49,
+     99948.45,
+     101410.49,
+     102335.38,
+     103224.59,
+     103889.44,
+     104034.08,
+     104277.74,
+     104083.13,
+     103934.15,
+     104026.56,
+     105493.85,
+     106065.19,
+     106051.81,
+     105542.45,
+     104982.98,
+     106550.88,
+     107080.7,
+     107188.69,
+     106898.0,
+     105878.65,
+     105857.29,
+     106735.6,
+     106401.74,
+     106226.83,
+     106058.14
+    ]
+   }
+  ],
+  "scorecard": [
+   {
+    "method": "minvar_spd_har",
+    "segment": "Large-cap core",
+    "days": 63,
+    "ret": -0.0562,
+    "vol": 0.0967,
+    "sharpe": -2.43,
+    "mdd": -0.0948,
+    "excess_spy": -0.1168,
+    "evidence": "sufficient"
+   },
+   {
+    "method": "voltarget_spd_har",
+    "segment": "Large-cap core",
+    "days": 63,
+    "ret": -0.0313,
+    "vol": 0.1091,
+    "sharpe": -1.19,
+    "mdd": -0.0563,
+    "excess_spy": -0.0919,
+    "evidence": "sufficient"
+   },
+   {
+    "method": "minvar_ewma",
+    "segment": "Large-cap core",
+    "days": 63,
+    "ret": -0.0388,
+    "vol": 0.1067,
+    "sharpe": -1.51,
+    "mdd": -0.0726,
+    "excess_spy": -0.0994,
+    "evidence": "sufficient"
+   },
+   {
+    "method": "equal_weight",
+    "segment": "Large-cap core",
+    "days": 63,
+    "ret": -0.0933,
+    "vol": 0.1706,
+    "sharpe": -2.33,
+    "mdd": -0.1755,
+    "excess_spy": -0.1539,
+    "evidence": "sufficient"
+   },
+   {
+    "method": "buy_and_hold_spy",
+    "segment": "Large-cap core",
+    "days": 63,
+    "ret": 0.0606,
+    "vol": 0.123,
+    "sharpe": 1.94,
+    "mdd": -0.0315,
+    "excess_spy": 0.0,
+    "evidence": "sufficient"
+   },
+   {
+    "method": "minvar_spd_har",
+    "segment": "Small/high-vol satellite",
+    "days": 63,
+    "ret": 0.0428,
+    "vol": 0.2781,
+    "sharpe": 0.61,
+    "mdd": -0.097,
+    "excess_spy": 0.012,
+    "evidence": "sufficient"
+   },
+   {
+    "method": "voltarget_spd_har",
+    "segment": "Crypto",
+    "days": 87,
+    "ret": -0.1391,
+    "vol": 0.2959,
+    "sharpe": -2.06,
+    "mdd": -0.1573,
+    "excess_spy": null,
+    "evidence": "sufficient"
+   }
+  ]
+ },
+ "latency": [
+  {
+   "component": "Data in (event \u2192 receive)",
+   "venue": "Alpaca IEX",
+   "p50_ms": 38,
+   "p99_ms": 210
+  },
+  {
+   "component": "Data in (event \u2192 receive)",
+   "venue": "Coinbase",
+   "p50_ms": 24,
+   "p99_ms": 140
+  },
+  {
+   "component": "Algorithm (tier 1)",
+   "venue": "local",
+   "p50_ms": 6,
+   "p99_ms": 19
+  },
+  {
+   "component": "Ledger hash + write",
+   "venue": "local",
+   "p50_ms": 3,
+   "p99_ms": 11
+  },
+  {
+   "component": "Order send \u2192 ack",
+   "venue": "Alpaca paper",
+   "p50_ms": 95,
+   "p99_ms": 420
+  }
+ ],
+ "timing_events": {
+  "deadline_miss": 0,
+  "infeasible_timing": 0,
+  "stale_quote_rejections": 3
+ },
+ "market": {
+  "segments": {
+   "core": [
+    {
+     "symbol": "NVDA",
+     "name": "NVIDIA",
+     "sector": "Hardware",
+     "price": 84.99,
+     "chg_1d": -0.0096,
+     "chg_1w": -0.0128,
+     "chg_1m": -0.0452,
+     "vol_20d": 0.3,
+     "vol_fcst": 0.314,
+     "volume_usd": 2980096000.0,
+     "rel_vol": 0.98,
+     "signal": {
+      "kind": "risk",
+      "value": 0.049,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "MSFT",
+     "name": "Microsoft",
+     "sector": "Technology",
+     "price": 782.48,
+     "chg_1d": -0.002,
+     "chg_1w": 0.032,
+     "chg_1m": -0.0128,
+     "vol_20d": 0.329,
+     "vol_fcst": 0.316,
+     "volume_usd": 1533846000.0,
+     "rel_vol": 1.18,
+     "signal": {
+      "kind": "risk",
+      "value": -0.04,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "AAPL",
+     "name": "Apple",
+     "sector": "Hardware",
+     "price": 368.6,
+     "chg_1d": 0.013,
+     "chg_1w": -0.0377,
+     "chg_1m": -0.1311,
+     "vol_20d": 0.303,
+     "vol_fcst": 0.342,
+     "volume_usd": 2636980000.0,
+     "rel_vol": 0.79,
+     "signal": {
+      "kind": "risk",
+      "value": 0.13,
+      "label": "Risk rising"
+     }
+    },
+    {
+     "symbol": "AMZN",
+     "name": "Amazon",
+     "sector": "Services",
+     "price": 156.18,
+     "chg_1d": -0.024,
+     "chg_1w": -0.0686,
+     "chg_1m": 0.0034,
+     "vol_20d": 0.322,
+     "vol_fcst": 0.293,
+     "volume_usd": 3747997000.0,
+     "rel_vol": 0.92,
+     "signal": {
+      "kind": "risk",
+      "value": -0.091,
+      "label": "Calming"
+     }
+    },
+    {
+     "symbol": "GOOGL",
+     "name": "Alphabet",
+     "sector": "Technology",
+     "price": 75.15,
+     "chg_1d": -0.0074,
+     "chg_1w": 0.0307,
+     "chg_1m": 0.1177,
+     "vol_20d": 0.395,
+     "vol_fcst": 0.388,
+     "volume_usd": 1730270000.0,
+     "rel_vol": 0.75,
+     "signal": {
+      "kind": "risk",
+      "value": -0.017,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "META",
+     "name": "Meta Platforms",
+     "sector": "Technology",
+     "price": 65.62,
+     "chg_1d": -0.0183,
+     "chg_1w": -0.0216,
+     "chg_1m": -0.0546,
+     "vol_20d": 0.228,
+     "vol_fcst": 0.217,
+     "volume_usd": 594126000.0,
+     "rel_vol": 1.05,
+     "signal": {
+      "kind": "risk",
+      "value": -0.049,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "AVGO",
+     "name": "Broadcom",
+     "sector": "Hardware",
+     "price": 92.5,
+     "chg_1d": 0.0215,
+     "chg_1w": 0.0376,
+     "chg_1m": 0.0481,
+     "vol_20d": 0.419,
+     "vol_fcst": 0.417,
+     "volume_usd": 3904446000.0,
+     "rel_vol": 0.63,
+     "signal": {
+      "kind": "risk",
+      "value": -0.005,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "TSM",
+     "name": "TSMC",
+     "sector": "Hardware",
+     "price": 138.43,
+     "chg_1d": 0.0056,
+     "chg_1w": -0.0092,
+     "chg_1m": 0.0572,
+     "vol_20d": 0.256,
+     "vol_fcst": 0.219,
+     "volume_usd": 1470796000.0,
+     "rel_vol": 0.99,
+     "signal": {
+      "kind": "risk",
+      "value": -0.146,
+      "label": "Calming"
+     }
+    },
+    {
+     "symbol": "LLY",
+     "name": "Eli Lilly",
+     "sector": "Medical",
+     "price": 444.19,
+     "chg_1d": 0.0085,
+     "chg_1w": -0.0034,
+     "chg_1m": 0.0319,
+     "vol_20d": 0.227,
+     "vol_fcst": 0.191,
+     "volume_usd": 1387996000.0,
+     "rel_vol": 1.46,
+     "signal": {
+      "kind": "risk",
+      "value": -0.156,
+      "label": "Calming"
+     }
+    },
+    {
+     "symbol": "JPM",
+     "name": "JPMorgan Chase",
+     "sector": "Services",
+     "price": 77.16,
+     "chg_1d": 0.0145,
+     "chg_1w": 0.0472,
+     "chg_1m": -0.0829,
+     "vol_20d": 0.184,
+     "vol_fcst": 0.172,
+     "volume_usd": 3711141000.0,
+     "rel_vol": 1.18,
+     "signal": {
+      "kind": "risk",
+      "value": -0.069,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "V",
+     "name": "Visa",
+     "sector": "Services",
+     "price": 120.71,
+     "chg_1d": -0.0327,
+     "chg_1w": 0.0336,
+     "chg_1m": 0.1543,
+     "vol_20d": 0.415,
+     "vol_fcst": 0.488,
+     "volume_usd": 652711000.0,
+     "rel_vol": 0.9,
+     "signal": {
+      "kind": "risk",
+      "value": 0.178,
+      "label": "Risk rising"
+     }
+    },
+    {
+     "symbol": "ORCL",
+     "name": "Oracle",
+     "sector": "Technology",
+     "price": 72.02,
+     "chg_1d": 0.035,
+     "chg_1w": -0.0704,
+     "chg_1m": -0.0455,
+     "vol_20d": 0.277,
+     "vol_fcst": 0.253,
+     "volume_usd": 3272744000.0,
+     "rel_vol": 1.74,
+     "signal": {
+      "kind": "risk",
+      "value": -0.087,
+      "label": "Calming"
+     }
+    },
+    {
+     "symbol": "UNH",
+     "name": "UnitedHealth",
+     "sector": "Medical",
+     "price": 497.44,
+     "chg_1d": -0.0004,
+     "chg_1w": -0.0117,
+     "chg_1m": -0.0845,
+     "vol_20d": 0.403,
+     "vol_fcst": 0.353,
+     "volume_usd": 2622765000.0,
+     "rel_vol": 1.11,
+     "signal": {
+      "kind": "risk",
+      "value": -0.123,
+      "label": "Calming"
+     }
+    },
+    {
+     "symbol": "COST",
+     "name": "Costco",
+     "sector": "Services",
+     "price": 468.89,
+     "chg_1d": -0.0057,
+     "chg_1w": 0.0325,
+     "chg_1m": -0.0103,
+     "vol_20d": 0.188,
+     "vol_fcst": 0.18,
+     "volume_usd": 730051000.0,
+     "rel_vol": 1.6,
+     "signal": {
+      "kind": "risk",
+      "value": -0.043,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "JNJ",
+     "name": "Johnson & Johnson",
+     "sector": "Medical",
+     "price": 70.76,
+     "chg_1d": -0.0112,
+     "chg_1w": -0.0804,
+     "chg_1m": 0.1471,
+     "vol_20d": 0.389,
+     "vol_fcst": 0.413,
+     "volume_usd": 12083069000.0,
+     "rel_vol": 0.75,
+     "signal": {
+      "kind": "risk",
+      "value": 0.062,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "AMD",
+     "name": "AMD",
+     "sector": "Hardware",
+     "price": 66.62,
+     "chg_1d": -0.0035,
+     "chg_1w": -0.0104,
+     "chg_1m": 0.0114,
+     "vol_20d": 0.208,
+     "vol_fcst": 0.214,
+     "volume_usd": 4303894000.0,
+     "rel_vol": 1.01,
+     "signal": {
+      "kind": "risk",
+      "value": 0.031,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "NFLX",
+     "name": "Netflix",
+     "sector": "Services",
+     "price": 140.89,
+     "chg_1d": -0.0367,
+     "chg_1w": -0.0569,
+     "chg_1m": 0.0625,
+     "vol_20d": 0.275,
+     "vol_fcst": 0.321,
+     "volume_usd": 1323186000.0,
+     "rel_vol": 1.23,
+     "signal": {
+      "kind": "risk",
+      "value": 0.167,
+      "label": "Risk rising"
+     }
+    },
+    {
+     "symbol": "CRM",
+     "name": "Salesforce",
+     "sector": "Technology",
+     "price": 399.67,
+     "chg_1d": 0.0125,
+     "chg_1w": -0.0031,
+     "chg_1m": -0.0391,
+     "vol_20d": 0.196,
+     "vol_fcst": 0.221,
+     "volume_usd": 1198482000.0,
+     "rel_vol": 0.84,
+     "signal": {
+      "kind": "risk",
+      "value": 0.126,
+      "label": "Risk rising"
+     }
+    },
+    {
+     "symbol": "ABBV",
+     "name": "AbbVie",
+     "sector": "Medical",
+     "price": 420.08,
+     "chg_1d": 0.0059,
+     "chg_1w": -0.0181,
+     "chg_1m": -0.2051,
+     "vol_20d": 0.373,
+     "vol_fcst": 0.414,
+     "volume_usd": 1901321000.0,
+     "rel_vol": 1.08,
+     "signal": {
+      "kind": "risk",
+      "value": 0.109,
+      "label": "Risk rising"
+     }
+    },
+    {
+     "symbol": "ISRG",
+     "name": "Intuitive Surgical",
+     "sector": "Medical",
+     "price": 231.02,
+     "chg_1d": -0.0112,
+     "chg_1w": 0.0714,
+     "chg_1m": 0.0537,
+     "vol_20d": 0.249,
+     "vol_fcst": 0.261,
+     "volume_usd": 7207737000.0,
+     "rel_vol": 2.11,
+     "signal": {
+      "kind": "risk",
+      "value": 0.05,
+      "label": "Stable"
+     }
+    }
+   ],
+   "satellite": [
+    {
+     "symbol": "IONQ",
+     "name": "IonQ",
+     "sector": "Quantum",
+     "price": 15.02,
+     "chg_1d": 0.0347,
+     "chg_1w": 0.0767,
+     "chg_1m": 0.0572,
+     "vol_20d": 0.991,
+     "vol_fcst": 0.969,
+     "volume_usd": 338889000.0,
+     "rel_vol": 0.59,
+     "signal": {
+      "kind": "risk",
+      "value": -0.022,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "RGTI",
+     "name": "Rigetti",
+     "sector": "Quantum",
+     "price": 9.85,
+     "chg_1d": 0.0054,
+     "chg_1w": -0.0459,
+     "chg_1m": 0.1216,
+     "vol_20d": 0.688,
+     "vol_fcst": 0.708,
+     "volume_usd": 532262000.0,
+     "rel_vol": 1.11,
+     "signal": {
+      "kind": "risk",
+      "value": 0.029,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "QBTS",
+     "name": "D-Wave",
+     "sector": "Quantum",
+     "price": 56.57,
+     "chg_1d": -0.0099,
+     "chg_1w": -0.0682,
+     "chg_1m": 0.1068,
+     "vol_20d": 0.964,
+     "vol_fcst": 0.899,
+     "volume_usd": 302979000.0,
+     "rel_vol": 1.23,
+     "signal": {
+      "kind": "risk",
+      "value": -0.066,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "OKLO",
+     "name": "Oklo",
+     "sector": "Nuclear",
+     "price": 40.23,
+     "chg_1d": -0.0385,
+     "chg_1w": -0.0236,
+     "chg_1m": -0.1349,
+     "vol_20d": 0.838,
+     "vol_fcst": 0.937,
+     "volume_usd": 367811000.0,
+     "rel_vol": 0.82,
+     "signal": {
+      "kind": "risk",
+      "value": 0.118,
+      "label": "Risk rising"
+     }
+    },
+    {
+     "symbol": "SMR",
+     "name": "NuScale",
+     "sector": "Nuclear",
+     "price": 36.96,
+     "chg_1d": 0.0027,
+     "chg_1w": -0.1658,
+     "chg_1m": 0.0024,
+     "vol_20d": 0.994,
+     "vol_fcst": 1.002,
+     "volume_usd": 100949000.0,
+     "rel_vol": 1.87,
+     "signal": {
+      "kind": "risk",
+      "value": 0.009,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "RKLB",
+     "name": "Rocket Lab",
+     "sector": "Space",
+     "price": 30.66,
+     "chg_1d": -0.0699,
+     "chg_1w": 0.0331,
+     "chg_1m": 0.2197,
+     "vol_20d": 0.771,
+     "vol_fcst": 0.758,
+     "volume_usd": 416166000.0,
+     "rel_vol": 1.1,
+     "signal": {
+      "kind": "risk",
+      "value": -0.017,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "ASTS",
+     "name": "AST SpaceMobile",
+     "sector": "Space",
+     "price": 23.63,
+     "chg_1d": 0.0119,
+     "chg_1w": -0.0102,
+     "chg_1m": 0.1021,
+     "vol_20d": 0.566,
+     "vol_fcst": 0.574,
+     "volume_usd": 155215000.0,
+     "rel_vol": 1.32,
+     "signal": {
+      "kind": "risk",
+      "value": 0.015,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "SOUN",
+     "name": "SoundHound",
+     "sector": "AI software",
+     "price": 8.81,
+     "chg_1d": 0.1179,
+     "chg_1w": 0.1531,
+     "chg_1m": -0.1642,
+     "vol_20d": 1.114,
+     "vol_fcst": 1.141,
+     "volume_usd": 489030000.0,
+     "rel_vol": 0.85,
+     "signal": {
+      "kind": "risk",
+      "value": 0.024,
+      "label": "Stable"
+     }
+    }
+   ],
+   "crypto": [
+    {
+     "symbol": "BTC",
+     "name": "Bitcoin",
+     "sector": "Layer 1",
+     "price": 68071.62,
+     "chg_1d": -0.0541,
+     "chg_1w": -0.0838,
+     "chg_1m": -0.3542,
+     "vol_20d": 0.841,
+     "vol_fcst": 0.934,
+     "volume_usd": 345905000.0,
+     "rel_vol": 0.72,
+     "signal": {
+      "kind": "risk",
+      "value": 0.111,
+      "label": "Risk rising"
+     }
+    },
+    {
+     "symbol": "ETH",
+     "name": "Ethereum",
+     "sector": "Layer 1",
+     "price": 2599.96,
+     "chg_1d": -0.0108,
+     "chg_1w": -0.1786,
+     "chg_1m": 0.028,
+     "vol_20d": 0.654,
+     "vol_fcst": 0.554,
+     "volume_usd": 1366092000.0,
+     "rel_vol": 0.86,
+     "signal": {
+      "kind": "risk",
+      "value": -0.153,
+      "label": "Calming"
+     }
+    },
+    {
+     "symbol": "SOL",
+     "name": "Solana",
+     "sector": "Layer 1",
+     "price": 0.2688,
+     "chg_1d": -0.0382,
+     "chg_1w": -0.0131,
+     "chg_1m": -0.0249,
+     "vol_20d": 0.413,
+     "vol_fcst": 0.41,
+     "volume_usd": 781247000.0,
+     "rel_vol": 1.41,
+     "signal": {
+      "kind": "risk",
+      "value": -0.008,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "XRP",
+     "name": "XRP",
+     "sector": "Payments",
+     "price": 8.09,
+     "chg_1d": 0.0276,
+     "chg_1w": 0.0479,
+     "chg_1m": 0.1406,
+     "vol_20d": 0.47,
+     "vol_fcst": 0.488,
+     "volume_usd": 761496000.0,
+     "rel_vol": 1.3,
+     "signal": {
+      "kind": "risk",
+      "value": 0.039,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "DOGE",
+     "name": "Dogecoin",
+     "sector": "Meme",
+     "price": 0.6566,
+     "chg_1d": -0.1111,
+     "chg_1w": -0.0761,
+     "chg_1m": 0.1492,
+     "vol_20d": 0.859,
+     "vol_fcst": 0.989,
+     "volume_usd": 2419755000.0,
+     "rel_vol": 1.14,
+     "signal": {
+      "kind": "risk",
+      "value": 0.151,
+      "label": "Risk rising"
+     }
+    },
+    {
+     "symbol": "ADA",
+     "name": "Cardano",
+     "sector": "Layer 1",
+     "price": 3.84,
+     "chg_1d": 0.0241,
+     "chg_1w": -0.0018,
+     "chg_1m": -0.2608,
+     "vol_20d": 0.765,
+     "vol_fcst": 0.722,
+     "volume_usd": 2348119000.0,
+     "rel_vol": 1.13,
+     "signal": {
+      "kind": "risk",
+      "value": -0.057,
+      "label": "Stable"
+     }
+    },
+    {
+     "symbol": "AVAX",
+     "name": "Avalanche",
+     "sector": "Layer 1",
+     "price": 27.77,
+     "chg_1d": -0.0563,
+     "chg_1w": -0.0466,
+     "chg_1m": 0.0356,
+     "vol_20d": 0.473,
+     "vol_fcst": 0.556,
+     "volume_usd": 1560478000.0,
+     "rel_vol": 1.06,
+     "signal": {
+      "kind": "risk",
+      "value": 0.176,
+      "label": "Risk rising"
+     }
+    },
+    {
+     "symbol": "LINK",
+     "name": "Chainlink",
+     "sector": "Oracle",
+     "price": 0.725,
+     "chg_1d": 0.0299,
+     "chg_1w": 0.0086,
+     "chg_1m": 0.0342,
+     "vol_20d": 0.407,
+     "vol_fcst": 0.394,
+     "volume_usd": 1460179000.0,
+     "rel_vol": 0.69,
+     "signal": {
+      "kind": "risk",
+      "value": -0.031,
+      "label": "Stable"
+     }
+    }
+   ],
+   "crypto_linked": [
+    {
+     "symbol": "COIN",
+     "name": "Coinbase",
+     "sector": "Exchange",
+     "price": 207.22,
+     "chg_1d": -0.013,
+     "chg_1w": 0.0359,
+     "chg_1m": -0.1014,
+     "vol_20d": 0.737,
+     "vol_fcst": 0.751,
+     "volume_usd": 972245000.0,
+     "rel_vol": 0.79,
+     "signal": {
+      "kind": "closure",
+      "value": 0.0017,
+      "label": "Flat"
+     }
+    },
+    {
+     "symbol": "MSTR",
+     "name": "Strategy",
+     "sector": "BTC treasury",
+     "price": 69.39,
+     "chg_1d": -0.087,
+     "chg_1w": -0.0282,
+     "chg_1m": -0.0934,
+     "vol_20d": 0.881,
+     "vol_fcst": 0.868,
+     "volume_usd": 890062000.0,
+     "rel_vol": 0.67,
+     "signal": {
+      "kind": "closure",
+      "value": 0.0024,
+      "label": "Long"
+     }
+    },
+    {
+     "symbol": "HOOD",
+     "name": "Robinhood",
+     "sector": "Broker",
+     "price": 257.47,
+     "chg_1d": -0.0136,
+     "chg_1w": 0.0192,
+     "chg_1m": -0.3621,
+     "vol_20d": 0.7,
+     "vol_fcst": 0.783,
+     "volume_usd": 357418000.0,
+     "rel_vol": 1.17,
+     "signal": {
+      "kind": "closure",
+      "value": -0.0002,
+      "label": "Flat"
+     }
+    },
+    {
+     "symbol": "IBIT",
+     "name": "iShares Bitcoin Trust",
+     "sector": "Spot BTC ETF",
+     "price": 51.34,
+     "chg_1d": 0.0071,
+     "chg_1w": 0.2715,
+     "chg_1m": -0.1427,
+     "vol_20d": 0.652,
+     "vol_fcst": 0.675,
+     "volume_usd": 424932000.0,
+     "rel_vol": 0.99,
+     "signal": {
+      "kind": "closure",
+      "value": -0.0003,
+      "label": "Flat"
+     }
+    },
+    {
+     "symbol": "MARA",
+     "name": "MARA Holdings",
+     "sector": "Miner",
+     "price": 42.51,
+     "chg_1d": 0.009,
+     "chg_1w": 0.2572,
+     "chg_1m": 0.248,
+     "vol_20d": 0.682,
+     "vol_fcst": 0.573,
+     "volume_usd": 114102000.0,
+     "rel_vol": 0.95,
+     "signal": {
+      "kind": "closure",
+      "value": -0.0053,
+      "label": "Short"
+     }
+    },
+    {
+     "symbol": "RIOT",
+     "name": "Riot Platforms",
+     "sector": "Miner",
+     "price": 30.39,
+     "chg_1d": 0.0572,
+     "chg_1w": 0.1251,
+     "chg_1m": 0.0524,
+     "vol_20d": 0.984,
+     "vol_fcst": 1.085,
+     "volume_usd": 777749000.0,
+     "rel_vol": 1.13,
+     "signal": {
+      "kind": "closure",
+      "value": 0.0078,
+      "label": "Long"
+     }
+    },
+    {
+     "symbol": "CLSK",
+     "name": "CleanSpark",
+     "sector": "Miner",
+     "price": 58.05,
+     "chg_1d": 0.0104,
+     "chg_1w": -0.0096,
+     "chg_1m": -0.195,
+     "vol_20d": 0.863,
+     "vol_fcst": 0.851,
+     "volume_usd": 538301000.0,
+     "rel_vol": 0.8,
+     "signal": {
+      "kind": "closure",
+      "value": -0.0168,
+      "label": "Short"
+     }
+    }
+   ]
+  },
+  "local_only_fields": [
+   "price",
+   "volume_usd"
+  ]
+ },
+ "tickers": [
+  {
+   "symbol": "BTC",
+   "price": 68071.62,
+   "chg_1d": -0.0541
+  },
+  {
+   "symbol": "ETH",
+   "price": 2599.96,
+   "chg_1d": -0.0108
+  },
+  {
+   "symbol": "SPY",
+   "price": 671.2,
+   "chg_1d": 0.0031
+  }
+ ]
+}

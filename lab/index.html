@@ -1,0 +1,417 @@
+---
+layout: default
+title: Market Lab
+---
+<div class="mx" id="mx">
+  <!-- top bar -->
+  <header class="mx-top">
+    <a class="mx-brand" href="{{ '/' | relative_url }}" title="Back to homepage">
+      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" fill="#c6f432"/><path d="M6 16l4-5 3 3 5-7" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Market Lab</span>
+    </a>
+    <nav class="mx-nav" id="mx-nav">
+      <a data-view="market" class="on">Market</a>
+      <a data-view="research">Research</a>
+      <a data-view="paper">Paper accounts</a>
+      <a data-view="ops">Ops</a>
+      <a class="soon" title="Coming in a later step">Signals <i>soon</i></a>
+    </nav>
+    <div class="mx-right">
+      <label class="mx-search"><svg viewBox="0 0 24 24" width="17" height="17"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="mx-q" placeholder="Search symbol or name" autocomplete="off"></label>
+      <span class="mx-mode" id="mx-mode">Snapshot</span>
+    </div>
+  </header>
+
+  <div class="mx-demo" id="mx-demo" hidden>Demo data — synthetic numbers to preview the product. The platform's export replaces them automatically.</div>
+
+  <!-- MARKET VIEW -->
+  <section class="mx-view" data-v="market">
+    <div class="mx-tabs-row">
+      <div class="mx-tabs" id="mx-tabs">
+        <a data-seg="core" class="on">Large caps</a>
+        <a data-seg="satellite">Satellite</a>
+        <a data-seg="crypto">Crypto</a>
+        <a data-seg="crypto_linked">Crypto-linked</a>
+        <a data-seg="watch">★ Watchlist</a>
+      </div>
+      <div class="mx-pills" id="mx-span">
+        <span class="lbl">Change</span><a data-span="chg_1d" class="on">1D</a><a data-span="chg_1w">1W</a><a data-span="chg_1m">1M</a>
+      </div>
+    </div>
+
+    <a class="mx-banner" id="mx-banner" data-goto="research"></a>
+
+    <div class="mx-tablewrap">
+      <table class="mx-table" id="mx-table">
+        <thead><tr>
+          <th class="c-rank" data-k="rank">Rank<s></s></th>
+          <th class="c-name" data-k="symbol">Name / Sector<s></s></th>
+          <th data-k="price" class="lo">Price / Change<s></s></th>
+          <th data-k="chg_1w"><u title="Return over the last 5 trading days">1W</u><s></s></th>
+          <th data-k="chg_1m"><u title="Return over the last 21 trading days">1M</u><s></s></th>
+          <th data-k="vol_20d"><u title="Realized volatility over the last 20 days, annualised">Realized vol</u><s></s></th>
+          <th data-k="vol_fcst"><u title="Our next-day volatility forecast (SPD-manifold covariance model), annualised">Our vol forecast</u><s></s></th>
+          <th data-k="volume_usd" class="lo"><u title="Dollar volume today">Volume</u><s></s></th>
+          <th data-k="rel_vol"><u title="Volume so far vs 20-day average, pro-rated for time of day">Rel. vol</u><s></s></th>
+          <th data-k="signal"><u title="Risk segments: forecast vs realized volatility. Crypto-linked: next-session (open→close) forecast from the overnight/weekend crypto move.">Our signal</u><s></s></th>
+          <th class="c-act">Paper trade</th>
+        </tr></thead>
+        <tbody id="mx-rows"></tbody>
+      </table>
+      <div class="mx-empty" id="mx-empty" hidden></div>
+    </div>
+  </section>
+
+  <!-- RESEARCH VIEW -->
+  <section class="mx-view" data-v="research" hidden><div class="mx-page" id="mx-research"></div></section>
+  <!-- PAPER VIEW -->
+  <section class="mx-view" data-v="paper" hidden><div class="mx-page" id="mx-paper"></div></section>
+  <!-- OPS VIEW -->
+  <section class="mx-view" data-v="ops" hidden><div class="mx-page" id="mx-ops"></div></section>
+
+  <!-- bottom status bar -->
+  <footer class="mx-bar" id="mx-bar"></footer>
+  <div class="mx-toast" id="mx-toast" hidden></div>
+</div>
+
+<script type="application/json" id="lab-data">{{ site.data.lab | jsonify }}</script>
+
+<style>
+  /* ===== Market Lab — dark trading-terminal theme, scoped to this page ===== */
+  :root{--paper:#000;--paper-2:#0b0b0b;--ink:#fff;--ink-soft:#a6a6a6;--ink-faint:#6b6b6b;--rule:#1c1c1c;--rule-soft:#141414;--accent:#c6f432}
+  @media (prefers-color-scheme: light){:root{--paper:#000;--ink:#fff;--rule:#1c1c1c}}
+  html,body{background:#000!important}
+  .site-footer{display:none}
+  .mx{--bg:#000;--bg1:#0d0d0d;--bg2:#161616;--bg3:#1f1f1f;--line:#1c1c1c;--tx:#fff;--tx2:#a3a3a3;--tx3:#6b6b6b;
+      --lime:#c6f432;--lime-d:#1c2410;--up:#25c26e;--dn:#f0525a;--gold:#f5c542;--silver:#c9ced6;--bronze:#c98457;
+      background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:64px;
+      font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.4;
+      font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+  .mx a{color:inherit;border:none;text-decoration:none;cursor:pointer}
+  .mx [hidden]{display:none!important}
+  /* top */
+  .mx-top{display:flex;align-items:center;gap:28px;padding:0 20px;height:64px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+  .mx-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;letter-spacing:-.01em;white-space:nowrap}
+  .mx-nav{display:flex;gap:26px;font-size:15.5px;color:var(--tx2);white-space:nowrap}
+  .mx-nav a:hover{color:var(--tx)} .mx-nav a.on{color:var(--tx);font-weight:600}
+  .mx-nav a.soon{color:var(--tx3);cursor:default} .mx-nav a.soon i{font-style:normal;font-size:11px;border:1px solid var(--bg3);border-radius:6px;padding:1px 5px;margin-left:4px}
+  .mx-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .mx-search{display:flex;align-items:center;gap:8px;background:var(--bg2);border-radius:12px;padding:0 12px;height:40px;color:var(--tx3)}
+  .mx-search input{background:none;border:none;outline:none;color:var(--tx);font:inherit;width:190px}
+  .mx-mode{background:var(--lime);color:#000;font-weight:700;border-radius:12px;padding:0 16px;height:40px;display:flex;align-items:center;white-space:nowrap}
+  .mx-mode.live::before{content:"";width:8px;height:8px;border-radius:50%;background:#000;margin-right:8px;animation:mxp 1.6s infinite}
+  @keyframes mxp{50%{opacity:.25}}
+  .mx-demo{background:#2a2410;color:#f2d36b;font-size:13.5px;padding:8px 20px;border-bottom:1px solid #3a321a}
+  /* tabs */
+  .mx-tabs-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px 12px;flex-wrap:wrap}
+  .mx-tabs{display:flex;gap:28px;font-size:24px;font-weight:700;color:var(--tx3);letter-spacing:-.01em;overflow-x:auto;white-space:nowrap}
+  .mx-tabs a.on{color:var(--tx)} .mx-tabs a:hover{color:var(--tx)}
+  .mx-pills{display:flex;align-items:center;gap:4px;background:var(--bg2);border-radius:12px;padding:4px}
+  .mx-pills .lbl{color:var(--tx3);font-size:13px;padding:0 8px}
+  .mx-pills a{padding:6px 12px;border-radius:9px;font-size:14px;color:var(--tx2)} .mx-pills a.on{background:var(--bg3);color:var(--tx)}
+  .mx-banner{display:flex;align-items:center;gap:14px;margin:0 20px 6px;padding:14px 16px;background:var(--bg1);border-radius:14px;font-size:15px;flex-wrap:wrap}
+  .mx-banner .ic{color:var(--lime);font-size:18px}
+  .mx-banner .ch{display:inline-flex;align-items:center;gap:6px;color:var(--tx2)}
+  .mx-banner .go{margin-left:auto;color:var(--tx2)}
+  /* table */
+  .mx-tablewrap{overflow-x:auto;margin-top:4px}
+  .mx-table{border-collapse:collapse;width:100%;min-width:1080px}
+  .mx-table th,.mx-table td{border:none!important;padding:0 10px;text-align:left;white-space:nowrap}
+  .mx-table th{height:48px;font-weight:400;color:var(--tx2);font-size:14px;border-bottom:1px solid var(--line)!important;cursor:pointer;user-select:none;background:var(--bg)}
+  .mx-table th u{text-decoration:underline dashed var(--tx3);text-underline-offset:4px}
+  .mx-table th s{display:inline-block;width:8px;height:12px;margin-left:5px;vertical-align:-1px;text-decoration:none;
+     background:linear-gradient(to bottom,transparent 0,transparent 100%);position:relative}
+  .mx-table th s::before,.mx-table th s::after{content:"";position:absolute;left:0;border:4px solid transparent}
+  .mx-table th s::before{top:-3px;border-bottom-color:var(--tx3)} .mx-table th s::after{top:7px;border-top-color:var(--tx3)}
+  .mx-table th.asc s::before{border-bottom-color:var(--tx)} .mx-table th.desc s::after{border-top-color:var(--tx)}
+  .mx-table th.c-act{cursor:default;text-align:right}
+  .mx-table td{height:78px;border-bottom:1px solid var(--line)!important;font-size:16px}
+  .mx-table tbody tr:hover td{background:#0c0c0c}
+  .c-rank{width:76px} .mx-table th:first-child,.mx-table td:first-child{padding-left:20px} .mx-table td.c-rank{font-size:15px}
+  .rk{display:inline-flex;align-items:center;gap:14px}
+  .rk b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:7px;font-size:13px;font-weight:700;color:#000}
+  .rk b.r1{background:var(--gold)} .rk b.r2{background:var(--silver)} .rk b.r3{background:var(--bronze)} .rk b.rn{background:none;color:var(--tx)}
+  .star{color:var(--tx3);font-size:18px;cursor:pointer;line-height:1} .star.on{color:var(--lime)}
+  .nm{display:flex;align-items:center;gap:14px}
+  .av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;color:#fff;letter-spacing:.02em;flex:none}
+  .nm .t{font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .nm .s{color:var(--tx2);font-size:13.5px;margin-top:3px}
+  .chip{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--bg3);color:var(--tx2)}
+  .chip.core{background:#1c2410;color:var(--lime)}
+  .up{color:var(--up)} .dn{color:var(--dn)} .mut{color:var(--tx3)}
+  .sub{font-size:14px;margin-top:4px}
+  .sig{display:inline-flex;flex-direction:column;gap:3px}
+  .sig .l{font-size:13px;font-weight:600;padding:3px 9px;border-radius:7px;width:max-content}
+  .sig .l.pos{background:#0f2a1b;color:var(--up)} .sig .l.neg{background:#2d1214;color:var(--dn)} .sig .l.neu{background:var(--bg3);color:var(--tx2)}
+  .sig .v{font-size:13px;color:var(--tx2)}
+  .c-act{text-align:right} .mx-table th:last-child,.mx-table td:last-child{padding-right:20px}
+  .btn{display:inline-flex;align-items:center;gap:7px;background:var(--lime-d);color:var(--lime);font-weight:600;font-size:15px;border-radius:14px;padding:9px 18px;cursor:pointer;border:none}
+  .btn:hover{background:#26311a}
+  @media (max-width:900px){.mx-table td.c-name,.mx-table th.c-name{position:sticky;left:0;background:var(--bg);z-index:1}}
+  .mx-empty{padding:60px 20px;text-align:center;color:var(--tx3)}
+  /* pages (research / paper / ops) */
+  .mx-page{padding:22px 20px;max-width:1180px}
+  .mx-page h2{font-size:24px;font-weight:700;margin:6px 0 4px;color:var(--tx);font-family:inherit}
+  .mx-page .lead{color:var(--tx2);margin:0 0 16px;max-width:860px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:14px 0 6px}
+  .card{background:var(--bg1);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card .k{color:var(--tx2);font-size:13px} .card .v{font-size:26px;font-weight:700;margin-top:4px} .card .n{color:var(--tx3);font-size:13px;margin-top:4px}
+  .verdict{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.04em;padding:4px 10px;border-radius:8px}
+  .verdict.go{background:#0f2a1b;color:var(--up)} .verdict.no-go{background:#2d1214;color:var(--dn)} .verdict.pending{background:var(--bg3);color:var(--tx2)}
+  .verdict.insufficient{background:#2a2410;color:#f2d36b}
+  .panel{background:var(--bg1);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px}
+  .panel h3{font-size:16.5px;font-weight:600;margin:0 0 2px;color:var(--tx);font-family:inherit}
+  .panel .note{color:var(--tx3);font-size:12.5px;margin-top:10px}
+  .ptab{width:100%;border-collapse:collapse;margin-top:8px;font-size:14.5px}
+  .ptab th,.ptab td{border:none!important;padding:9px 10px;text-align:right;white-space:nowrap}
+  .ptab th{color:var(--tx2);font-weight:400;font-size:13px;border-bottom:1px solid var(--bg3)!important}
+  .ptab td{border-bottom:1px solid var(--line)!important}
+  .ptab th:first-child,.ptab td:first-child,.ptab .l{text-align:left}
+  .ptab tr.ours td{background:#10140a} .ptab tr.ours td:first-child{color:var(--lime);font-weight:600}
+  .ptw{overflow-x:auto}
+  .pending-box{padding:40px;text-align:center;color:var(--tx3);border:1px dashed var(--bg3);border-radius:14px;margin-top:14px}
+  .mx svg{display:block;width:100%;height:auto}
+  /* bottom bar */
+  .mx-bar{position:fixed;left:0;right:0;bottom:0;height:48px;background:#0a0a0a;border-top:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 20px;font-size:13.5px;color:var(--tx2);z-index:6;overflow-x:auto;white-space:nowrap}
+  .mx-bar .it{display:inline-flex;align-items:center;gap:7px}
+  .mx-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--up)} .mx-bar .dot.warn{background:#f5c542} .mx-bar .dot.down{background:var(--dn)}
+  .mx-bar .sep{width:1px;height:20px;background:var(--bg3)}
+  .mx-bar .tk b{color:var(--tx);font-weight:500}
+  .mx-bar .lat{margin-left:auto;background:#10200f;color:var(--up);border-radius:9px;padding:5px 12px;font-weight:600}
+  .mx-bar .lat.warn{background:#2a2410;color:#f2d36b}
+  .mx-toast{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--bg3);color:var(--tx);padding:10px 16px;border-radius:12px;font-size:14px;z-index:7}
+  @media (max-width:900px){
+    .mx-top{gap:16px;padding:0 14px;height:56px}
+    .mx-nav{display:none}
+    .mx-search input{width:120px}
+    .mx-tabs{font-size:19px;gap:18px}
+    .mx-tabs-row,.mx-page{padding-left:14px;padding-right:14px}
+    .mx-banner{margin:0 14px 6px}
+  }
+  @media (max-width:560px){ .mx-mode{height:34px;padding:0 10px;font-size:13.5px} .mx-top{gap:12px} .mx-search{display:none} .mx-brand span{display:none} .mx-nav{display:flex;gap:16px;font-size:14.5px;overflow-x:auto} .mx-nav a.soon{display:none} }
+</style>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const M = '−';
+  const sg = (x, d) => { const r = Number(x.toFixed(d)); return (r > 0 ? '+' : r < 0 ? M : '') + Math.abs(r).toFixed(d); };
+  const pc = (x, d = 2) => x == null ? '<span class="mut">–</span>' : `<span class="${x > 0 ? 'up' : x < 0 ? 'dn' : 'mut'}">${sg(x * 100, d)}%</span>`;
+  const pcu = (x, d = 1) => x == null ? '<span class="mut">–</span>' : (x * 100).toFixed(d) + '%';
+  const money = v => v == null ? '<span class="mut">–</span>' : v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + 'B' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? '$' + (v / 1e3).toFixed(0) + 'K' : '$' + v.toFixed(0);
+  const price = v => v == null ? '<span class="mut">–</span>' : '$' + (v >= 1000 ? v.toLocaleString('en-US', {maximumFractionDigits: 2, minimumFractionDigits: 2}) : v >= 1 ? v.toFixed(2) : v.toPrecision(4));
+  const toast = msg => { const t = $('mx-toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 2400); };
+  const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+
+  let D = null;
+  try { D = JSON.parse($('lab-data').textContent || 'null'); } catch (e) {}
+  const state = { view: 'market', seg: store.get('mx.seg', 'core'), span: 'chg_1d', sort: {k: 'rank', dir: 1}, q: '', watch: new Set(store.get('mx.watch', [])) };
+
+  // ----- palettes for monogram avatars (by sector)
+  const AV = ['#2d6cdf', '#8b5cf6', '#e0533d', '#13a37f', '#d9a21b', '#d4467a', '#3aa0c8', '#7a8a2a'];
+  const avColor = s => AV[[...s].reduce((a, c) => a + c.charCodeAt(0), 0) % AV.length];
+
+  // ----- MARKET
+  const SEG_LABEL = {core: 'Large caps', satellite: 'Satellite', crypto: 'Crypto', crypto_linked: 'Crypto-linked'};
+  function rowsFor(seg) {
+    const S = (D && D.market && D.market.segments) || {};
+    let rows = seg === 'watch' ? Object.entries(S).flatMap(([k, v]) => v.map(r => ({...r, _seg: k}))).filter(r => state.watch.has(r.symbol))
+                               : (S[seg] || []).map(r => ({...r, _seg: seg}));
+    rows = rows.slice().sort((a, b) => (b.volume_usd ?? 0) - (a.volume_usd ?? 0)).map((r, i) => ({...r, rank: i + 1}));
+    if (state.q) { const q = state.q.toLowerCase(); rows = rows.filter(r => r.symbol.toLowerCase().includes(q) || (r.name || '').toLowerCase().includes(q)); }
+    const {k, dir} = state.sort;
+    const key = r => k === 'signal' ? (r.signal ? r.signal.value : -1e9) : k === 'price' ? r[state.span] : r[k];
+    rows.sort((a, b) => { const x = key(a), y = key(b); if (typeof x === 'string') return dir * x.localeCompare(y); return dir * ((x ?? -1e18) - (y ?? -1e18)); });
+    return rows;
+  }
+  function sigCell(s) {
+    if (!s) return '<span class="mut">–</span>';
+    if (s.kind === 'closure') { const c = s.label === 'Long' ? 'pos' : s.label === 'Short' ? 'neg' : 'neu';
+      return `<div class="sig"><span class="l ${c}">${esc(s.label)}</span><span class="v">Next session ${sg(s.value * 100, 2)}%</span></div>`; }
+    const c = s.label === 'Risk rising' ? 'neg' : s.label === 'Calming' ? 'pos' : 'neu';
+    return `<div class="sig"><span class="l ${c}">${esc(s.label)}</span><span class="v">Forecast vs realized ${sg(s.value * 100, 0)}%</span></div>`;
+  }
+  function drawMarket() {
+    document.querySelectorAll('#mx-tabs a').forEach(a => a.classList.toggle('on', a.dataset.seg === state.seg));
+    document.querySelectorAll('#mx-span a').forEach(a => a.classList.toggle('on', a.dataset.span === state.span));
+    document.querySelectorAll('#mx-table th[data-k]').forEach(th => { th.classList.toggle('asc', th.dataset.k === state.sort.k && state.sort.dir === 1); th.classList.toggle('desc', th.dataset.k === state.sort.k && state.sort.dir === -1); });
+    const rows = rowsFor(state.seg);
+    const spanLbl = {chg_1d: '1D', chg_1w: '1W', chg_1m: '1M'}[state.span];
+    $('mx-rows').innerHTML = rows.map(r => {
+      const rk = r.rank <= 3 ? `<b class="r${r.rank}">${r.rank}</b>` : `<b class="rn">${r.rank}</b>`;
+      const on = state.watch.has(r.symbol);
+      const fc = r.vol_fcst, rv = r.vol_20d, arrow = fc != null && rv != null ? (fc > rv * 1.02 ? '<span class="dn">▲</span>' : fc < rv * 0.98 ? '<span class="up">▼</span>' : '<span class="mut">•</span>') : '';
+      return `<tr>
+        <td class="c-rank"><span class="rk">${rk}<span class="star ${on ? 'on' : ''}" data-star="${esc(r.symbol)}" title="${on ? 'Remove from' : 'Add to'} watchlist">${on ? '★' : '☆'}</span></span></td>
+        <td class="c-name"><div class="nm"><div class="av" style="background:${avColor(r.sector || r.symbol)};font-size:${r.symbol.length > 3 ? 10.5 : 12.5}px">${esc(r.symbol.slice(0, 4))}</div>
+          <div><div class="t">${esc(r.symbol)} ${r._seg === 'core' ? '<span class="chip core">Core</span>' : `<span class="chip">${esc(SEG_LABEL[r._seg] || '')}</span>`}</div>
+          <div class="s">${esc(r.name)} · ${esc(r.sector)}</div></div></div></td>
+        <td><div>${price(r.price)}</div><div class="sub">${pc(r[state.span])} <span class="mut">${spanLbl}</span></div></td>
+        <td>${pc(r.chg_1w)}</td><td>${pc(r.chg_1m)}</td>
+        <td>${pcu(r.vol_20d)}</td>
+        <td>${pcu(r.vol_fcst)} ${arrow}</td>
+        <td>${money(r.volume_usd)}</td>
+        <td>${r.rel_vol == null ? '<span class="mut">–</span>' : r.rel_vol.toFixed(2) + '×'}</td>
+        <td>${sigCell(r.signal)}</td>
+        <td class="c-act"><button class="btn" data-trade="${esc(r.symbol)}"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M13 2L4 14h7l-1 8 9-12h-7z" fill="currentColor"/></svg>Paper</button></td>
+      </tr>`; }).join('');
+    const empty = $('mx-empty');
+    if (!rows.length) { empty.hidden = false; empty.textContent = state.seg === 'watch' ? 'Your watchlist is empty. Tap ☆ on any row to add it.' : state.q ? 'No match.' : 'No data for this segment yet.'; }
+    else empty.hidden = true;
+    // hide local-only columns when the snapshot has none of them (public export)
+    const hasPrice = rows.some(r => r.price != null), hasVol = rows.some(r => r.volume_usd != null);
+    document.querySelector('#mx-table th[data-k="volume_usd"]').hidden = !hasVol;
+    document.querySelectorAll('#mx-rows tr').forEach(tr => { tr.children[7].hidden = !hasVol; });
+    document.querySelector('#mx-table th[data-k="price"]').firstChild.textContent = hasPrice ? 'Price / Change' : 'Change';
+  }
+
+  function verdict(v) { return `<span class="verdict ${esc(v || 'pending')}">${v === 'go' ? 'GO' : v === 'no-go' ? 'NO-GO' : v === 'insufficient' ? 'INSUFFICIENT EVIDENCE' : 'PENDING'}</span>`; }
+
+  function drawBanner() {
+    const st = D && (D.stages || []).find(s => s.id === D.stage);
+    $('mx-banner').innerHTML = `<span class="ic">◆</span><span>Stage ${esc(D ? D.stage : '–')}: ${esc(st ? st.label : '')}</span>
+      <span class="ch">Risk dynamics ${verdict(D && D.risk ? D.risk.verdict : 'pending')}</span>
+      <span class="ch">Closure lead-lag ${verdict(D && D.closure ? D.closure.verdict : 'pending')}</span>
+      <span class="go">Research ›</span>`;
+  }
+
+  // ----- charts
+  function lineChart(dates, series, W) {
+    const sm = W < 560, fs = sm ? 11 : 12.5, H = sm ? 250 : 320, L = 44, R = Math.min(175, W * 0.36), T = 12, B = 28;
+    const ns = series.map(s => ({...s, y: s.values.map(v => v / s.values[0] - 1)}));
+    let lo = Math.min(...ns.flatMap(s => s.y)), hi = Math.max(...ns.flatMap(s => s.y)); const pd = (hi - lo) * .08 || .01; lo -= pd; hi += pd;
+    const n = dates.length, x = i => L + (W - L - R) * i / (n - 1), y = v => T + (H - T - B) * (hi - v) / (hi - lo);
+    const step = (hi - lo) > .2 ? .05 : (hi - lo) > .08 ? .02 : .01; let g = '';
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) { const yy = y(v).toFixed(1), z = Math.abs(v) < 1e-9;
+      g += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" stroke="${z ? '#555' : '#1c1c1c'}"/><text x="${L - 8}" y="${+yy + 4}" text-anchor="end" font-size="${fs}" fill="#6b6b6b">${z ? '0' : sg(v * 100, 0)}%</text>`; }
+    [0, Math.floor(n / 3), Math.floor(2 * n / 3), n - 1].forEach(i => { const d = new Date(dates[i] + 'T12:00:00');
+      g += `<text x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}" font-size="${fs}" fill="#6b6b6b">${d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</text>`; });
+    let k = 0; ns.forEach(s => { if (s.group === 'ours') s.idx = k++; });
+    const sty = s => s.group === 'ours' ? {c: s.idx === 0 ? '#c6f432' : '#7fa31c', w: 2.2, d: ''} : s.group === 'baseline' ? {c: '#7a7a7a', w: 1.5, d: ''} : {c: '#e6e6e6', w: 1.3, d: '5 4'};
+    ns.slice().sort((a, b) => (a.group === 'ours') - (b.group === 'ours')).forEach(s => { const t = sty(s);
+      g += `<polyline fill="none" stroke="${t.c}" stroke-width="${t.w}" ${t.d ? `stroke-dasharray="${t.d}"` : ''} stroke-linejoin="round" points="${s.y.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ')}"/>`; });
+    const lb = ns.map(s => ({s, yy: y(s.y[n - 1])})).sort((a, b) => a.yy - b.yy);
+    for (let i = 1; i < lb.length; i++) if (lb[i].yy - lb[i - 1].yy < 15) lb[i].yy = lb[i - 1].yy + 15;
+    lb.forEach(({s, yy}) => { const t = sty(s); g += `<text x="${W - R + 8}" y="${(yy + 4).toFixed(1)}" font-size="${fs}" fill="${t.c}" font-weight="${s.group === 'ours' ? 600 : 400}">${esc(s.name)} ${sg(s.y[n - 1] * 100, 1)}%</text>`; });
+    return `<svg viewBox="0 0 ${W} ${H}" font-family="Inter,sans-serif">${g}</svg>`;
+  }
+  function barChart(items, W) {
+    const rh = 34, L = Math.min(150, W * .34), R = 70, H = items.length * rh + 6;
+    const lo = Math.min(0, ...items.map(d => d.v)), hi = Math.max(0, ...items.map(d => d.v)), x = v => L + (W - L - R) * (v - lo) / ((hi - lo) || 1);
+    let g = `<line x1="${x(0)}" x2="${x(0)}" y1="0" y2="${H}" stroke="#555"/>`;
+    items.forEach((d, i) => { const yy = i * rh, x0 = Math.min(x(0), x(d.v)), w = Math.abs(x(d.v) - x(0));
+      g += `<text x="${L - 10}" y="${yy + 21}" text-anchor="end" font-size="13" fill="${d.ours ? '#c6f432' : '#a3a3a3'}" font-weight="${d.ours ? 600 : 400}">${esc(d.label)}</text>`;
+      g += `<rect x="${x0.toFixed(1)}" y="${yy + 8}" width="${Math.max(w, 1).toFixed(1)}" height="18" rx="4" fill="${d.ours ? '#c6f432' : d.v < 0 ? '#5a2024' : '#2a3a4e'}"/>`;
+      g += `<text x="${(d.v >= 0 ? x(d.v) : x(0)) + 7}" y="${yy + 21}" font-size="13" fill="${d.v > 0 ? '#25c26e' : d.v < 0 ? '#f0525a' : '#a3a3a3'}">${sg(d.v * 100, 1)}%</text>`; });
+    return `<svg viewBox="0 0 ${W} ${H}" font-family="Inter,sans-serif">${g}</svg>`;
+  }
+  const charts = []; const chart = fn => { const id = 'mxc' + charts.length; charts.push({id, fn}); return `<div id="${id}"></div>`; };
+  const drawCharts = () => charts.forEach(c => { const el = $(c.id); if (el && el.offsetParent !== null) el.innerHTML = c.fn(Math.max(300, Math.round(el.clientWidth))); });
+  const pending = m => `<div class="pending-box">${m}</div>`;
+  const n2 = (x, d = 2) => x == null ? '<span class="mut">–</span>' : (x < 0 ? M : '') + Math.abs(x).toFixed(d);
+
+  // ----- RESEARCH
+  function drawResearch() {
+    let h = `<h2>Research</h2><p class="lead">Out-of-sample tests on history decide which methods get live paper accounts. Rules are pre-registered; large caps decide.</p>`;
+    h += `<div class="cards">
+      <div class="card"><div class="k">Risk dynamics &amp; portfolio optimization</div><div class="v">${verdict(D.risk && D.risk.verdict)}</div><div class="n">${D.risk ? esc(D.risk.n_days) + ' trading days · ' + esc(D.risk.period) : 'Appears at Step C'}</div></div>
+      <div class="card"><div class="k">Market-closure lead-lag</div><div class="v">${verdict(D.closure && D.closure.verdict)}</div><div class="n">${D.closure ? (D.closure.windows.weeknight + D.closure.windows.weekend).toLocaleString() + ' closure windows · ' + esc(D.closure.period) : 'Appears at Step C'}</div></div></div>`;
+    if (D.risk) { const R = D.risk;
+      h += `<div class="panel"><h3>Covariance forecast loss — lower is better</h3><div class="note" style="margin:2px 0 4px">Rule: ${esc(R.rule)}</div><div class="ptw"><table class="ptab"><thead><tr><th>Estimator</th><th>QLIKE · large caps</th><th>DM p vs EWMA</th><th>QLIKE · crypto</th><th>DM p vs EWMA</th><th>Realized vol · large caps</th><th>Realized vol · crypto</th></tr></thead><tbody>` +
+        R.qlike.map(r => { const v = R.vol.find(x => x.estimator === r.estimator) || {};
+          const p = x => x == null ? '<span class="mut">–</span>' : x < .05 ? `<span class="up">${x.toFixed(2)}</span>` : x.toFixed(2);
+          return `<tr class="${r.estimator.startsWith('spd') ? 'ours' : ''}"><td>${esc(r.estimator)}</td><td>${n2(r.core, 3)}</td><td>${p(r.dm_p_core)}</td><td>${n2(r.crypto, 3)}</td><td>${p(r.dm_p_crypto)}</td><td>${pcu(v.core)}</td><td>${pcu(v.crypto)}</td></tr>`; }).join('') +
+        `</tbody></table></div><div class="note">QLIKE relative to the 60-day sample covariance (= 1.000). Diebold–Mariano test with HAC errors; green if p &lt; 0.05. Realized vol of the ${pcu(R.vol_target, 0)}-target portfolio, out of sample.</div></div>`; }
+    else h += pending('Risk-dynamics results appear at Step C.');
+    if (D.closure) { const C = D.closure;
+      h += `<div class="panel"><h3>Does the crypto move while stocks are closed predict the next session?</h3><div class="note" style="margin:2px 0 4px">Rule: ${esc(C.rule)}</div><div class="ptw"><table class="ptab"><thead><tr><th>Closure</th><th class="l">Target (tradable)</th><th>Coef. on BTC move</th><th>t-stat</th><th>Stock-sessions</th></tr></thead><tbody>` +
+        C.regression.map(r => `<tr><td>${esc(r.window)}</td><td class="l">${esc(r.target)}</td><td>${n2(r.coef, 3)}</td><td>${Math.abs(r.t) >= 3 ? `<span class="up">${n2(r.t)}</span>` : n2(r.t)}</td><td>${r.n.toLocaleString()}</td></tr>`).join('') +
+        `</tbody></table></div><div class="note">Pooled across crypto-linked stocks, stock fixed effects, standard errors clustered by date. The opening gap is not tradable and is not a target.</div></div>`;
+      h += `<div class="panel"><h3>Strategy comparison after costs</h3>${chart(W => barChart(C.strategies.map(s => ({label: s.name, v: s.cum_return, ours: s.name === 'closure_signal'})), W))}<div class="note">Out-of-sample cumulative return after bid/ask, slippage and fees.</div></div>`; }
+    else h += pending('Closure results appear at Step C.');
+    $('mx-research').innerHTML = h;
+  }
+
+  // ----- PAPER
+  function drawPaper() {
+    const L = D.live;
+    let h = `<h2>Paper accounts</h2><p class="lead">$100,000 per method, three replicate accounts each, fills at bid/ask plus costs. Large caps are the headline.</p>`;
+    if (!L || !L.series || !L.series.length) { $('mx-paper').innerHTML = h + pending('Live paper accounts start at Step D, after the research results are reviewed.'); return; }
+    const spy = L.series.find(s => s.name === 'buy_and_hold_spy'), ret = s => s.values[s.values.length - 1] / s.values[0] - 1;
+    const best = L.series.filter(s => s.group === 'ours').sort((a, b) => ret(b) - ret(a))[0];
+    h += `<div class="cards"><div class="card"><div class="k">Best of ours · large caps</div><div class="v">${pc(ret(best), 1)}</div><div class="n">${esc(best.name)}</div></div>
+      <div class="card"><div class="k">SPY buy &amp; hold</div><div class="v">${spy ? pc(ret(spy), 1) : '–'}</div><div class="n">since ${esc(L.start)}</div></div>
+      <div class="card"><div class="k">Live days</div><div class="v">${L.dates.length}</div><div class="n">${L.dates.length < 60 ? verdict('insufficient') : '≥ 60 days'}</div></div></div>`;
+    h += `<div class="panel"><h3>Cumulative return · large caps</h3>${chart(W => lineChart(L.dates, L.series, W))}<div class="note">Ours in lime, baselines grey, benchmarks dashed. After fees and slippage; average of 3 replicate accounts.</div></div>`;
+    h += `<div class="panel"><h3>Scorecard</h3><div class="ptw"><table class="ptab"><thead><tr><th>Method</th><th class="l">Segment</th><th>Days</th><th>Return</th><th>Ann. vol</th><th>Sharpe</th><th>Max DD</th><th>vs SPY</th><th class="l">Evidence</th></tr></thead><tbody>` +
+      L.scorecard.map(r => { const o = (L.series.find(s => s.name === r.method) || {}).group === 'ours';
+        return `<tr class="${o ? 'ours' : ''}"><td>${esc(r.method)}</td><td class="l">${esc(r.segment)}</td><td>${r.days}</td><td>${pc(r.ret, 1)}</td><td>${pcu(r.vol)}</td><td>${n2(r.sharpe)}</td><td>${pc(r.mdd, 1)}</td><td>${pc(r.excess_spy, 1)}</td><td class="l">${r.evidence === 'insufficient' ? verdict('insufficient') : '<span class="mut">≥ 60 days</span>'}</td></tr>`; }).join('') +
+      `</tbody></table></div></div>`;
+    $('mx-paper').innerHTML = h;
+  }
+
+  // ----- OPS
+  function drawOps() {
+    let h = `<h2>Ops</h2><p class="lead">Physical latency is measured and reserved first; the algorithm gets the remaining time budget.</p>`;
+    if (D.latency && D.latency.length) h += `<div class="panel"><h3>Latency by component</h3><div class="ptw"><table class="ptab"><thead><tr><th>Component</th><th class="l">Venue</th><th>p50 (ms)</th><th>p99 (ms)</th></tr></thead><tbody>` +
+      D.latency.map(r => `<tr><td>${esc(r.component)}</td><td class="l">${esc(r.venue)}</td><td>${r.p50_ms}</td><td>${r.p99_ms}</td></tr>`).join('') + `</tbody></table></div>` +
+      (D.timing_events ? `<div class="note">Rolling 5 trading days · deadline misses ${D.timing_events.deadline_miss} · infeasible plans ${D.timing_events.infeasible_timing} · stale-quote rejections ${D.timing_events.stale_quote_rejections}</div>` : '') + `</div>`;
+    if (D.health && D.health.length) h += `<div class="panel"><h3>Data feeds</h3><div class="ptw"><table class="ptab"><thead><tr><th>Feed</th><th class="l">Status</th><th>Last message (s)</th><th>Gaps today</th></tr></thead><tbody>` +
+      D.health.map(f => `<tr><td>${esc(f.feed)}</td><td class="l ${f.status === 'ok' ? 'up' : 'dn'}">${esc(f.status)}</td><td>${f.last_msg_s}</td><td>${f.gaps_today}</td></tr>`).join('') + `</tbody></table></div></div>`;
+    $('mx-ops').innerHTML = h;
+  }
+
+  // ----- bottom bar
+  function drawBar(live) {
+    const feeds = (D.health || []).map(f => `<span class="it"><span class="dot ${f.status === 'ok' ? '' : f.status === 'warn' ? 'warn' : 'down'}"></span>${esc(f.feed.replace(/ \(.*\)/, ''))}</span>`).join('');
+    const tks = (D.tickers || []).map(t => `<span class="it tk">${esc(t.symbol)} <b>${price(t.price)}</b> ${pc(t.chg_1d)}</span>`).join('');
+    const lat = (D.latency || []).filter(r => /Data in/.test(r.component));
+    const p50 = lat.length ? Math.max(...lat.map(r => r.p50_ms)) : null, p99 = lat.length ? Math.max(...lat.map(r => r.p99_ms)) : null;
+    const asof = D.as_of ? new Date(D.as_of).toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : '–';
+    $('mx-bar').innerHTML = `${feeds}<span class="sep"></span>${tks}<span class="sep"></span><span class="it">${live ? 'Live' : 'Snapshot'} · ${esc(asof)}</span><span class="it mut">Paper only</span>` +
+      (p50 != null ? `<span class="it lat ${p99 > 1000 ? 'warn' : ''}">${p99 > 1000 ? 'Slow' : 'Stable'} ${p50}ms · p99 ${p99}ms</span>` : '');
+  }
+
+  // ----- routing & events
+  function show(view) {
+    state.view = view;
+    document.querySelectorAll('#mx-nav a[data-view]').forEach(a => a.classList.toggle('on', a.dataset.view === view));
+    document.querySelectorAll('.mx-view').forEach(s => s.hidden = s.dataset.v !== view);
+    if (location.hash !== '#' + view) history.replaceState(null, '', '#' + view);
+    drawCharts();
+  }
+  function renderAll(live) {
+    if (!D) { $('mx-rows').innerHTML = ''; $('mx-empty').hidden = false; $('mx-empty').textContent = 'No data exported yet.'; return; }
+    $('mx-demo').hidden = !D.demo;
+    $('mx-mode').textContent = live ? 'Live' : 'Snapshot'; $('mx-mode').classList.toggle('live', !!live);
+    charts.length = 0;
+    drawBanner(); drawMarket(); drawResearch(); drawPaper(); drawOps(); drawBar(live); drawCharts();
+  }
+  document.querySelectorAll('#mx-nav a[data-view]').forEach(a => a.onclick = () => show(a.dataset.view));
+  $('mx-banner').onclick = () => show('research');
+  document.querySelectorAll('#mx-tabs a').forEach(a => a.onclick = () => { state.seg = a.dataset.seg; store.set('mx.seg', state.seg); drawMarket(); });
+  document.querySelectorAll('#mx-span a').forEach(a => a.onclick = () => { state.span = a.dataset.span; drawMarket(); });
+  document.querySelectorAll('#mx-table th[data-k]').forEach(th => th.onclick = () => {
+    const k = th.dataset.k; state.sort = {k, dir: state.sort.k === k ? -state.sort.dir : (k === 'rank' || k === 'symbol' ? 1 : -1)}; drawMarket(); });
+  $('mx-q').oninput = e => { state.q = e.target.value.trim(); drawMarket(); };
+  $('mx-rows').onclick = e => {
+    const st = e.target.closest('[data-star]'); if (st) { const s = st.dataset.star; state.watch.has(s) ? state.watch.delete(s) : state.watch.add(s); store.set('mx.watch', [...state.watch]); drawMarket(); return; }
+    const tr = e.target.closest('[data-trade]'); if (tr) toast(`Paper trading for ${tr.dataset.trade} opens at Step D. No real money is ever used.`);
+  };
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawCharts, 150); });
+
+  renderAll(false);
+  show(['market', 'research', 'paper', 'ops'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'market');
+
+  // ----- live mode: when served by the local platform, poll its API (same origin only)
+  (async function poll() {
+    try {
+      const r = await fetch('api/lab.json', {cache: 'no-store'});
+      if (!r.ok || !(r.headers.get('content-type') || '').includes('json')) return;
+      D = await r.json(); renderAll(true); show(state.view);
+      setInterval(async () => { try { const x = await fetch('api/lab.json', {cache: 'no-store'}); if (x.ok) { D = await x.json(); renderAll(true); show(state.view); } } catch (e) {} }, 2000);
+    } catch (e) { /* static snapshot only */ }
+  })();
+})();
+</script>

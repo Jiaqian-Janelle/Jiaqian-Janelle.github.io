@@ -86,3 +86,34 @@ bundle exec jekyll serve
 4. Wait a minute; your site builds automatically. It rebuilds on every push.
 
 That's the whole loop: write Markdown → commit → push.
+
+---
+
+## Market Lab (`/lab/`)
+
+The **Market Lab** page (`lab/index.html`, a dark market-list app: Market · Research · Paper accounts · Ops) and the homepage "Market Lab" section read one file: `_data/lab.json`.
+The trading platform's daily export (`scripts/export_site.py` in `/home/jzbmn/market`) overwrites it after the US close,
+commits and pushes; GitHub Pages rebuilds the site.
+
+- `"demo": true` shows a yellow "demonstration data" banner. The shipped file is demo data.
+- Any top-level block that is missing (`risk`, `closure`, `live`, `latency`, `health`) is shown as "pending".
+- Only derived results go in this file (returns, risk statistics, verdicts, timing). Never put exchange quotes or prices here.
+
+Schema (version 1), see the shipped `_data/lab.json` for a full example:
+
+| Key | Content |
+|---|---|
+| `schema_version`, `demo`, `as_of` (ISO time), `stage` (`A`–`E`) | header |
+| `stages[]` | `{id, label, status: done / in_progress / pending}` |
+| `health[]` | `{feed, status: ok / warn / down, last_msg_s, gaps_today}` |
+| `risk` | `{verdict: go / no-go / pending, period, n_days, rule, qlike[] {estimator, core, crypto, dm_p_core, dm_p_crypto}, vol_target, vol[] {estimator, core, crypto}}` — QLIKE relative to `sample_60d` = 1 |
+| `closure` | `{verdict, period, rule, windows {weeknight, weekend}, regression[] {window, target, coef, t, n}, strategies[] {name, cum_return, sharpe, hit_rate, n}}` |
+| `live` | `{start, dates[], series[] {name, group: ours / baseline / benchmark, values[] equity in $}, scorecard[] {method, segment, days, ret, vol, sharpe, mdd, excess_spy, evidence: sufficient / insufficient}}` — large-cap core curves only in `series` |
+| `latency[]` | `{component, venue, p50_ms, p99_ms}` |
+| `timing_events` | `{deadline_miss, infeasible_timing, stale_quote_rejections}` |
+| `market.segments` | `{core[], satellite[], crypto[], crypto_linked[]}`, each row `{symbol, name, sector, price, chg_1d, chg_1w, chg_1m, vol_20d, vol_fcst, volume_usd, rel_vol, signal {kind: risk / closure, value, label}}` |
+| `tickers[]` | bottom-bar tickers `{symbol, price, chg_1d}` |
+
+**Public vs local.** The same page runs in two places. On the personal site it shows the daily snapshot in `_data/lab.json`; there, leave out
+`price`, `volume_usd` and `tickers[].price` (the page hides those columns automatically), because exchange prices may not be redistributed publicly.
+On the local platform (`http://127.0.0.1:8800/lab/`) the page finds `api/lab.json` on the same server, switches to **Live** and refreshes every 2 s with full fields.

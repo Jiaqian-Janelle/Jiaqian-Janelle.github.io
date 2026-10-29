@@ -35,6 +35,7 @@ layout: default
             <li>AI PhD → founder</li>
             <li>Skills &amp; teardowns</li>
             <li><a href="{{ '/startup/' | relative_url }}">Startup log →</a></li>
+            <li><a href="{{ '/lab/' | relative_url }}">Market lab →</a></li>
           </ul>
         </div>
         <div class="facet">
@@ -180,6 +181,29 @@ layout: default
         </li>
         {% endfor %}
       </ul>
+    </section>
+
+    <!-- MARKET LAB — live validation of our own strategies (data: _data/lab.json) -->
+    <section class="section" id="lab">
+      <div class="section-head">
+        <h2>Market Lab</h2>
+        <a class="all-link" href="{{ '/lab/' | relative_url }}">OPEN LAB →</a>
+      </div>
+      <p style="margin:-0.6rem 0 1.1rem;color:var(--ink-faint);font-size:.85rem">Live validation of my own trading strategies on paper accounts — updated daily after the US close.</p>
+      {% assign lab = site.data.lab %}
+      {% if lab %}
+      <ul class="paperlog">
+        <li class="entry">
+          <div class="date">{% if lab.demo %}DEMO DATA · {% endif %}STAGE {{ lab.stage }}{% for s in lab.stages %}{% if s.id == lab.stage %} · {{ s.label | upcase }}{% endif %}{% endfor %}</div>
+          <h3><a href="{{ '/lab/' | relative_url }}#research">Risk dynamics &amp; portfolio optimization</a></h3>
+          <p class="gist">SPD-manifold covariance forecasts vs standard estimators, large-cap core first. Verdict: <b>{% if lab.risk %}{{ lab.risk.verdict | upcase }}{% else %}PENDING{% endif %}</b></p>
+        </li>
+        <li class="entry">
+          <h3><a href="{{ '/lab/' | relative_url }}#research">Market-closure lead-lag</a></h3>
+          <p class="gist">Does crypto's move while US stocks are closed predict crypto-linked stocks after the open? Verdict: <b>{% if lab.closure %}{{ lab.closure.verdict | upcase }}{% else %}PENDING{% endif %}</b></p>
+        </li>
+      </ul>
+      {% endif %}
     </section>
 
     <!-- BLOG -->
